@@ -17,20 +17,20 @@ function primitivesLoopSplice(source, target) {
     return true;
 }
 
-exports.extendFlat = function() {
-    return _extend(arguments, false, false, false);
+exports.extendFlat = function(...args) {
+    return _extend(args, false, false, false);
 };
 
-exports.extendDeep = function() {
-    return _extend(arguments, true, false, false);
+exports.extendDeep = function(...args) {
+    return _extend(args, true, false, false);
 };
 
-exports.extendDeepAll = function() {
-    return _extend(arguments, true, true, false);
+exports.extendDeepAll = function(...args) {
+    return _extend(args, true, true, false);
 };
 
-exports.extendDeepNoArrays = function() {
-    return _extend(arguments, true, false, true);
+exports.extendDeepNoArrays = function(...args) {
+    return _extend(args, true, false, true);
 };
 
 /*
@@ -72,7 +72,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
         input = inputs[i];
 
         for(key in input) {
-            src = target[key];
+            src = Object.prototype.hasOwnProperty.call(target, key) ? target[key] : undefined;
             copy = input[key];
 
             if(noArrayCopies && isArray(copy)) {

@@ -767,10 +767,7 @@ describe('Draw new shapes to layout', function() {
                 var n;
                 Plotly.newPlot(gd, {
                     data: fig.data,
-                    layout: fig.layout,
-                    config: {
-                        mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-                    }
+                    layout: fig.layout
                 })
                     .then(function() {
                         n = gd._fullLayout.shapes.length; // initial number of shapes on _fullLayout

@@ -336,7 +336,7 @@ describe('Test volume', function() {
             }
 
             function _hover4() {
-                mouseEvent('mouseover', 150, 300);
+                mouseEvent('mouseover', 140, 300);
                 return delay(20)();
             }
 

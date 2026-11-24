@@ -165,20 +165,41 @@ function _doPlot(gd, data, layout, config) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
-    // make the figure responsive
+    // Make the figure responsive. We need to save the callback that clears the
+    // listener for proper teardown.
     if (gd._context.responsive) {
-        if (!gd._responsiveChartHandler) {
-            // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function () {
+        if (!gd._clearResponsive) {
+            const resizeIfShown = () => {
                 if (!Lib.isHidden(gd)) Plots.resize(gd);
             };
-
-            // Listen to window resize
-            window.addEventListener('resize', gd._responsiveChartHandler);
+            // We still need the window resize listener for `fillFrame` and an
+            // escape hatch for browser-like users that don't support `ResizeObserver` (like jsdom)
+            if (gd._context.fillFrame || typeof ResizeObserver === 'undefined') {
+                window.addEventListener('resize', resizeIfShown);
+                gd._clearResponsive = () => window.removeEventListener('resize', resizeIfShown);
+            } else {
+                let previousWidth = gd.offsetWidth;
+                let previousHeight = gd.offsetHeight;
+                const observer = new ResizeObserver(() => {
+                    const width = gd.offsetWidth;
+                    const height = gd.offsetHeight;
+                    // Ignore size changes of one pixel or less (the same as plotAutoSize)
+                    const changed = Math.abs(width - previousWidth) > 1 || Math.abs(height - previousHeight) > 1;
+                    previousWidth = width;
+                    previousHeight = height;
+                    // Only resize plot if it changed and is visible (width and height > 0)
+                    if (changed && width && height) resizeIfShown();
+                });
+                observer.observe(gd);
+                gd._clearResponsive = () => observer.disconnect();
+            }
         }
     } else {
         Lib.clearResponsive(gd);
     }
+
+    // Text measured while one of these faces loads uses the fallback font
+    const unloadedFaces = document.fonts ? [...document.fonts].filter((face) => face.status !== 'loaded') : [];
 
     /*
      * start async-friendly code - now we're actually drawing things
@@ -310,7 +331,7 @@ function _doPlot(gd, data, layout, config) {
     function marginPushersAgain() {
         if (!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
 
-        return Lib.syncOrAsync([marginPushers, subroutines.layoutStyles], gd);
+        return marginPushers();
     }
 
     function positionAndAutorange() {
@@ -373,7 +394,6 @@ function _doPlot(gd, data, layout, config) {
         subroutines.drawData,
         subroutines.finalDraw,
         initInteractions,
-        Plots.addLinks,
         Plots.rehover,
         Plots.redrag,
         Plots.reselect,
@@ -391,9 +411,38 @@ function _doPlot(gd, data, layout, config) {
     if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function () {
+        redrawAfterFontLoads(gd, unloadedFaces);
         emitAfterPlot(gd);
         return gd;
     });
+}
+
+/**
+ * Redraw a plot after the web fonts that load during its draw finish loading.
+ *
+ * A plot that draws before its web font loads measures its text with the fallback font.
+ * The redraw happens after the draw that calls this function, once every face that started or
+ * finished loading during the draw settles. A face that fails to load still settles.
+ * A font that other text loads during the draw also causes one redraw.
+ * A later draw or `Plots.purge` cancels a pending redraw.
+ *
+ * @param gd - The graph div that finished a draw
+ * @param unloadedFaces - The faces in `document.fonts` that were not loaded when the draw started
+ */
+async function redrawAfterFontLoads(gd, unloadedFaces) {
+    // The draw started these loads, or they finished during the draw
+    const faces = unloadedFaces.filter((face) => ['loaded', 'loading'].includes(face.status));
+    if (!faces.length) return;
+
+    const token = {};
+    gd._fontLoadToken = token;
+    await Promise.all(faces.map((face) => face.loaded.catch(() => {})));
+    if (gd._fontLoadToken !== token) return;
+    delete gd._fontLoadToken;
+
+    // Clear size cache to force new measurement with loaded fonts
+    Drawing.savedBBoxes = {};
+    exports._doPlot(gd);
 }
 
 function emitAfterPlot(gd) {
@@ -485,7 +534,6 @@ function setPlotContext(gd, config) {
         context.scrollZoom = false;
         context.doubleClick = false;
         context.showTips = false;
-        context.showLink = false;
         context.displayModeBar = false;
     }
 
@@ -510,7 +558,6 @@ function setPlotContext(gd, config) {
         szOut.cartesian = 1;
         szOut.gl3d = 1;
         szOut.geo = 1;
-        szOut.mapbox = 1;
         szOut.map = 1;
     } else if (typeof szIn === 'string') {
         var parts = szIn.split('+');
@@ -520,7 +567,6 @@ function setPlotContext(gd, config) {
     } else if (szIn !== false) {
         szOut.gl3d = 1;
         szOut.geo = 1;
-        szOut.mapbox = 1;
         szOut.map = 1;
     }
 }
@@ -1410,16 +1456,6 @@ function _restyle(gd, aobj, traces) {
         return 'LAYOUT' + axName + '.range';
     }
 
-    function getFullTrace(traceIndex) {
-        // usually fullData maps 1:1 onto data, but with groupby transforms
-        // the fullData index can be greater. Take the *first* matching trace.
-        for (var j = traceIndex; j < fullData.length; j++) {
-            if (fullData[j]._input === data[traceIndex]) return fullData[j];
-        }
-        // should never get here - and if we *do* it should cause an error
-        // later on undefined fullTrace is passed to nestedProperty.
-    }
-
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
@@ -1436,11 +1472,11 @@ function _restyle(gd, aobj, traces) {
         if (attr in aobj || helpers.hasParent(aobj, attr)) return;
 
         var extraparam;
-        if (attr.substr(0, 6) === 'LAYOUT') {
+        if (attr.slice(0, 6) === 'LAYOUT') {
             extraparam = layoutNP(gd.layout, attr.replace('LAYOUT', ''));
         } else {
             var tracei = traces[i];
-            var preGUI = fullLayout._tracePreGUI[getFullTrace(tracei)._fullInput.uid];
+            var preGUI = fullLayout._tracePreGUI[fullData[tracei].uid];
             extraparam = makeNP(preGUI, guiEditFlag)(data[tracei], attr);
         }
 
@@ -1495,7 +1531,7 @@ function _restyle(gd, aobj, traces) {
 
         redoit[ai] = vi;
 
-        if (ai.substr(0, 6) === 'LAYOUT') {
+        if (ai.slice(0, 6) === 'LAYOUT') {
             param = layoutNP(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [undefinedToNull(param.get())];
             // since we're allowing val to be an array, allow it here too,
@@ -1511,8 +1547,8 @@ function _restyle(gd, aobj, traces) {
         undoit[ai] = a0();
         for (i = 0; i < traces.length; i++) {
             cont = data[traces[i]];
-            contFull = getFullTrace(traces[i]);
-            var preGUI = fullLayout._tracePreGUI[contFull._fullInput.uid];
+            contFull = fullData[traces[i]];
+            var preGUI = fullLayout._tracePreGUI[contFull.uid];
             param = makeNP(preGUI, guiEditFlag)(cont, ai);
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
@@ -1520,7 +1556,7 @@ function _restyle(gd, aobj, traces) {
             if (newVal === undefined) continue;
 
             var finalPart = param.parts[param.parts.length - 1];
-            var prefix = ai.substr(0, ai.length - finalPart.length - 1);
+            var prefix = ai.slice(0, ai.length - finalPart.length - 1);
             var prefixDot = prefix ? prefix + '.' : '';
             var innerContFull = prefix ? nestedProperty(contFull, prefix).get() : contFull;
 
@@ -1566,9 +1602,9 @@ function _restyle(gd, aobj, traces) {
                     labelsTo = 'y';
                     valuesTo = 'x';
                 }
-                Lib.swapAttrs(cont, ['?', '?src'], 'labels', labelsTo);
+                Lib.swapAttrs(cont, ['?'], 'labels', labelsTo);
                 Lib.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
-                Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
+                Lib.swapAttrs(cont, ['?'], 'values', valuesTo);
 
                 if (oldVal === 'pie' || oldVal === 'funnelarea') {
                     nestedProperty(cont, 'marker.color').set(nestedProperty(cont, 'marker.colors').get());
@@ -1872,7 +1908,7 @@ function _relayout(gd, aobj) {
     for (i = 0; i < keys.length; i++) {
         if (keys[i].indexOf('allaxes') === 0) {
             for (j = 0; j < axes.length; j++) {
-                var scene = axes[j]._id.substr(1);
+                var scene = axes[j]._id.slice(1);
                 var axisAttr = scene.indexOf('scene') !== -1 ? scene + '.' : '';
                 var newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
 
@@ -2076,6 +2112,12 @@ function _relayout(gd, aobj) {
             if (!newType || newType === '-') newType = 'linear';
             Registry.getComponentMethod('annotations', 'convertCoords')(gd, fullProp, newType, doextra);
             Registry.getComponentMethod('images', 'convertCoords')(gd, fullProp, newType, doextra);
+
+            // a range or autorange in a whole axis object is handled like the dotted keys above
+            if (!ptrunk && fullProp && vi && (vi.range !== undefined || vi.autorange !== undefined)) {
+                recordAlteredAxis(`${pleaf}.range`);
+                fullProp._inputRange = null;
+            }
         }
 
         // alter gd.layout
@@ -2333,11 +2375,11 @@ var layoutUIControlPatterns = [
     { pattern: /^(ternary\d*\.[abc]axis)\.(min|title\.text)$/ },
     { pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title\.text)/ },
     { pattern: /^(polar\d*\.angularaxis)\.rotation/ },
-    { pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/ },
     { pattern: /^(map\d*)\.(center|zoom|bearing|pitch)/ },
 
     { pattern: /^legend\.(x|y)$/, attr: 'editrevision' },
     { pattern: /^(shapes|annotations)/, attr: 'editrevision' },
+    { pattern: /^selections/, attr: 'selectionrevision' },
     { pattern: /^title\.text$/, attr: 'editrevision' }
 ];
 
@@ -2345,8 +2387,7 @@ var layoutUIControlPatterns = [
 // or with no `attr` we use `trace.uirevision`
 var traceUIControlPatterns = [
     { pattern: /^selectedpoints$/, attr: 'selectionrevision' },
-    // "visible" includes trace.transforms[i].styles[j].value.visible
-    { pattern: /(^|value\.)visible$/, attr: 'legend.uirevision' },
+    { pattern: /^visible$/, attr: 'legend.uirevision' },
     { pattern: /^dimensions\[\d+\]\.constraintrange/ },
     { pattern: /^node\.(x|y|groups)/ }, // for Sankey nodes
     { pattern: /^level$/ }, // for Sunburst, Treemap and Icicle traces
@@ -2356,8 +2397,7 @@ var traceUIControlPatterns = [
     // reasonable or should these be `editrevision`?
     // Also applies to axis titles up in the layout section
 
-    // "name" also includes transform.styles
-    { pattern: /(^|value\.)name$/ },
+    { pattern: /^name$/ },
     // including nested colorbar attributes (ie marker.colorbar)
     { pattern: /colorbar\.title\.text$/ },
     { pattern: /colorbar\.(x|y)$/, attr: 'editrevision' }
@@ -2369,7 +2409,7 @@ function findUIPattern(key, patternSpecs) {
         var match = key.match(spec.pattern);
         if (match) {
             var head = match[1] || '';
-            return { head: head, tail: key.substr(head.length + 1), attr: spec.attr };
+            return { head: head, tail: key.slice(head.length + 1), attr: spec.attr };
         }
     }
 }
@@ -2394,7 +2434,7 @@ function getNewRev(revAttr, container) {
 
 function getFullTraceIndexFromUid(uid, fullData) {
     for (var i = 0; i < fullData.length; i++) {
-        if (fullData[i]._fullInput.uid === uid) return i;
+        if (fullData[i].uid === uid) return i;
     }
     return -1;
 }
@@ -2446,7 +2486,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     }
                     newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
                     continue;
-                } else if (tail === 'autorange' || tail.substr(0, 6) === 'range[') {
+                } else if (tail === 'autorange' || tail.slice(0, 6) === 'range[') {
                     // Special case for (auto)range since we push it back into the layout
                     // so all null should be treated equivalently to autorange: true with any range
                     var pre0 = layoutPreGUI[head + '.range[0]'];
@@ -2478,7 +2518,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
         // so remove it from _preGUI for next time.
         delete layoutPreGUI[key];
 
-        if (match && match.tail.substr(0, 6) === 'range[') {
+        if (match && match.tail.slice(0, 6) === 'range[') {
             newRangeAccepted[match.head] = 1;
         }
     }
@@ -2501,7 +2541,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
     for (var uid in allTracePreGUI) {
         var tracePreGUI = allTracePreGUI[uid];
         var newTrace = null;
-        var fullInput;
+        var fullTrace;
         for (key in tracePreGUI) {
             // wait until we know we have preGUI values to look for traces
             // but if we don't find both, stop looking at this uid
@@ -2513,10 +2553,9 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     delete allTracePreGUI[uid];
                     break;
                 }
-                var fullTrace = oldFullData[fulli];
-                fullInput = fullTrace._fullInput;
+                fullTrace = oldFullData[fulli];
 
-                var newTracei = getTraceIndexFromUid(uid, data, fullInput.index);
+                var newTracei = getTraceIndexFromUid(uid, data, fullTrace.index);
                 if (newTracei < 0) {
                     // No match in new data
                     delete allTracePreGUI[uid];
@@ -2531,7 +2570,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     oldRev = nestedProperty(oldFullLayout, match.attr).get();
                     newRev = oldRev && getNewRev(match.attr, layout);
                 } else {
-                    oldRev = fullInput.uirevision;
+                    oldRev = fullTrace.uirevision;
                     // inheritance for trace.uirevision is simple, just layout.uirevision
                     newRev = newTrace.uirevision;
                     if (newRev === undefined) newRev = layout.uirevision;
@@ -2543,7 +2582,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     newNP = nestedProperty(newTrace, key);
                     newVal = newNP.get();
                     if (valsMatch(newVal, preGUIVal)) {
-                        newNP.set(undefinedToNull(nestedProperty(fullInput, key).get()));
+                        newNP.set(undefinedToNull(nestedProperty(fullTrace, key).get()));
                         continue;
                     }
                 }
@@ -2632,9 +2671,9 @@ function react(gd, data, layout, config) {
 
             applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
 
-            // "true" skips updating calcdata and remapping arrays from calcTransforms,
-            // which supplyDefaults usually does at the end, but we may need to NOT do
-            // if the diff (which we haven't determined yet) says we'll recalc
+            // "true" skips updating calcdata, which supplyDefaults usually does at
+            // the end, but we may need to NOT do if the diff (which we haven't
+            // determined yet) says we'll recalc
             Plots.supplyDefaults(gd, { skipUpdateCalc: true });
 
             var newFullData = gd._fullData;
@@ -2669,7 +2708,7 @@ function react(gd, data, layout, config) {
                         if (emptyCategories) emptyCategories();
                     }
                 }
-                // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
+                // otherwise do the calcdata updates that we skipped earlier
             } else {
                 Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
             }
@@ -2785,11 +2824,11 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
 
     for (i = 0; i < oldFullData.length; i++) {
         if (newFullData[i]) {
-            trace = newFullData[i]._fullInput;
+            trace = newFullData[i];
             if (seenUIDs[trace.uid]) continue;
             seenUIDs[trace.uid] = 1;
 
-            getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
+            getDiffFlags(oldFullData[i], trace, [], diffOpts);
         }
     }
 
@@ -2838,6 +2877,17 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
             // We skip the else case (newDomain !== oldInputDomain && newDomain === oldDomain)
             // because it's likely that if the newDomain and oldDomain are the same, the user
             // passed in the same layout object and we should keep the _inputDomain.
+        }
+
+        // Same for _inputRange: constraints compare the range against it, so a stale one
+        // puts the previous range back
+        const newRange = newFullLayout[key].range;
+        const oldRange = oldFullLayout[key].range;
+        const oldInputRange = oldFullLayout[key]._inputRange;
+        if (oldInputRange && newRange && oldRange) {
+            const isInputRange = newRange[0] === oldInputRange[0] && newRange[1] === oldInputRange[1];
+            const isOldRange = newRange[0] === oldRange[0] && newRange[1] === oldRange[1];
+            if (!isInputRange && !isOldRange) newFullLayout[key]._inputRange = null;
         }
     }
 

@@ -1,48 +1,56 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var countryRegex = require('country-regex');
+const { COUNTRIES, createLookup } = require('country-iso-search');
 var { area: turfArea } = require('@turf/area');
 var { centroid: turfCentroid } = require('@turf/centroid');
-var { bbox: turfBbox } = require('@turf/bbox');
+const { coordAll } = require('@turf/meta');
+const { geoBounds } = require('d3-geo');
 
 var identity = require('./identity');
 var loggers = require('./loggers');
 var isPlainObject = require('./is_plain_object');
 var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
+const { usaLocationAbbreviations, usaLocationList } = require('./usa_location_names');
+const { COUNTRIES_X } = require('./custom_country_codes');
 
-// make list of all country iso3 ids from at runtime
-var countryIds = Object.keys(countryRegex);
+const { lookupAlpha3 } = createLookup([...COUNTRIES, ...COUNTRIES_X]);
 
 var locationmodeToIdFinder = {
     'ISO-3': identity,
-    'USA-states': identity,
+    'USA-states': usaLocationToAbbreviation,
     'country names': countryNameToISO3
 };
 
 function countryNameToISO3(countryName) {
-    for(var i = 0; i < countryIds.length; i++) {
-        var iso3 = countryIds[i];
-        var regex = new RegExp(countryRegex[iso3]);
-
-        if(regex.test(countryName.trim().toLowerCase())) return iso3;
-    }
-
+    const iso3 = lookupAlpha3(countryName);
+    if (iso3) return iso3;
     loggers.log('Unrecognized country name: ' + countryName + '.');
 
     return false;
 }
 
+function usaLocationToAbbreviation(loc) {
+    loc = loc.trim();
+    const abbreviation = usaLocationAbbreviations.has(loc.toUpperCase())
+        ? loc.toUpperCase()
+        : usaLocationList[loc.toLowerCase()];
+
+    if (abbreviation) return abbreviation;
+
+    loggers.log('Unrecognized US location: ' + loc + '.');
+
+    return false;
+}
+
 function locationToFeature(locationmode, location, features) {
-    if(!location || typeof location !== 'string') return false;
+    if (!location || typeof location !== 'string') return false;
 
-    var locationId = locationmodeToIdFinder[locationmode](location);
-    var filteredFeatures;
-    var f, i;
-
-    if(locationId) {
-        if(locationmode === 'USA-states') {
+    const locationId = locationmodeToIdFinder[locationmode](location);
+    if (locationId) {
+        let filteredFeatures;
+        if (locationmode === 'USA-states') {
             // Filter out features out in USA
             //
             // This is important as the Natural Earth files
@@ -50,28 +58,43 @@ function locationToFeature(locationmode, location, features) {
             // which have some overlay in their two-letter ids. For example,
             // 'WA' is used for both Washington state and Western Australia.
             filteredFeatures = [];
-            for(i = 0; i < features.length; i++) {
-                f = features[i];
-                if(f.properties && f.properties.gu && f.properties.gu === 'USA') {
-                    filteredFeatures.push(f);
-                }
+            for (const f of features) {
+                if (f?.properties?.gu === 'USA') filteredFeatures.push(f);
             }
         } else {
             filteredFeatures = features;
         }
 
-        for(i = 0; i < filteredFeatures.length; i++) {
-            f = filteredFeatures[i];
-            if(f.id === locationId) return f;
+        for (const f of filteredFeatures) {
+            if (f.id === locationId) return f;
         }
 
-        loggers.log([
-            'Location with id', locationId,
-            'does not have a matching topojson feature at this resolution.'
-        ].join(' '));
+        loggers.log(`Location with id ${locationId} does not have a matching topojson feature at this resolution.`);
     }
 
     return false;
+}
+
+// Offset used to lift negative longitudes (-180..0) into a continuous frame
+// (180..360) so polygons and points that straddle the antimeridian can be
+// compared with linear math. Shared between polygon stitching and hover
+// hit-testing so both sides stay in sync.
+const ANTIMERIDIAN_LON_SHIFT = 360;
+
+/**
+ * Find the first index where a polygon ring crosses the antimeridian
+ * (a transition from positive to negative longitude between consecutive
+ * points). Returns null when no crossing is found.
+ *
+ * @param {Array<Array<number>>} pts - polygon points as [lon, lat] pairs
+ * @return {number|null} index of the segment that crosses, or null
+ */
+function doesCrossAntiMeridian(pts) {
+    for (let l = 0; l < pts.length - 1; l++) {
+        if (pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
+    }
+
+    return null;
 }
 
 function feature2polygons(feature) {
@@ -82,14 +105,7 @@ function feature2polygons(feature) {
     var polygons = [];
     var appendPolygon, j, k, m;
 
-    function doesCrossAntiMerdian(pts) {
-        for(var l = 0; l < pts.length - 1; l++) {
-            if(pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
-        }
-        return null;
-    }
-
-    if(loc === 'RUS' || loc === 'FJI') {
+    if (loc === 'RUS' || loc === 'FJI') {
         // Russia and Fiji have landmasses that cross the antimeridian,
         // we need to add +360 to their longitude coordinates, so that
         // polygon 'contains' doesn't get confused when crossing the antimeridian.
@@ -97,32 +113,29 @@ function feature2polygons(feature) {
         // Note that other countries have polygons on either side of the antimeridian
         // (e.g. some Aleutian island for the USA), but those don't confuse
         // the 'contains' method; these are skipped here.
-        appendPolygon = function(_pts) {
+        appendPolygon = function (_pts) {
             var pts;
 
-            if(doesCrossAntiMerdian(_pts) === null) {
+            if (doesCrossAntiMeridian(_pts) === null) {
                 pts = _pts;
             } else {
                 pts = new Array(_pts.length);
-                for(m = 0; m < _pts.length; m++) {
+                for (m = 0; m < _pts.length; m++) {
                     // do not mutate calcdata[i][j].geojson !!
-                    pts[m] = [
-                        _pts[m][0] < 0 ? _pts[m][0] + 360 : _pts[m][0],
-                        _pts[m][1]
-                    ];
+                    pts[m] = [_pts[m][0] < 0 ? _pts[m][0] + ANTIMERIDIAN_LON_SHIFT : _pts[m][0], _pts[m][1]];
                 }
             }
 
             polygons.push(polygon.tester(pts));
         };
-    } else if(loc === 'ATA') {
+    } else if (loc === 'ATA') {
         // Antarctica has a landmass that wraps around every longitudes which
         // confuses the 'contains' methods.
-        appendPolygon = function(pts) {
-            var crossAntiMeridianIndex = doesCrossAntiMerdian(pts);
+        appendPolygon = function (pts) {
+            var crossAntiMeridianIndex = doesCrossAntiMeridian(pts);
 
             // polygon that do not cross anti-meridian need no special handling
-            if(crossAntiMeridianIndex === null) {
+            if (crossAntiMeridianIndex === null) {
                 return polygons.push(polygon.tester(pts));
             }
 
@@ -135,10 +148,10 @@ function feature2polygons(feature) {
             var stitch = new Array(pts.length + 1);
             var si = 0;
 
-            for(m = 0; m < pts.length; m++) {
-                if(m > crossAntiMeridianIndex) {
-                    stitch[si++] = [pts[m][0] + 360, pts[m][1]];
-                } else if(m === crossAntiMeridianIndex) {
+            for (m = 0; m < pts.length; m++) {
+                if (m > crossAntiMeridianIndex) {
+                    stitch[si++] = [pts[m][0] + ANTIMERIDIAN_LON_SHIFT, pts[m][1]];
+                } else if (m === crossAntiMeridianIndex) {
                     stitch[si++] = pts[m];
                     stitch[si++] = [pts[m][0], -90];
                 } else {
@@ -155,21 +168,21 @@ function feature2polygons(feature) {
         };
     } else {
         // otherwise using same array ref is fine
-        appendPolygon = function(pts) {
+        appendPolygon = function (pts) {
             polygons.push(polygon.tester(pts));
         };
     }
 
-    switch(geometry.type) {
+    switch (geometry.type) {
         case 'MultiPolygon':
-            for(j = 0; j < coords.length; j++) {
-                for(k = 0; k < coords[j].length; k++) {
+            for (j = 0; j < coords.length; j++) {
+                for (k = 0; k < coords[j].length; k++) {
                     appendPolygon(coords[j][k]);
                 }
             }
             break;
         case 'Polygon':
-            for(j = 0; j < coords.length; j++) {
+            for (j = 0; j < coords.length; j++) {
                 appendPolygon(coords[j]);
             }
             break;
@@ -185,7 +198,7 @@ function getTraceGeojson(trace) {
 
     // This should not happen, but just in case something goes
     // really wrong when fetching the GeoJSON
-    if(!isPlainObject(geojsonIn)) {
+    if (!isPlainObject(geojsonIn)) {
         loggers.error('Oops ... something went wrong when fetching ' + g);
         return false;
     }
@@ -197,15 +210,15 @@ function extractTraceFeature(calcTrace) {
     var trace = calcTrace[0].trace;
 
     var geojsonIn = getTraceGeojson(trace);
-    if(!geojsonIn) return false;
+    if (!geojsonIn) return false;
 
     var lookup = {};
     var featuresOut = [];
     var i;
 
-    for(i = 0; i < trace._length; i++) {
+    for (i = 0; i < trace._length; i++) {
         var cdi = calcTrace[i];
-        if(cdi.loc || cdi.loc === 0) {
+        if (cdi.loc || cdi.loc === 0) {
             lookup[cdi.loc] = cdi;
         }
     }
@@ -214,10 +227,10 @@ function extractTraceFeature(calcTrace) {
         var id = nestedProperty(fIn, trace.featureidkey || 'id').get();
         var cdi = lookup[id];
 
-        if(cdi) {
+        if (cdi) {
             var geometry = fIn.geometry;
 
-            if(geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
+            if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
                 var fOut = {
                     type: 'Feature',
                     id: id,
@@ -225,11 +238,18 @@ function extractTraceFeature(calcTrace) {
                     properties: {}
                 };
 
-                // Compute centroid, add it to the properties
-                if (fOut.geometry.coordinates.length > 0) {
-                    fOut.properties.ct = findCentroid(fOut);
-                } else {
-                    fOut.properties.ct = [NaN, NaN];
+                fOut.properties.ct = findCentroid(fOut);
+
+                if (isNaN(fOut.properties.ct[0])) {
+                    loggers.log(
+                        [
+                            'Location',
+                            cdi.loc,
+                            'has no polygon with positive area.',
+                            'Its centroid could not be computed,',
+                            'so hover and selection will not work for it.'
+                        ].join(' ')
+                    );
                 }
 
                 // Mutate in in/out features into calcdata
@@ -238,11 +258,15 @@ function extractTraceFeature(calcTrace) {
 
                 featuresOut.push(fOut);
             } else {
-                loggers.log([
-                    'Location', cdi.loc, 'does not have a valid GeoJSON geometry.',
-                    'Traces with locationmode *geojson-id* only support',
-                    '*Polygon* and *MultiPolygon* geometries.'
-                ].join(' '));
+                loggers.log(
+                    [
+                        'Location',
+                        cdi.loc,
+                        'does not have a valid GeoJSON geometry.',
+                        'Traces with locationmode *geojson-id* only support',
+                        '*Polygon* and *MultiPolygon* geometries.'
+                    ].join(' ')
+                );
             }
         }
 
@@ -251,10 +275,10 @@ function extractTraceFeature(calcTrace) {
         delete lookup[id];
     }
 
-    switch(geojsonIn.type) {
+    switch (geojsonIn.type) {
         case 'FeatureCollection':
             var featuresIn = geojsonIn.features;
-            for(i = 0; i < featuresIn.length; i++) {
+            for (i = 0; i < featuresIn.length; i++) {
                 appendFeature(featuresIn[i]);
             }
             break;
@@ -262,20 +286,25 @@ function extractTraceFeature(calcTrace) {
             appendFeature(geojsonIn);
             break;
         default:
-            loggers.warn([
-                'Invalid GeoJSON type', (geojsonIn.type || 'none') + '.',
-                'Traces with locationmode *geojson-id* only support',
-                '*FeatureCollection* and *Feature* types.'
-            ].join(' '));
+            loggers.warn(
+                [
+                    'Invalid GeoJSON type',
+                    (geojsonIn.type || 'none') + '.',
+                    'Traces with locationmode *geojson-id* only support',
+                    '*FeatureCollection* and *Feature* types.'
+                ].join(' ')
+            );
             return false;
     }
 
-    for(var loc in lookup) {
-        loggers.log([
-            'Location *' + loc + '*',
-            'does not have a matching feature with id-key',
-            '*' + trace.featureidkey + '*.'
-        ].join(' '));
+    for (var loc in lookup) {
+        loggers.log(
+            [
+                'Location *' + loc + '*',
+                'does not have a matching feature with id-key',
+                '*' + trace.featureidkey + '*.'
+            ].join(' ')
+        );
     }
 
     return featuresOut;
@@ -289,14 +318,14 @@ function findCentroid(feature) {
     var geometry = feature.geometry;
     var poly;
 
-    if(geometry.type === 'MultiPolygon') {
+    if (geometry.type === 'MultiPolygon') {
         var coords = geometry.coordinates;
         var maxArea = 0;
 
-        for(var i = 0; i < coords.length; i++) {
-            var polyi = {type: 'Polygon', coordinates: coords[i]};
+        for (var i = 0; i < coords.length; i++) {
+            var polyi = { type: 'Polygon', coordinates: coords[i] };
             var area = turfArea(polyi);
-            if(area > maxArea) {
+            if (area > maxArea) {
                 maxArea = area;
                 poly = polyi;
             }
@@ -304,6 +333,11 @@ function findCentroid(feature) {
     } else {
         poly = geometry;
     }
+
+    // Guard against MultiPolygons that don't contain a positive-area polygon
+    // (collapsed rings measure zero, malformed ring ordering measures negative)
+    // and when either geometry type has rings holding no points at all.
+    if (!poly || !poly.coordinates.some((ring) => ring.length > 0)) return [NaN, NaN];
 
     return turfCentroid(poly).geometry.coordinates;
 }
@@ -313,13 +347,14 @@ function fetchTraceGeoData(calcData) {
     var promises = [];
 
     function fetch(url) {
-        return new Promise(function(resolve, reject) {
-            d3.json(url, function(err, d) {
-                if(err) {
+        return new Promise(function (resolve, reject) {
+            d3.json(url, function (err, d) {
+                if (err) {
                     delete PlotlyGeoAssets[url];
-                    var msg = err.status === 404 ?
-                        ('GeoJSON at URL "' + url + '" does not exist.') :
-                        ('Unexpected error while fetching from ' + url);
+                    var msg =
+                        err.status === 404
+                            ? 'GeoJSON at URL "' + url + '" does not exist.'
+                            : 'Unexpected error while fetching from ' + url;
                     return reject(new Error(msg));
                 }
 
@@ -330,14 +365,14 @@ function fetchTraceGeoData(calcData) {
     }
 
     function wait(url) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             var cnt = 0;
-            var interval = setInterval(function() {
-                if(PlotlyGeoAssets[url] && PlotlyGeoAssets[url] !== 'pending') {
+            var interval = setInterval(function () {
+                if (PlotlyGeoAssets[url] && PlotlyGeoAssets[url] !== 'pending') {
                     clearInterval(interval);
                     return resolve(PlotlyGeoAssets[url]);
                 }
-                if(cnt > 100) {
+                if (cnt > 100) {
                     clearInterval(interval);
                     return reject('Unexpected error while fetching from ' + url);
                 }
@@ -346,15 +381,15 @@ function fetchTraceGeoData(calcData) {
         });
     }
 
-    for(var i = 0; i < calcData.length; i++) {
+    for (var i = 0; i < calcData.length; i++) {
         var trace = calcData[i][0].trace;
         var url = trace.geojson;
 
-        if(typeof url === 'string') {
-            if(!PlotlyGeoAssets[url]) {
+        if (typeof url === 'string') {
+            if (!PlotlyGeoAssets[url]) {
                 PlotlyGeoAssets[url] = 'pending';
                 promises.push(fetch(url));
-            } else if(PlotlyGeoAssets[url] === 'pending') {
+            } else if (PlotlyGeoAssets[url] === 'pending') {
                 promises.push(wait(url));
             }
         }
@@ -363,17 +398,120 @@ function fetchTraceGeoData(calcData) {
     return promises;
 }
 
-// TODO `turf/bbox` gives wrong result when the input feature/geometry
-// crosses the anti-meridian. We should try to implement our own bbox logic.
-function computeBbox(d) {
-    return turfBbox(d);
+/**
+ * Compute a `[west, south, east, north]` bounding box for a GeoJSON object
+ * (Feature, Geometry, FeatureCollection, or GeometryCollection). This function
+ * handles geometry that crosses the antimeridian. `north`/`south` will be in the
+ * range `[-90, 90]`; `west` will typically be in the range `[-180, 180]`; `east`
+ * will typically be in the range `[-180, 180]`, but when the input crosses the
+ * antimeridian, it will be shifted by +360° so the range will be `[180, west + 360)`.
+ *
+ * @param {object} d - a GeoJSON Feature, Geometry, FeatureCollection, or
+ *   GeometryCollection.
+ * @return {[number, number, number, number]|null} `[west, south, east, north]`
+ *   in degrees; `east` may exceed 180° when the input crosses ±180°.
+ *   Returns `null` for input with no extractable coordinates (e.g. `Sphere`,
+ *   empty FeatureCollection).
+ */
+const computeBbox = (d) => boundsOfCoords(coordsOf(d));
+
+/**
+ * Return every coordinate contained in a GeoJSON object.
+ *
+ * @param {object} d - a GeoJSON Feature, Geometry, FeatureCollection, or
+ *   GeometryCollection.
+ * @return {Array} `[lon, lat]` pairs. Empty for input with nothing extractable:
+ *   coordAll throws on a Sphere, on malformed input and on nullish values, and
+ *   returns nothing for an empty collection.
+ */
+function coordsOf(d) {
+    try {
+        return coordAll(d);
+    } catch (_) {
+        return [];
+    }
+}
+
+/**
+ * Bounding box of a list of coordinates, as `computeBbox` describes.
+ *
+ * @param {Array} points - `[lon, lat]` pairs
+ * @return {[number, number, number, number]|null} `[west, south, east, north]`,
+ *   or null when there are no points.
+ */
+function boundsOfCoords(points) {
+    if (points.length === 0) return null;
+    if (points.length === 1) {
+        const [lon, lat] = points[0];
+        return [lon, lat, lon, lat];
+    }
+    // Pass as MultiPoint (just a bunch of vertices) to avoid
+    // geobounds treating collection as polygons
+    const [[west, south], [east, north]] = geoBounds({ type: 'MultiPoint', coordinates: points });
+
+    return [
+        west,
+        south,
+        unwrapLonRange([west, east])[1], // Unwrap antimeridian crossing; east may exceed 180°
+        north
+    ];
+}
+
+const usesFitGeojson = (trace, geoLayout) => geoLayout.fitbounds === 'geojson' && trace.locationmode === 'geojson-id';
+
+/**
+ * Coordinates of a trace's whole geojson, for the `fitbounds: 'geojson'` mode.
+ *
+ * @param {object} trace - a `fullData` trace
+ * @param {object} geoLayout - the subplot's `fullLayout` entry
+ * @return {Array} `[lon, lat]` pairs. Empty when the trace is in another mode, or
+ *   when the geojson has nothing extractable.
+ */
+const fitGeojsonCoords = (trace, geoLayout) =>
+    usesFitGeojson(trace, geoLayout) ? coordsOf(getTraceGeojson(trace)) : [];
+
+/**
+ * Bounding box of a trace's whole geojson, for the `fitbounds: 'geojson'` mode.
+ *
+ * @param {object} trace - a `fullData` trace
+ * @param {object} geoLayout - the subplot's `fullLayout` entry
+ * @return {Array|null} `[west, south, east, north]`, or null whenever
+ *   `fitGeojsonCoords` is empty.
+ */
+const fitGeojsonBbox = (trace, geoLayout) => boundsOfCoords(fitGeojsonCoords(trace, geoLayout));
+
+/**
+ * Return an unwrapped version of a `[lon0, lon1]` longitude range.
+ * When the range crosses the antimeridian (`lon0 > lon1`),
+ * 360 is added to `lon1` to produce a continuous range;
+ * otherwise the input pair is returned unchanged. Function assumes
+ * `lon0` is west of `lon1`.
+ *
+ * @example
+ *   unwrapLonRange([170, -170]) // → [170, 190]  (span = 20°, midpoint = 180°)
+ *   unwrapLonRange([-10, 20])   // → [-10, 20]   (no crossing, passthrough)
+ *   unwrapLonRange([-5, -170])  // → [-5, 190]   (mixed-sign crossing, e.g. from geoBounds)
+ *
+ * @param {[number, number]} lonRange - `[lon0, lon1]`, each in the range [-180, 180]
+ * @return {[number, number]} The unwrapped range; when the input contract is
+ *   respected, `lon1` falls in the range `[lon0, lon0 + 360)`.
+ */
+function unwrapLonRange([lon0, lon1]) {
+    return [lon0, lon0 > lon1 ? lon1 + ANTIMERIDIAN_LON_SHIFT : lon1];
 }
 
 module.exports = {
-    locationToFeature: locationToFeature,
-    feature2polygons: feature2polygons,
-    getTraceGeojson: getTraceGeojson,
-    extractTraceFeature: extractTraceFeature,
-    fetchTraceGeoData: fetchTraceGeoData,
-    computeBbox: computeBbox
+    locationToFeature,
+    feature2polygons,
+    getTraceGeojson,
+    extractTraceFeature,
+    fetchTraceGeoData,
+    boundsOfCoords,
+    computeBbox,
+    coordsOf,
+    doesCrossAntiMeridian,
+    fitGeojsonBbox,
+    fitGeojsonCoords,
+    unwrapLonRange,
+    ANTIMERIDIAN_LON_SHIFT
 };

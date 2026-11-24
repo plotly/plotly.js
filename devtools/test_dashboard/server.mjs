@@ -1,17 +1,27 @@
-import ecstatic from 'ecstatic';
+import { once } from 'node:events';
+import http from 'node:http';
 import { build, context } from 'esbuild';
-import http from 'http';
 import minimist from 'minimist';
-import open from 'open';
+import sirv from 'sirv';
 import { devtoolsConfig, localDevConfig } from '../../esbuild-config.js';
 import constants from '../../tasks/util/constants.js';
 import { createMocksList, getMockFiles, readFiles, saveMockListToFile } from '../dashboard_utilities.mjs';
 
 var args = minimist(process.argv.slice(2), {});
-var PORT = args.port || 3000;
+// An explicit --port is used as given. Without one, try PORT_ATTEMPTS consecutive ports from DEFAULT_PORT.
+// This can be passed using the npm script as follows: npm start -- --port XXXX.
+const DEFAULT_PORT = 3000;
+const PORT_ATTEMPTS = 3;
+const portIsExplicit = args.port !== undefined;
+const firstPort = portIsExplicit ? Number(args.port) : DEFAULT_PORT;
+if (portIsExplicit && !(/^\d+$/.test(String(args.port)) && firstPort >= 1 && firstPort <= 65535)) {
+    console.error(`Invalid --port value "${args.port}". Pass an integer from 1 to 65535.`);
+    process.exit(1);
+}
 var strict = args.strict;
 var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
+var mathjax4chtml = args.mathjax4chtml;
 
 if (strict) localDevConfig.entryPoints = ['./lib/index-strict.js'];
 
@@ -21,16 +31,18 @@ await getMockFiles().then(readFiles).then(createMocksList).then(saveMockListToFi
 build(devtoolsConfig);
 
 var ctx = await context(localDevConfig);
-devServer();
+await devServer();
 console.log('watching esbuild...');
 await ctx.watch();
 
-function devServer() {
-    const staticFilesHandler = ecstatic({
-        root: constants.pathToRoot,
-        cache: 0,
+async function devServer() {
+    const staticFilesHandler = sirv(constants.pathToRoot, {
+        dev: true,
+        maxAge: 0,
         gzip: true,
-        cors: true
+        setHeaders: (res) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+        }
     });
 
     const server = http.createServer((req, res) => {
@@ -56,13 +68,34 @@ function devServer() {
     });
 
     // Start the server up!
-    server.listen(PORT);
+    const attempts = portIsExplicit ? 1 : PORT_ATTEMPTS;
+    let port;
+    for (let i = 0; i < attempts && port === undefined; i++) {
+        const candidate = firstPort + i;
+        try {
+            server.listen(candidate);
+            await once(server, 'listening');
+            port = candidate;
+        } catch (err) {
+            if (err.code !== 'EADDRINUSE') throw err;
+            console.warn(`Port ${candidate} is in use.`);
+            if (i + 1 < attempts) console.warn(`Trying port ${candidate + 1}.`);
+        }
+    }
+    if (port === undefined) {
+        console.error(
+            'All attempted ports are in use. Stop a process on one of those ports or pass a free port with --port.'
+        );
+        process.exit(1);
+    }
 
     let indexName = 'index';
     if (mathjax3) indexName += '-mathjax3';
     else if (mathjax3chtml) indexName += '-mathjax3chtml';
+    else if (mathjax4chtml) indexName += '-mathjax4chtml';
     indexName += '.html';
 
     // open up browser window
-    open(`http://localhost:${PORT}/devtools/test_dashboard/${indexName}${strict ? '?strict=true' : ''}`);
+    const serverUrl = `http://localhost:${port}/devtools/test_dashboard/${indexName}${strict ? '?strict=true' : ''}`;
+    console.log(`  \x1b[1m\x1b[32m➜\x1b[0m  \x1b[1mLocal:\x1b[0m   \x1b[1m\x1b[36m${serverUrl}\x1b[0m\n`);
 }

@@ -47,7 +47,8 @@
         "showgrid": true,
         "gridcolor": "#444",
         "tick0": 2
-      }
+      },
+      "fitbounds": false
     },
     "geo2": {
       "domain": { "row": 0, "column": 1 },
@@ -60,7 +61,8 @@
         "showgrid": true,
         "gridcolor": "#444",
         "tick0": 1
-      }
+      },
+      "fitbounds": false
     },
     "geo3": {
       "domain": { "row": 1, "column": 0 },
@@ -73,7 +75,8 @@
         "showgrid": true,
         "gridcolor": "#444",
         "tick0": -40
-      }
+      },
+      "fitbounds": false
     },
     "geo4": {
       "domain": { "row": 1, "column": 1 },
@@ -86,7 +89,8 @@
         "showgrid": true,
         "gridcolor": "#444",
         "tick0": 45
-      }
+      },
+      "fitbounds": false
     },
     "margin": { "t": 10, "b": 10 },
     "width": 1100,

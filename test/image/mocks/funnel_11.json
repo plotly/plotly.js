@@ -120,7 +120,6 @@
     "funnelmode": "group",
     "funnelgap": 0.2,
     "funnelgroupgap": 0,
-    "separators": ".,",
-    "hidesources": false
+    "separators": ".,"
   }
 }

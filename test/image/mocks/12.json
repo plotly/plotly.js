@@ -505,7 +505,6 @@
     "bargroupgap": 0,
     "boxmode": "overlay",
     "separators": ".,",
-    "hidesources": false,
     "selections": [
       {
         "x0": 150,

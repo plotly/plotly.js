@@ -8,10 +8,8 @@ var scatterMapAttrs = require('../scattermap/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 /*
- * - https://docs.map.com/help/tutorials/make-a-heatmap-with-mapbox-gl-js/
- * - https://docs.mapbox.com/mapbox-gl-js/example/heatmap-layer/
- * - https://docs.mapbox.com/mapbox-gl-js/style-spec/#layers-heatmap
- * - https://blog.map.com/introducing-heatmaps-in-mapbox-gl-js-71355ada9e6c
+ * - https://maplibre.org/maplibre-style-spec/layers/#heatmap
+ * - https://maplibre.org/maplibre-gl-js/docs/examples/create-a-heatmap-layer/
  *
  * Gotchas:
  * - https://github.com/mapbox/mapbox-gl-js/issues/6463
@@ -20,7 +18,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 /*
  *
- * In mathematical terms, Map GL heatmaps are a bivariate (2D) kernel density
+ * In mathematical terms, MapLibre GL heatmaps are a bivariate (2D) kernel density
  * estimation with a Gaussian kernel. It means that each data point has an area
  * of “influence” around it (called a kernel) where the numerical value of
  * influence (which we call density) decreases as you go further from the point.

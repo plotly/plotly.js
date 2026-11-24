@@ -103,7 +103,8 @@
     "yaxis2": {
       "gridwidth": 2,
       "side": "right",
-      "overlaying": "y"
+      "overlaying": "y",
+      "tickmode": "auto"
     }
   }
 }

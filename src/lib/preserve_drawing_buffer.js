@@ -28,8 +28,8 @@ module.exports = function preserveDrawingBuffer(opts) {
                 // find Safari version
                 for(var k = i - 1; k > -1; k--) {
                     var prevPart = allParts[k];
-                    if(prevPart.substr(0, 8) === 'Version/') {
-                        var v = prevPart.substr(8).split('.')[0];
+                    if(prevPart.slice(0, 8) === 'Version/') {
+                        var v = prevPart.slice(8).split('.')[0];
                         if(isNumeric(v)) v = +v;
                         if(v >= 13) return true;
                     }

@@ -133,10 +133,21 @@ module.exports = {
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         editType: 'calc',
-        description: ['Determines which trace information appear on the graph.'].join(' ')
+        description: [
+            'Determines what trace information appears on the graph.',
+            'Flags are rendered in a fixed order; use `texttemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
+        ].join(' ')
     },
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name']
+        flags: ['label', 'text', 'value', 'percent', 'name'],
+        description: [
+            'Determines what trace information appears on hover.',
+            'Flags are rendered in a fixed order; use `hovertemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
+        ].join(' ')
     }),
     hovertemplate: hovertemplateAttrs({}, { keys: ['label', 'color', 'value', 'percent', 'text'] }),
     hovertemplatefallback: templatefallbackAttrs(),
@@ -180,7 +191,38 @@ module.exports = {
         editType: 'plot',
         description: ['Determines whether outside text labels can push the margins.'].join(' ')
     },
-
+    showlegend: extendFlat({}, baseAttrs.showlegend, {
+        arrayOk: true,
+        description: [
+            'Determines whether or not items corresponding to the pie slices are shown in the',
+            'legend. Can be an array if `values` is set. In that case, each entry specifies',
+            'appearance in the legend for one slice.'
+        ].join(' ')
+    }),
+    legend: extendFlat({}, baseAttrs.legend, {
+        arrayOk: true,
+        description: [
+            'Sets the reference to a legend to show the pie slices in. Can be an array if `values`',
+            'is set. In that case, each entry specifies the legend reference for one slice.',
+            'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+            'Settings for these legends are set in the layout, under',
+            '`layout.legend`, `layout.legend2`, etc.'
+        ].join(' ')
+    }),
+    legendrank: extendFlat({}, baseAttrs.legendrank, {
+        arrayOk: true,
+        description: [
+            'Sets the legend rank for this pie. If passed as an array, this will set the legend',
+            'rank of the individual pie slices.',
+            'Items and groups with smaller ranks are presented on top/left side while',
+            'with *reversed* `legend.traceorder` they are on bottom/right side.',
+            'The default legendrank is 1000,',
+            'so that you can use ranks less than 1000 to place certain items before all unranked items,',
+            'and ranks greater than 1000 to go after all unranked items.',
+            'When having unranked or equal rank items shapes would be displayed after traces',
+            'i.e. according to their order in data and layout.'
+        ].join(' ')
+    }),
     title: {
         text: {
             valType: 'string',

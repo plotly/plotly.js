@@ -1,10 +1,15 @@
-@import "vars.scss";
+@use "base";
+@use "cloud_dialog";
+@use "cursor";
+@use "modebar";
+@use "tooltip";
+@use "notifier";
 
 .js-plotly-plot .plotly {
-    @import "mixins.scss";
-    @import "base.scss";
-    @import "cursor.scss";
-    @import "modebar.scss";
-    @import "tooltip.scss";
+    @include base.styles;
+    @include cursor.styles;
+    @include modebar.styles;
+    @include tooltip.styles;
+    @include cloud_dialog.styles;
 }
-@import "notifier.scss";
+@include notifier.styles;

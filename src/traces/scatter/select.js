@@ -13,7 +13,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var x;
     var y;
 
-    var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
+    var hasOnlyLines = trace.mode && !subtypes.hasMarkers(trace) && !subtypes.hasText(trace);
     if(hasOnlyLines) return [];
 
     if(selectionTester === false) { // clear selection

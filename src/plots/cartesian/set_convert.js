@@ -35,6 +35,21 @@ function isValidCategory(v) {
     return v !== null && v !== undefined;
 }
 
+const MIN_PADDED_LENGTH = 2;
+
+/**
+ * Get the part of the requested `domainpad` that fits in a domain band.
+ *
+ * @param wanted - the total padding of the two edges, in pixels
+ * @param bandLength - the length of the domain band, in pixels
+ * @returns the factor from 0 to 1 to multiply each pad by
+ */
+function padFactor(wanted, bandLength) {
+    if(wanted <= 0) return 0;
+    const room = Math.max(0, bandLength - MIN_PADDED_LENGTH);
+    return wanted > room ? room / wanted : 1;
+}
+
 /**
  * Define the conversion functions for an axis data is used in 5 ways:
  *
@@ -445,23 +460,25 @@ module.exports = function setConvert(ax, fullLayout) {
 
         var bounds = Lib.simpleMap([minallowed, maxallowed], ax.r2l);
 
-        if(minallowed !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
-        if(maxallowed !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
+        if(minallowed !== undefined && rng[0] < bounds[0]) {
+            range[axrev ? 1 : 0] = minallowed;
+            rng[0] = bounds[0];
+        }
+        if(maxallowed !== undefined && rng[1] > bounds[1]) {
+            range[axrev ? 0 : 1] = maxallowed;
+            rng[1] = bounds[1];
+        }
 
-        if(range[0] === range[1]) {
-            var minL = ax.l2r(minallowed);
-            var maxL = ax.l2r(maxallowed);
-
+        // If clamping collapsed or inverted the range, extend the opposite end
+        // so we preserve the original orientation. Otherwise a default range
+        // entirely below minallowed (or above maxallowed) would flip the axis.
+        if(rng[0] >= rng[1]) {
             if(minallowed !== undefined) {
-                var _max = minL + 1;
-                if(maxallowed !== undefined) _max = Math.min(_max, maxL);
-                range[axrev ? 1 : 0] = _max;
-            }
-
-            if(maxallowed !== undefined) {
-                var _min = maxL + 1;
-                if(minallowed !== undefined) _min = Math.max(_min, minL);
-                range[axrev ? 0 : 1] = _min;
+                var _max = bounds[0] + 1;
+                if(maxallowed !== undefined) _max = Math.min(_max, bounds[1]);
+                range[axrev ? 0 : 1] = ax.l2r(_max);
+            } else if(maxallowed !== undefined) {
+                range[axrev ? 1 : 0] = ax.l2r(bounds[1] - 1);
             }
         }
     };
@@ -560,6 +577,7 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ax.overlaying) {
             var ax2 = axisIds.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
             ax.domain = ax2.domain;
+            ax.domainpad = ax2.domainpad;
         }
 
         // While transitions are occurring, we get a double-transform
@@ -574,14 +592,31 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
         var isY = axLetter === 'y';
+        // the length in pixels of the domain band, before `domainpad`
+        const bandLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+        const pad = ax.domainpad;
+        let padStart = 0;
+        let padEnd = 0;
+
+        if(pad) {
+            padStart = (isY ? pad.top : pad.left) || 0;
+            padEnd = (isY ? pad.bottom : pad.right) || 0;
+
+            const fits = padFactor(padStart + padEnd, bandLength);
+            padStart *= fits;
+            padEnd *= fits;
+        }
+
+        ax._length = bandLength - padStart - padEnd;
+        ax._padStart = padStart;
+        ax._padEnd = padEnd;
+
         if(isY) {
-            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
-            ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h + padStart;
             ax._m = ax._length / (rl0 - rl1);
             ax._b = -ax._m * rl1;
         } else {
-            ax._offset = gs.l + ax.domain[0] * gs.w;
-            ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.l + ax.domain[0] * gs.w + padStart;
             ax._m = ax._length / (rl1 - rl0);
             ax._b = -ax._m * rl0;
         }
@@ -739,22 +774,24 @@ module.exports = function setConvert(ax, fullLayout) {
             max = Lib.constrain(max, r0, r1);
             if(min === max) return;
 
-            var isNewBreak = true;
-            for(var j = 0; j < rangebreaksOut.length; j++) {
-                var brkj = rangebreaksOut[j];
+            let merged;
+            for(let j = 0; j < rangebreaksOut.length; j++) {
+                const brkj = rangebreaksOut[j];
                 if(min < brkj.max && max >= brkj.min) {
-                    if(min < brkj.min) {
-                        brkj.min = min;
+                    if(merged) {
+                        // The axis code sums the break lengths, so the located breaks must not overlap.
+                        merged.min = Math.min(merged.min, brkj.min);
+                        merged.max = Math.max(merged.max, brkj.max);
+                        rangebreaksOut.splice(j, 1);
+                        j--;
+                    } else {
+                        merged = brkj;
+                        merged.min = Math.min(merged.min, min);
+                        merged.max = Math.max(merged.max, max);
                     }
-                    if(max > brkj.max) {
-                        brkj.max = max;
-                    }
-                    isNewBreak = false;
                 }
             }
-            if(isNewBreak) {
-                rangebreaksOut.push({min: min, max: max});
-            }
+            if(!merged) rangebreaksOut.push({min, max});
         };
 
         for(i = 0; i < rangebreaksIn.length; i++) {

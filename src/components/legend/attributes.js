@@ -2,6 +2,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
+const { dfltFillHeight } = require('./constants');
 
 
 module.exports = {
@@ -141,6 +142,18 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the width (in px) of the legend item symbols (the part other than the title.text).',
     },
+    itemheight: {
+        valType: 'number',
+        min: dfltFillHeight,
+        dflt: dfltFillHeight,
+        editType: 'legend',
+        description: [
+            'Sets the height (in px) of the legend item fill swatch.',
+            'A taller swatch shows more of a trace *fill* or *fillpattern*.',
+            'Only traces with a *fill* use this value.',
+            'Every legend item grows to fit, so a larger value makes every row taller.'
+        ].join(' ')
+    },
     itemclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
@@ -174,6 +187,43 @@ module.exports = {
             'Determines the behavior on legend group item click.',
             '*toggleitem* toggles the visibility of the individual item clicked on the graph.',
             '*togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph.'
+        ].join(' ')
+    },
+    groupdoubleclick: {
+        valType: 'enumerated',
+        values: ['toggleitem', 'togglegroup'],
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend group item double-click.',
+            '*toggleitem* toggles the visibility of the individual item clicked on the graph.',
+            '*togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph.',
+            'Defaults to the value of `groupclick`.'
+        ].join(' ')
+    },
+    titleclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'toggleothers', false],
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend title click.',
+            '*toggle* toggles the visibility of all items in the legend.',
+            '*toggleothers* toggles the visibility of all other legends.',
+            '*false* disables legend title click interactions.',
+            'Defaults to *toggle* when there are multiple legends, *false* otherwise.',
+            'Not supported for legends containing pie and pie-like traces.'
+        ].join(' ')
+    },
+    titledoubleclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'toggleothers', false],
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend title double-click.',
+            '*toggle* toggles the visibility of all items in the legend.',
+            '*toggleothers* toggles the visibility of all other legends.',
+            '*false* disables legend title double-click interactions.',
+            'Defaults to *toggleothers* when there are multiple legends, *false* otherwise.',
+            'Not supported for legends containing pie and pie-like traces.'
         ].join(' ')
     },
     x: {

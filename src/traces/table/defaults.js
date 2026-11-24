@@ -50,6 +50,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('cells.fill.color');
     Lib.coerceFont(coerce, 'cells.font', layout.font);
 
-    // disable 1D transforms
+    // Ensure _length is defined
     traceOut._length = null;
 };

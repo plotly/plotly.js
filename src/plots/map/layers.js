@@ -230,7 +230,7 @@ function convertOpts(opts) {
             var textOpts = convertTextOpts(symbol.textposition, symbol.iconsize);
 
             Lib.extendFlat(layout, {
-                'icon-image': symbol.icon + '-15',
+                'icon-image': symbol.icon,
                 'icon-size': symbol.iconsize / 10,
 
                 'text-field': symbol.text,

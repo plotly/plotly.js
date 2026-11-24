@@ -21,6 +21,7 @@ const { font } = require('../../../src/plots/layout_attributes');
 
 var SLICES_SELECTOR = '.slice path';
 var SLICES_TEXT_SELECTOR = '.pielayer text.slicetext';
+const checkContrastingText = require('../assets/check_contrasting_text');
 var LEGEND_ENTRIES_SELECTOR = '.legendpoints path';
 
 describe('Pie defaults', function() {
@@ -1779,7 +1780,7 @@ describe('pie inside text orientation', function() {
                 if(pos0 !== -1) {
                     pos0 += 'rotate('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    rotate = +(transform.substring(pos0, pos1));
+                    rotate = +(transform.slice(pos0, pos1));
                 }
 
                 expect(opts.rotations[i]).toBeCloseTo(rotate, -1, 'rotation for element ' + i, msg);
@@ -1879,7 +1880,7 @@ describe('pie uniformtext', function() {
                 if(pos0 !== -1) {
                     pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0, pos1));
+                    scale = +(transform.slice(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
@@ -2086,3 +2087,15 @@ describe('pie value format', function() {
         .then(done, done.fail);
     });
 });
+
+checkContrastingText(
+    'pie',
+    {
+        values: [3, 2, 1],
+        labels: ['A', 'B', 'C'],
+        textposition: 'inside',
+        marker: { colors: ['#3D9970', '#3D9970', '#3D9970'] }
+    },
+    SLICES_TEXT_SELECTOR,
+    '#3D9970'
+);

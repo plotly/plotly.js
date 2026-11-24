@@ -19,7 +19,7 @@ describe('Plotly w/o WebGL support:', function() {
     function checkNoWebGLMsg(visible) {
         var msg = gd.querySelector('div.no-webgl > p');
         if(visible) {
-            expect(msg.innerHTML.substr(0, 22)).toBe('WebGL is not supported');
+            expect(msg.innerHTML.slice(0, 22)).toBe('WebGL is not supported');
         } else {
             expect(msg).toBe(null);
         }

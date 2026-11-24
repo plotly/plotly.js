@@ -695,26 +695,26 @@ describe('Test splom interactions:', function() {
         }
 
         _newPlot(gd, fig).then(function() {
-            _assert([1198, 16558, 3358, 118]);
+            _assert([1198, 16798, 3358, 118]);
             return Plotly.restyle(gd, 'showupperhalf', false);
         })
         .then(function() {
-            _assert([1198, 8476, 1768, 4]);
+            _assert([1198, 8704, 1768, 4]);
             return Plotly.restyle(gd, 'diagonal.visible', false);
         })
         .then(function() {
-            _assert([1138, 7534, 1600]);
+            _assert([1138, 7864, 1600]);
             return Plotly.restyle(gd, {
                 showupperhalf: true,
                 showlowerhalf: false
             });
         })
         .then(function() {
-            _assert([7966, 112, 1588]);
+            _assert([7978, 112, 1588]);
             return Plotly.restyle(gd, 'diagonal.visible', true);
         })
         .then(function() {
-            _assert([58, 8908, 1756, 118]);
+            _assert([58, 8932, 1756, 118]);
             return Plotly.relayout(gd, {
                 'xaxis.gridcolor': null,
                 'xaxis.gridwidth': null,
@@ -725,9 +725,96 @@ describe('Test splom interactions:', function() {
         .then(function() {
             // one batch for all 'grid' lines
             // and another for all 'zeroline' lines
-            _assert([8968, 1876]);
+            _assert([8992, 1876]);
         })
         .then(done, done.fail);
+    });
+
+    it('@gl should place the splom cells in the plot areas that domainpad leaves', (done) => {
+        _newPlot(gd, [{
+            type: 'splom',
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 3, 1]}
+            ]
+        }], {
+            width: 500,
+            height: 500,
+            xaxis: {domainpad: {left: 25, right: 5}},
+            yaxis2: {domainpad: {top: 30, bottom: 10}}
+        })
+        .then(() => {
+            const fullLayout = gd._fullLayout;
+            const gs = fullLayout._size;
+            const scene = fullLayout._splomScenes[gd._fullData[0].uid];
+            const bottom = gs.t + gs.h;
+
+            ['', '2'].forEach((id, k) => {
+                const xa = fullLayout['xaxis' + id];
+                const ya = fullLayout['yaxis' + id];
+
+                expect(scene.viewOpts.domains[k]).toBeCloseToArray([
+                    (xa._offset - gs.l) / gs.w,
+                    (bottom - ya._offset - ya._length) / gs.h,
+                    (xa._offset + xa._length - gs.l) / gs.w,
+                    (bottom - ya._offset) / gs.h
+                ], 6, `cell ${k}`);
+            });
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl when hasOnlyLargeSploms, should keep the regl grid inside the padded plot areas', (done) => {
+        const fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
+        const ids = fig.data[0].dimensions.map((_, i) => (i === 0 ? '' : String(i + 1)));
+
+        ids.forEach((id) => {
+            fig.layout['xaxis' + id] = Lib.extendFlat({}, fig.layout['xaxis' + id], {domainpad: {left: 4, right: 3}});
+            fig.layout['yaxis' + id] = Lib.extendFlat({}, fig.layout['yaxis' + id], {domainpad: {top: 5, bottom: 2}});
+        });
+
+        _newPlot(gd, fig).then(() => {
+            const fullLayout = gd._fullLayout;
+            const pixelRatio = gd._context.plotGlPixelRatio;
+            const xAxes = ids.map((id) => fullLayout['xaxis' + id]);
+            const yAxes = ids.map((id) => fullLayout['yaxis' + id]);
+
+            const want = [
+                Math.min(...xAxes.map((ax) => ax._offset)) * pixelRatio,
+                Math.min(...yAxes.map((ax) => fullLayout.height - ax._offset - ax._length)) * pixelRatio,
+                Math.max(...xAxes.map((ax) => ax._offset + ax._length)) * pixelRatio,
+                Math.max(...yAxes.map((ax) => fullLayout.height - ax._offset)) * pixelRatio
+            ];
+
+            const passes = fullLayout._splomGrid.passes;
+            const got = [
+                Math.min(...passes.map((pass) => pass.bounds[0])),
+                Math.min(...passes.map((pass) => pass.bounds[1])),
+                Math.max(...passes.map((pass) => pass.bounds[2])),
+                Math.max(...passes.map((pass) => pass.bounds[3]))
+            ];
+
+            expect(got).toBeCloseToArray(want, 3);
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl when hasOnlyLargeSploms, should convert modern CSS grid colors for regl-line2d', (done) => {
+        const fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
+
+        _newPlot(gd, fig)
+            .then(() => {
+                spyOn(gd._fullLayout._splomGrid, 'update').and.callThrough();
+                return Plotly.relayout(gd, 'xaxis.gridcolor', 'oklch(0.7 0.15 30)');
+            })
+            .then(() => {
+                const gridData = gd._fullLayout._splomGrid.update.calls.mostRecent().args[0];
+                const colors = gridData.map((d) => d.color);
+
+                expect(colors).toContain('rgb(237, 118, 101)');
+                expect(colors).not.toContain('oklch(0.7 0.15 30)');
+            })
+            .then(done, done.fail);
     });
 
     it('@gl should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
@@ -1237,7 +1324,7 @@ describe('Test splom update switchboard:', function() {
 
             expect(scene.matrixOptions.size).toBe(20, msg);
             expect(gd._fullLayout.xaxis.range)
-                .toBeCloseToArray([0.753, 3.246], 1, 'xrng ' + msg);
+                .toBeCloseToArray([0.58, 3.42], 1, 'xrng ' + msg);
 
             return Plotly.restyle(gd, 'marker.size', [[4, 10, 20]]);
         })
@@ -1255,7 +1342,7 @@ describe('Test splom update switchboard:', function() {
 
             expect(scene.matrixOptions.sizes).toBeCloseToArray([4, 10, 20], 1, msg);
             expect(gd._fullLayout.xaxis.range)
-                .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
+                .toBeCloseToArray([0.81, 3.38], 1, 'xrng ' + msg);
 
             return Plotly.restyle(gd, 'marker.symbol', 'square');
         })
@@ -1484,11 +1571,11 @@ describe('Test splom drag:', function() {
             expect(scene.matrix.draw).toHaveBeenCalledTimes(3);
 
             _assertRanges('after drag', [
-                [2.9, 7.3],
+                [4.0, 8.5],
                 [1.7, 4.7],
                 [0.3, 7.6]
             ], [
-                [5.1, 9.6],
+                [4.0, 8.5],
                 [1.7, 4.7],
                 [0.3, 7.6]
             ]);

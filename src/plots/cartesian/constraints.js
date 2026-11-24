@@ -108,6 +108,14 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
 
     function setAttrVal() {
         val = axOut[attr];
+        if(attr === 'range') {
+            hasRange = !!(val &&
+                axIn.range &&
+                axIn.range.length === 2 &&
+                axIn.range[0] !== null &&
+                axIn.range[1] !== null
+            );
+        }
         if(attr === 'rangebreaks') {
             hasDayOfWeekBreaks = axOut._hasDayOfWeekBreaks;
         }
@@ -115,6 +123,8 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
 
     for(i = 0; i < matchGroups.length; i++) {
         group = matchGroups[i];
+        // a range set in another match group must not disable autorange here
+        hasRange = false;
 
         // find 'matching' range attrs
         for(var j = 0; j < matchAttrs.length; j++) {
@@ -145,14 +155,6 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
             // special logic for coupling of range and autorange
             // if nobody explicitly specifies autorange, but someone does
             // explicitly specify range, autorange must be disabled.
-            if(attr === 'range' && val &&
-                axIn.range &&
-                axIn.range.length === 2 &&
-                axIn.range[0] !== null &&
-                axIn.range[1] !== null
-            ) {
-                hasRange = true;
-            }
             if(attr === 'autorange' && val === null && hasRange) {
                 val = false;
             }
@@ -386,13 +388,13 @@ function multiplyScales(a, b) {
     if(typeof a === 'string') {
         aPrefix = a.match(/^[xy]*/)[0];
         aLen = aPrefix.length;
-        a = +a.substr(aLen);
+        a = +a.slice(aLen);
     }
 
     if(typeof b === 'string') {
         bPrefix = b.match(/^[xy]*/)[0];
         bLen = bPrefix.length;
-        b = +b.substr(bLen);
+        b = +b.slice(bLen);
     }
 
     var c = a * b;
@@ -413,7 +415,7 @@ function multiplyScales(a, b) {
     }
 
     // partial cancelation of prefixes
-    return (aLen > bLen ? aPrefix.substr(bLen) : bPrefix.substr(aLen)) + c;
+    return (aLen > bLen ? aPrefix.slice(bLen) : bPrefix.slice(aLen)) + c;
 }
 
 function finalRatios(group, fullLayout) {
@@ -428,7 +430,7 @@ function finalRatios(group, fullLayout) {
         if(typeof val === 'string') {
             var prefix = val.match(/^[xy]*/)[0];
             var pLen = prefix.length;
-            val = +val.substr(pLen);
+            val = +val.slice(pLen);
             var mult = prefix.charAt(0) === 'y' ? yRatio : (1 / yRatio);
             for(var j = 0; j < pLen; j++) {
                 val *= mult;
@@ -565,7 +567,7 @@ exports.enforce = function enforce(gd) {
                         var getPadMin = autorange.makePadFn(fullLayout, ax, 0);
                         var getPadMax = autorange.makePadFn(fullLayout, ax, 1);
 
-                        updateDomain(ax, factor);
+                        updateDomain(ax, factor, fullLayout);
                         var m = Math.abs(ax._m);
                         var extremes = autorange.concatExtremes(gd, ax);
                         var minArray = extremes.min;
@@ -596,7 +598,7 @@ exports.enforce = function enforce(gd) {
                             [rangeMin, rangeMax] : [rangeMax, rangeMin];
                     }
 
-                    updateDomain(ax, factor);
+                    updateDomain(ax, factor, fullLayout);
                 }
             }
         }
@@ -633,14 +635,32 @@ exports.clean = function clean(gd, ax) {
     }
 };
 
-function updateDomain(ax, factor) {
+function domainPadFraction(ax, fullLayout) {
+    const pad = ax.domainpad;
+    if(!pad) return 0;
+
+    const gs = fullLayout._size;
+    return ax._id.charAt(0) === 'y' ?
+        ((pad.top || 0) + (pad.bottom || 0)) / gs.h :
+        ((pad.left || 0) + (pad.right || 0)) / gs.w;
+}
+
+function updateDomain(ax, factor, fullLayout) {
     var inputDomain = ax._inputDomain;
     var centerFraction = FROM_BL[ax.constraintoward];
     var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
 
+    let divisor = factor;
+    const padFraction = domainPadFraction(ax, fullLayout);
+    if(padFraction > 0) {
+        const inputSpan = inputDomain[1] - inputDomain[0];
+        const drawnSpan = inputSpan - padFraction;
+        if(drawnSpan > 0) divisor = inputSpan / (drawnSpan / factor + padFraction);
+    }
+
     ax.domain = ax._input.domain = [
-        center + (inputDomain[0] - center) / factor,
-        center + (inputDomain[1] - center) / factor
+        center + (inputDomain[0] - center) / divisor,
+        center + (inputDomain[1] - center) / divisor
     ];
     ax.setScale();
 }

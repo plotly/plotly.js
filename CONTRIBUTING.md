@@ -1,7 +1,7 @@
 # Contributing to Plotly.js
 
 Thanks for your interest in contributing to Plotly.js! We are actively looking for
-diverse contributors, with diverse background and skills.
+diverse contributors, with diverse backgrounds and skills.
 
 This document outlines the general way that changes get made to this library and by whom,
 and then provides specific technical information about how to set up a development
@@ -14,7 +14,7 @@ but the general idea is to be nice.
 
 ## Plotly.js vs Plotly.py and Plotly.R
 
-[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r), respectively, for clarity). There also exist Plotly.js-powered libraries for other languages such as Julia, Scala, Rust, .NET and even C++!
+[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](https://plotly.com/r), respectively, for clarity). There also exist Plotly.js-powered libraries for other languages such as Julia, Scala, Rust, .NET and even C++!
 
 The basic architecture of Plotly.js is to accept [JSON](https://json.org/) representation of figures that adhere to the [figure schema](https://plotly.com/javascript/reference/index/) and draw interactive graphical representations of these figures in a browser. Libraries in other languages like Python and R provide idiomatic interfaces for users of those languages to create and manipulate these JSON structures, and arrange for them to be rendered in a browser context by Plotly.js. This means that in many cases, when a Python or R user wishes to add a feature to the library they know as `plotly`, the relevant changes must be implemented in Plotly.js, in this repo.
 
@@ -44,11 +44,17 @@ The Plotly.js community, construed fairly broadly, includes the maintainers and 
 
 ## Opening issues
 
-Please read the [issue guidelines](./.github/ISSUE_TEMPLATE.md).
+Please read the [issue guidelines](./.github/ISSUE_TEMPLATE/) in the appropriate template.
 
 ## Making pull requests
 
 Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
+
+## Using a coding agent
+
+If you prepare a contribution with a coding agent, point it at [AGENTS.md](AGENTS.md).
+That file and the [.agents](.agents/) folder state the rules an agent follows in this
+repository, including the steps it must leave to a human.
 
 ## GitHub labels
 
@@ -71,20 +77,21 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `status: in progress` | PRs that required some initial feedback but not ready to merge |
 | `status: reviewable` | PRs that are completed from the author's perspective |
 | `status: on hold` | PRs that are put on hold |
+| `no-draftlog` | PR opted out of the [draftlog](./draftlogs/README.md) check |
 
 ## Development
 
 #### Prerequisites
 
 - git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v18.x.
+- [node.js](https://nodejs.org/en/). We recommend using node.js v22.x.
   Upgrading and managing node versions can be easily done using
-  [`nvm`](https://github.com/creationix/nvm) or its Windows alternatives.
+  [`nvm`](https://github.com/nvm-sh/nvm) or its Windows alternatives.
 - [`npm`](https://www.npmjs.com/) v10.x and up to ensure that the
   [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
   used and updated correctly.
 - [`python3`](https://www.python.org/downloads/)
-Note: for M1 mac users specifically, you might need to install some [extra dependencies](https://github.com/Automattic/node-canvas/issues/1733#issuecomment-761703018). 
+Note: For M1 Mac users specifically, you might need to install some [extra dependencies](https://github.com/Automattic/node-canvas/issues/1733#issuecomment-761703018). 
 
 #### Step 1: Fork the plotly.js repository, clone your fork and step into it
 
@@ -96,7 +103,7 @@ cd plotly.js
 #### Step 2: Switch to a dev branch
 
 ```bash
-# please do not use master or main for your dev branch
+# please do not use main for your dev branch
 git checkout dev-branch-name
 ```
 
@@ -137,7 +144,7 @@ comes bundled with some useful tools while developing - all bundled under the
 | `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
 | `Tabs.purge()` | Destroys all plots. |
 
-View [the source](https://github.com/plotly/plotly.js/blob/master/devtools/test_dashboard/devtools.js) for more info.
+View [the source](https://github.com/plotly/plotly.js/blob/main/devtools/test_dashboard/devtools.js) for more info.
 
 Three additional helpers exist that are refreshed every second:
 
@@ -163,31 +170,66 @@ npm run schema
 #### Step 9: REGL - Review & commit potential changes to precompiled regl shaders
 
 If you are implementing a new feature that involves regl shaders, or if you are
-making changes that affect the usage of regl shaders, you would need to run
+making changes that affect the usage of regl shaders, you will need to regenerate the precompiled regl shader code. In practice, that means edits under:
 
-```bash
-npm run regl-codegen
-```
+- `src/traces/{scattergl,scatterpolargl,splom,parcoords}/`
+- `src/lib/prepare_regl.js`
+- `stackgl_modules/` (where the `regl-*` shader libs live)
+- `devtools/regl_codegen/`
 
-to regenerate the regl code. This opens a browser window, runs through all
-traces with 'regl' in the tags, and stores the captured code into 
-[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it would be a no-op, but
-if there are changes, you would need to commit them.
+CI's `check-regl-codegen` job uses this same list as its trigger — see [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the authoritative version.
 
 This is needed because regl performs codegen in runtime which breaks CSP
 compliance, and so for strict builds we pre-generate regl shader code here.
 
+The CI pipeline will automatically detect when regl-related files have changed and
+run the codegen process. If the precompiled shaders are out of date, the
+`check-regl-codegen` job will fail and upload a `regl-codegen` artifact containing
+the updated files. The artifact represents the full desired state of the codegen
+output (CI wipes the output directory before regenerating, so any orphaned shader
+files are pruned). To fix this:
+
+1. Download the `regl-codegen` artifact from the failed workflow run
+2. Delete `src/generated/regl-codegen/` in your working tree, then unzip the
+   artifact into `src/` so it replaces (rather than merges into) the existing
+   directory. Note that `actions/upload-artifact` strips the longest common
+   parent path from the uploaded paths, so the zip's root contains
+   `generated/regl-codegen/` and `traces/{scattergl,scatterpolargl,splom,parcoords}/regl_precompiled.js`
+   directly — extracting into `src/` restores the correct layout and
+   overwrites the four `regl_precompiled.js` files in one step.
+3. Commit and push the changes to your pull request
+
+Alternatively, you can regenerate the code locally:
+
+```bash
+rm -rf src/generated/regl-codegen/*
+npm run regl-codegen
+```
+
+The `rm -rf` step is needed to clean up any orphaned shader files left over from
+previous changes. `npm run regl-codegen` will prompt you to open
+a browser window, run through the mocks for each regl-using trace
+(`parcoords`, `scattergl`, `scatterpolargl`, `splom`), and store the captured
+shader code into
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/main/src/generated/regl-codegen).
+The four `src/traces/{parcoords,scattergl,scatterpolargl,splom}/regl_precompiled.js`
+files are rewritten in the same pass so their imports point at the freshly
+generated shader files. Commit any changes that result — both the
+`src/generated/regl-codegen/` updates and any modified `regl_precompiled.js`
+files.
+
 #### Other npm scripts that may be of interest in development
 
-- `npm run preprocess`: pre-processes the css and svg source file in js. This
-  script must be run manually when updating the css and svg source files.
-- `npm run watch`: starts a watchify file watcher just like the test dashboard but
-  without booting up a server.
+- `npm run preprocess`: regenerates the sources that the build depends on, and
+  must be run manually when their inputs change. Commit the result.
+  `build/README.md` describes the committed files under `build/` and what
+  triggers each one. Note that the `preprocess` step is always run automatically
+  as part of `npm run build`.
 
 ## Testing
 
-Both jasmine and image tests are run on
-[CircleCI](https://circleci.com/gh/plotly/plotly.js) on every push to this
+Both Jasmine and image tests are run on
+[GitHub Actions](https://github.com/plotly/plotly.js/actions/workflows/ci.yml) on every push to this
 repo.
 
 ### Jasmine tests
@@ -206,7 +248,7 @@ npm run test-jasmine -- <suite>
 ```
 
 where the `<suite>` corresponds to the suite's file name as found in
-[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests).
+[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/main/test/jasmine/tests).
 
 You can also test multiple suites at a time, for example:
 
@@ -240,30 +282,31 @@ npm run test-jasmine -- --info
 ```
 
 ### Draft new baselines
-#### With docker:
-> If you prefer using docker each time you need to
+
+#### With Docker:
 ```sh
-docker run -it -v "$(pwd)":/plotly.js circleci/python:3.8.9 bash
-# then inside the docker
-cd plotly.js
-sudo bash .circleci/env_image.sh
+docker run -it -v "$(pwd)":/plotly.js python:3.12 bash
+# Then inside the container
+cd /plotly.js
+pip install uv
+bash .github/scripts/env_image.sh
 ```
 
-#### Without docker:
-> Otherwise you may need to install `python 3.8`
-Then upgrade `pip` if needed
+#### Without Docker:
+Ensure you have Python 3.12+ and [`uv`](https://docs.astral.sh/uv/) installed.
+
+To install required fonts and tools, run the [setup script](https://github.com/plotly/plotly.js/blob/main/.github/scripts/env_image.sh):
 ```sh
-python3 -m pip install --upgrade pip
+bash .github/scripts/env_image.sh
 ```
 
-To install required fonts and tools see this [shell script](https://github.com/plotly/plotly.js/blob/master/.circleci/env_image.sh).
+#### Scripts to generate/update new baselines with/without Docker:
 
-#### Scripts to generate/update new baselines with/without docker:
 ```sh
 python3 test/image/make_baseline.py = mock_1 mock_2
 ```
 
-> Alternatively using npm & node.js (which are not available in the python docker by default)
+Alternatively, you can use Node:
 
 ```sh
 npm run baseline mock_1 mock_2
@@ -276,9 +319,9 @@ npm run baseline mock_*
 ```
 
 **IMPORTANT:** the `baseline`, `test-image` and `test-export` scripts do **not** bundle the source files before
-running the image tests. We recommend running `npm run watch` or `npm start` in
+running the image tests. We recommend running `npm start` in
 a separate tab to ensure that the most up-to-date code is used.
-Also if you are adding a new mock, you may need to re-run `npm start` or `npm run watch`
+Also if you are adding a new mock, you may need to re-run `npm start`
 to be able to find the new mock in the browser.
 To help ensure valid attributes are used in your new mock(s), please run `npm run test-mock`
 or `npm run test-mock mock_name(s)` after adding new mocks or implementing any new attributes.
@@ -287,10 +330,11 @@ If you added new mocks to test/image/mocks folder, to generate draft baselines r
 ```sh
 python3 test/image/make_baseline.py = mockFilename1 mockFilename2
 ```
+
 Then commit the new baselines and push.
-Please note that image pixel comparison tests run using circleci/python:3.8.9 docker container.
+Please note that image pixel comparison tests run on `ubuntu-latest` in GitHub Actions.
 Therefore the final baselines may need updates.
-This could simply be done by downloading the `baselines.tar` stored in the `ARTIFACTS` tab of `test-baselines` job (if the test failed).
+To use the images generated by the CI job directly, you can download the baseline images from the "Upload image diffs" step of the `test-baselines` job in the failed workflow run.
 
 ### Using the developer console in karma to write/debug jasmine tests
 
@@ -325,6 +369,17 @@ This will produce the following plot, and say you want to simulate a selection p
 
 <img src="https://user-images.githubusercontent.com/31989842/38890553-0bc6190c-4282-11e8-8efc-077bf05ca565.png">
 
+### Live links to dev builds
+
+The [Upload dev build from PR](.github/workflows/upload-dev-build.yml) workflow can be used to upload a dev build for a PR to the plotly.js-dev-builds repo, creating a live link to the plotly.js dev build which can be used in online coding environments to test and demo the PR.
+
+It is triggered in one of two ways:
+- Automatically on completion of the Publish Dist workflow, if triggered by a PR from a branch in the main repo (not a fork).
+- Manually via the Actions tab in the GitHub UI, by entering a PR number in the workflow inputs
+  - Only users with write access to the plotly.js repo can trigger workflows manually
+
+If you would like a link to the dev build for your PR but don't have permission to trigger the workflow, tag a maintainer to request a run for your PR.
+
 ## Repo organization
 
 - Distributed files are in `dist/`
@@ -332,16 +387,23 @@ This will produce the following plot, and say you want to simulate a selection p
 - Sources files are in `src/`
 - Build and repo management scripts are in `tasks/`
 - All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
-- Tests are `test/`, they are partitioned into `image` and `jasmine` tests
+- Tests are in `test/`; they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
-- Built files are in `build/` (the files in here are git-ignored, except for `plotcss.js`)
+- Built files are in `build/` (mostly git-ignored, with a few exceptions: see `build/README.md`)  
+
+### The bundled maplibre-gl worker
+
+`map` traces render through `maplibre-gl`, which parses tiles in a web worker.
+As of v6, the library no longer includes a UMD bundle with this code. As such,
+it's now necessary to extract it and include it as part of the build process.
+See `tasks/util/bundle_maplibre_worker.js` for more information.
 
 ## Trace module design
 
-The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/master/src/traces))
+The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/main/src/traces))
 are defined as plain objects with functions and constants attached to them in an index file
 (e.g. `src/traces/scatter/index.js`). The trace modules are "registered" under the `Registry` object
-(found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/master/src/registry.js)) using
+(found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/main/src/registry.js)) using
 `Plotly.register` (as done in the index files in `dist/`).
 
 The trace module methods are meant to be called as part of loops during subplot-specific
@@ -357,8 +419,10 @@ All traces modules set:
   This object is used to generate the plot-schema JSON.
 - `_module.supplyDefaults`: Takes in input trace settings and coerces them into "full" settings
   under `gd._fullData`. This one is called during the figure-wide `Plots.supplyDefaults` routine.
-  Note that the `supplyDefaults` method performance should scale with the number of attributes (**not** the
-  number of data points - so it should not loop over any data arrays).
+  As a rule, `supplyDefaults` performance should scale with the number of attributes rather than
+  the number of data points, so avoid looping over data arrays in this function. That being said,
+  there are a few exceptions to this rule due to technical requirements (`fitbounds` on map subplots).
+  The same guidance applies to `_module.supplyLayoutDefaults`.
 - `_module.calc`: Converts inputs data into "calculated" (or sanitized) data. This one is called during
   the figure-wide `Plots.doCalcdata` routine. The `calc` method is allowed to
   scale with the number of data points and is in general more costly than `supplyDefaults`.
@@ -384,10 +448,9 @@ Other methods used by some trace modules:
   selections.
 - `_module.convert`: Sometimes separated from `_module.plot` or `_module.calc` to convert the
   plotly.js settings to another framework e.g. to `gl-plot3d` for `gl3d` traces, to
-  `mapbox-gl` from `mapbox` traces. This split can make the logic easier to test.
+  `maplibre-gl` for `map` traces. This split can make the logic easier to test.
   If you make a `convert`, you should call it from either `calc` or `plot`.
 
 ## Coding style
 
-Check if ok, with `npm run lint`
-
+Check if OK with `npm run lint`

@@ -1,42 +1,48 @@
-&, div {
-    direction: ltr;
-    font-family: 'Open Sans', verdana, arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
+@use "vars";
+@use "mixins";
 
-input, button {
-    font-family: 'Open Sans', verdana, arial, sans-serif;
-
-    &:focus {
-        outline: none;
+@mixin styles {
+    &, div {
+        direction: ltr;
+        font-family: 'Open Sans', verdana, arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        border: 0;
     }
-}
 
-a {
-    text-decoration: none;
+    input, button {
+        font-family: 'Open Sans', verdana, arial, sans-serif;
 
-    &:hover {
+        &:focus {
+            outline: none;
+        }
+    }
+
+    a {
         text-decoration: none;
+
+        &:hover {
+            text-decoration: none;
+        }
     }
-}
 
-.crisp { shape-rendering: crispEdges; }
+    .crisp { shape-rendering: crispEdges; }
 
-.user-select-none {
-    @include vendor('user-select', none);
-}
+    .user-select-none {
+        @include mixins.vendor('user-select', none);
+    }
 
-svg a { fill: $color-brand-primary; }
-svg a:hover { fill: #3c6dc5; }
+    svg a { fill: vars.$color-brand-primary; }
+    svg a:hover { fill: #3c6dc5; }
 
-.main-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
+    .main-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
 
-    .draglayer {
-        pointer-events: all;
+        .draglayer {
+            pointer-events: all;
+        }
     }
 }

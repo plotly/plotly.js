@@ -13,7 +13,7 @@ module.exports = {
             'The tip of the lines represent the `low` and `high` values and',
             'the horizontal segments represent the `open` and `close` values.',
 
-            'Sample points where the close value is higher (lower) then the open',
+            'Sample points where the close value is higher (lower) than the open',
             'value are called increasing (decreasing).',
 
             'By default, increasing items are drawn in green whereas',

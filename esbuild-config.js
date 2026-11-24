@@ -14,6 +14,8 @@ const esbuildConfig = {
     sourcemap: false,
     plugins: [InlineCSSPlugin(), glsl({ minify: true }), environmentPlugin({ NODE_DEBUG: false })],
     alias: {
+        // Force users of regl (gl-text) to use the plotly flavor to deduplicate code
+        regl: '@plotly/regl',
         stream: 'stream-browserify'
     },
     define: {
@@ -47,11 +49,9 @@ const localDevConfig = {
 
 // Config used when building bundle to serve regl
 const localDevReglCodegenConfig = {
-    ...esbuildConfig,
+    ...devtoolsConfig,
     entryPoints: [path.join(constants.pathToRoot, 'devtools/regl_codegen', 'devtools.js')],
-    outfile: './build/regl_codegen-bundle.js',
-    sourcemap: false,
-    minify: false
+    outfile: './build/regl_codegen-bundle.js'
 };
 
 module.exports = {

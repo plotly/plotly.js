@@ -9,6 +9,7 @@
   ],
   "layout": {
     "width": 600,
-    "height": 400
+    "height": 400,
+    "map": { "zoom": 1 }
   }
 }

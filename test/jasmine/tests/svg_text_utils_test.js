@@ -1,7 +1,11 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
+var Plotly = require('../../../lib/index');
 var util = require('../../../src/lib/svg_text_utils');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
 describe('svg+text utils', function() {
@@ -617,5 +621,42 @@ describe('sanitizeHTML', function() {
         );
 
         expect(innerHTML).toEqual('<a href="https://example.com/?q=date%20%3E=%202018-01-01">click</a>');
+    });
+});
+
+// regression test for https://github.com/plotly/plotly.js/issues/7926
+describe('convertToTspans with an unsupported MathJax version', function() {
+    'use strict';
+
+    var gd;
+    var mathJaxBefore;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mathJaxBefore = window.MathJax;
+        // Fake the presence of MathJax v2 by clearing window.MathJax
+        // and setting window.MathJax.version to a v2.x version string
+        window.MathJax = {version: '2.7.9'};
+    });
+
+    afterEach(function() {
+        if(mathJaxBefore === undefined) delete window.MathJax;
+        else window.MathJax = mathJaxBefore;
+        destroyGraphDiv();
+    });
+
+    it('draws the plot with the tex left unevaluated', function(done) {
+        Plotly.newPlot(gd, [{y: [1, 2, 3]}], {title: {text: '$x^2$'}})
+        .then(function() {
+            // whole plot should render except for tex string
+            expect(d3SelectAll('.scatterlayer .trace').size()).toBe(1, 'trace');
+            expect(d3SelectAll('.xtick').size()).toBeGreaterThan(0, 'x ticks');
+
+            var title = d3Select('.gtitle');
+            expect(title.size()).toBe(1, 'title');
+            expect(title.text()).toBe('$x^2$', 'raw tex as title');
+            expect(title.node().style.display).not.toBe('none', 'title is visible');
+        })
+        .then(done, done.fail);
     });
 });

@@ -143,7 +143,7 @@ function worldCalFmt(fmt, x, calendar) {
             // format the cDate according to the translated directive
             else replacementPart = cDate.formatDate(directiveObj[modifier]);
 
-            fmt = fmt.substr(0, i) + replacementPart + fmt.substr(i + directiveLen);
+            fmt = fmt.slice(0, i) + replacementPart + fmt.slice(i + directiveLen);
             i += replacementPart.length;
         }
     }

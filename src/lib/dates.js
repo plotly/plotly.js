@@ -166,11 +166,11 @@ exports.dateTime2ms = function(s, calendar) {
     // 'G' as a prefix to force the built-in gregorian calendar.
     var s0 = s.charAt(0);
     if(isWorld && (s0 === 'G' || s0 === 'g')) {
-        s = s.substr(1);
+        s = s.slice(1);
         calendar = '';
     }
 
-    var isChinese = isWorld && calendar.substr(0, 7) === 'chinese';
+    var isChinese = isWorld && calendar.slice(0, 7) === 'chinese';
 
     var match = s.match(isChinese ? DATETIME_REGEXP_CN : DATETIME_REGEXP);
     if(!match) return BADNUM;
@@ -234,7 +234,7 @@ exports.isDateTime = function(s, calendar) {
 
 // pad a number with zeroes, to given # of digits before the decimal point
 function lpad(val, digits) {
-    return String(val + Math.pow(10, digits)).substr(1);
+    return String(val + Math.pow(10, digits)).slice(1);
 }
 
 /**
@@ -272,7 +272,7 @@ exports.ms2DateTime = function(ms, r, calendar) {
         // other things for a few calendars, so we can't trust it. Just pad
         // it manually (after the '-' if there is one)
         if(dateStr.charAt(0) === '-') {
-            while(dateStr.length < 11) dateStr = '-0' + dateStr.substr(1);
+            while(dateStr.length < 11) dateStr = '-0' + dateStr.slice(1);
         } else {
             while(dateStr.length < 10) dateStr = '0' + dateStr;
         }
@@ -388,7 +388,7 @@ function modDateFormat(fmt, x, formatter, calendar) {
         var digits = Math.min(+(match.charAt(1)) || 6, 6);
         var fracSecs = ((x / 1000 % 1) + 2)
             .toFixed(digits)
-            .substr(2).replace(/0+$/, '') || '0';
+            .slice(2).replace(/0+$/, '') || '0';
         return fracSecs;
     });
 
@@ -441,7 +441,7 @@ function formatTime(x, tr) {
          */
         var sec = Math.min(mod(x / ONESEC, 60), MAXSECONDS[tr]);
 
-        var secStr = (100 + sec).toFixed(tr).substr(1);
+        var secStr = (100 + sec).toFixed(tr).slice(1);
         if(tr > 0) {
             secStr = secStr.replace(/0+$/, '').replace(/[\.]$/, '');
         }

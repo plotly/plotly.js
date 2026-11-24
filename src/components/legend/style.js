@@ -23,17 +23,18 @@ var MAX_MARKER_LINE_WIDTH = 5;
 
 module.exports = function style(s, gd, legend) {
     var fullLayout = gd._fullLayout;
-    if(!legend) legend = fullLayout.legend;
+    if (!legend) legend = fullLayout.legend;
     var constantItemSizing = legend.itemsizing === 'constant';
     var itemWidth = legend.itemwidth;
+    var itemHeight = legend.itemheight;
     var centerPos = (itemWidth + constants.itemGap * 2) / 2;
     var centerTransform = strTranslate(centerPos, 0);
 
-    var boundLineWidth = function(mlw, cont, max, cst) {
+    var boundLineWidth = function (mlw, cont, max, cst) {
         var v;
-        if(mlw + 1) {
+        if (mlw + 1) {
             v = mlw;
-        } else if(cont && cont.width > 0) {
+        } else if (cont && cont.width > 0) {
             v = cont.width;
         } else {
             return 0;
@@ -41,7 +42,7 @@ module.exports = function style(s, gd, legend) {
         return constantItemSizing ? cst : Math.min(v, max);
     };
 
-    s.each(function(d) {
+    s.each(function (d) {
         var traceGroup = d3.select(this);
 
         var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
@@ -51,49 +52,37 @@ module.exports = function style(s, gd, legend) {
         var valign = legend.valign;
         var lineHeight = d[0].lineHeight;
         var height = d[0].height;
-        if((valign === 'middle' && indentation === 0) || !lineHeight || !height) {
+        if ((valign === 'middle' && indentation === 0) || !lineHeight || !height) {
             layers.attr('transform', null);
         } else {
-            var factor = {top: 1, bottom: -1}[valign];
-            var markerOffsetY = (factor * (0.5 * (lineHeight - height + 3))) || 0;
+            var factor = { top: 1, bottom: -1 }[valign];
+            var markerOffsetY = factor * (0.5 * (lineHeight - height + 3)) || 0;
             var markerOffsetX = legend.indentation;
             layers.attr('transform', strTranslate(markerOffsetX, markerOffsetY));
         }
 
-        var fill = layers
-            .selectAll('g.legendfill')
-                .data([d]);
-        fill.enter().append('g')
-            .classed('legendfill', true);
+        var fill = layers.selectAll('g.legendfill').data([d]);
+        fill.enter().append('g').classed('legendfill', true);
 
-        var line = layers
-            .selectAll('g.legendlines')
-                .data([d]);
-        line.enter().append('g')
-            .classed('legendlines', true);
+        var line = layers.selectAll('g.legendlines').data([d]);
+        line.enter().append('g').classed('legendlines', true);
 
-        var symbol = layers
-            .selectAll('g.legendsymbols')
-                .data([d]);
-        symbol.enter().append('g')
-            .classed('legendsymbols', true);
+        var symbol = layers.selectAll('g.legendsymbols').data([d]);
+        symbol.enter().append('g').classed('legendsymbols', true);
 
-        symbol.selectAll('g.legendpoints')
-            .data([d])
-          .enter().append('g')
-            .classed('legendpoints', true);
+        symbol.selectAll('g.legendpoints').data([d]).enter().append('g').classed('legendpoints', true);
     })
-    .each(styleSpatial)
-    .each(styleWaterfalls)
-    .each(styleFunnels)
-    .each(styleBars)
-    .each(styleBoxes)
-    .each(styleFunnelareas)
-    .each(stylePies)
-    .each(styleLines)
-    .each(stylePoints)
-    .each(styleCandles)
-    .each(styleOHLC);
+        .each(styleSpatial)
+        .each(styleWaterfalls)
+        .each(styleFunnels)
+        .each(styleBars)
+        .each(styleBoxes)
+        .each(styleFunnelareas)
+        .each(stylePies)
+        .each(styleLines)
+        .each(stylePoints)
+        .each(styleCandles)
+        .each(styleOHLC);
 
     function styleLines(d) {
         var styleGuide = getStyleGuide(d);
@@ -112,53 +101,63 @@ module.exports = function style(s, gd, legend) {
         var colorscale = cOpts.colorscale;
         var reversescale = cOpts.reversescale;
 
-        var fillStyle = function(s) {
-            if(s.size()) {
-                if(showFill) {
+        var fillStyle = function (s) {
+            if (s.size()) {
+                if (showFill) {
                     Drawing.fillGroupStyle(s, gd, true);
                 } else {
                     var gradientID = 'legendfill-' + trace.uid;
-                    Drawing.gradient(s, gd, gradientID,
-                        getGradientDirection(reversescale),
-                        colorscale, 'fill');
+                    Drawing.gradient(s, gd, gradientID, getGradientDirection(reversescale), colorscale, 'fill');
                 }
             }
         };
 
-        var lineGradient = function(s) {
-            if(s.size()) {
+        var lineGradient = function (s) {
+            if (s.size()) {
                 var gradientID = 'legendline-' + trace.uid;
                 Drawing.lineGroupStyle(s);
-                Drawing.gradient(s, gd, gradientID,
-                    getGradientDirection(reversescale),
-                    colorscale, 'stroke');
+                Drawing.gradient(s, gd, gradientID, getGradientDirection(reversescale), colorscale, 'stroke');
             }
         };
 
         // with fill and no markers or text, move the line and fill up a bit
         // so it's more centered
 
-        var pathStart = (subTypes.hasMarkers(trace) || !anyFill) ? 'M5,0' :
-            // with a line leave it slightly below center, to leave room for the
-            // line thickness and because the line is usually more prominent
-            anyLine ? 'M5,-2' : 'M5,-3';
+        var pathStart =
+            subTypes.hasMarkers(trace) || !anyFill
+                ? 'M5,0'
+                : // with a line leave it slightly below center, to leave room for the
+                  // line thickness and because the line is usually more prominent
+                  anyLine
+                  ? 'M5,-2'
+                  : 'M5,-3';
 
         var this3 = d3.select(this);
 
-        var fill = this3.select('.legendfill').selectAll('path')
+        var fill = this3
+            .select('.legendfill')
+            .selectAll('path')
             .data(showFill || showGradientFill ? [d] : []);
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
-        fill.attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z')
-            .call(fillStyle);
+        fill.attr('d', pathStart + 'h' + itemWidth + 'v' + itemHeight + 'h-' + itemWidth + 'z').call(fillStyle);
 
-        if(showLine || showGradientLine) {
+        // Grow a tall fill swatch up and down by the same amount, so the space above and below the symbol
+        // stays as in the default row. The line and the markers move with the fill to stay on its top edge.
+        const fillShiftY = showFill || showGradientFill ? (constants.dfltFillHeight - itemHeight) / 2 : 0;
+        this3
+            .selectAll('g.legendfill, g.legendlines, g.legendsymbols')
+            .attr('transform', fillShiftY ? strTranslate(0, fillShiftY) : null);
+
+        if (showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);
-            tMod = Lib.minExtend(trace, {line: {width: lw}});
-            dMod = [Lib.minExtend(d0, {trace: tMod})];
+            tMod = Lib.minExtend(trace, { line: { width: lw } });
+            dMod = [Lib.minExtend(d0, { trace: tMod })];
         }
 
-        var line = this3.select('.legendlines').selectAll('path')
+        var line = this3
+            .select('.legendlines')
+            .selectAll('path')
             .data(showLine || showGradientLine ? [dMod] : []);
         line.enter().append('path').classed('js-line', true);
         line.exit().remove();
@@ -169,8 +168,9 @@ module.exports = function style(s, gd, legend) {
         // though there *is* no vertical variation in this case.
         // so add an invisibly small angle to the line
         // This issue (and workaround) exist across (Mac) Chrome, FF, and Safari
-        line.attr('d', pathStart + (showGradientLine ? 'l' + itemWidth + ',0.0001' : 'h' + itemWidth))
-            .call(showLine ? Drawing.lineGroupStyle : lineGradient);
+        line.attr('d', pathStart + (showGradientLine ? 'l' + itemWidth + ',0.0001' : 'h' + itemWidth)).call(
+            showLine ? Drawing.lineGroupStyle : lineGradient
+        );
     }
 
     function stylePoints(d) {
@@ -190,37 +190,41 @@ module.exports = function style(s, gd, legend) {
 
         function boundVal(attrIn, arrayToValFn, bounds, cst) {
             var valIn = Lib.nestedProperty(trace, attrIn).get();
-            var valToBound = (Lib.isArrayOrTypedArray(valIn) && arrayToValFn) ?
-                arrayToValFn(valIn) :
-                valIn;
+            var valToBound = Lib.isArrayOrTypedArray(valIn) && arrayToValFn ? arrayToValFn(valIn) : valIn;
 
-            if(constantItemSizing && valToBound && cst !== undefined) {
+            if (constantItemSizing && valToBound && cst !== undefined) {
                 valToBound = cst;
             }
 
-            if(bounds) {
-                if(valToBound < bounds[0]) return bounds[0];
-                else if(valToBound > bounds[1]) return bounds[1];
+            if (bounds) {
+                if (valToBound < bounds[0]) return bounds[0];
+                else if (valToBound > bounds[1]) return bounds[1];
             }
             return valToBound;
         }
 
         function pickFirst(array) {
-            if(d0._distinct && d0.index && array[d0.index]) return array[d0.index];
+            if (d0._distinct && d0.index && array[d0.index]) return array[d0.index];
             return array[0];
         }
 
         // constrain text, markers, etc so they'll fit on the legend
-        if(showMarker || showText || showLine) {
+        if (showMarker || showText || showLine) {
             var dEdit = {};
             var tEdit = {};
 
-            if(showMarker) {
+            if (showMarker) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
-                dEdit.mx = boundVal('marker.symbol', pickFirst);
+                // Scattermap traces use marker.symbol to specify the Maki icon used in
+                // the map itself, which usually doesn't correspond to a valid
+                // Plotly symbol. Always draw a circle so the swatch is consistent
+                // across symbols rather than silently mismatched.
+                var isScattermapTrace = trace.type === 'scattermap';
+                dEdit.mx = isScattermapTrace ? 'circle' : boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
                 dEdit.mlw = boundVal('marker.line.width', Lib.mean, [0, 5], CST_MARKER_LINE_WIDTH);
+                dEdit.mld = boundVal('marker.line.dash', pickFirst);
                 tEdit.marker = {
                     sizeref: 1,
                     sizemin: 1,
@@ -232,13 +236,13 @@ module.exports = function style(s, gd, legend) {
                 tEdit.marker.size = ms;
             }
 
-            if(showLine) {
+            if (showLine) {
                 tEdit.line = {
                     width: boundVal('line.width', pickFirst, [0, 10], CST_LINE_WIDTH)
                 };
             }
 
-            if(showText) {
+            if (showText) {
                 dEdit.tx = 'Aa';
                 dEdit.tp = boundVal('textposition', pickFirst);
                 dEdit.ts = 10;
@@ -264,24 +268,18 @@ module.exports = function style(s, gd, legend) {
 
         var ptgroup = d3.select(this).select('g.legendpoints');
 
-        var pts = ptgroup.selectAll('path.scatterpts')
-            .data(showMarker ? dMod : []);
+        var pts = ptgroup.selectAll('path.scatterpts').data(showMarker ? dMod : []);
         // make sure marker is on the bottom, in case it enters after text
-        pts.enter().insert('path', ':first-child')
-            .classed('scatterpts', true)
-            .attr('transform', centerTransform);
+        pts.enter().insert('path', ':first-child').classed('scatterpts', true).attr('transform', centerTransform);
         pts.exit().remove();
         pts.call(Drawing.pointStyle, tMod, gd);
 
         // 'mrc' is set in pointStyle and used in textPointStyle:
         // constrain it here
-        if(showMarker) dMod[0].mrc = 3;
+        if (showMarker) dMod[0].mrc = 3;
 
-        var txt = ptgroup.selectAll('g.pointtext')
-            .data(showText ? dMod : []);
-        txt.enter()
-            .append('g').classed('pointtext', true)
-                .append('text').attr('transform', centerTransform);
+        var txt = ptgroup.selectAll('g.pointtext').data(showText ? dMod : []);
+        txt.enter().append('g').classed('pointtext', true).append('text').attr('transform', centerTransform);
         txt.exit().remove();
         txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
     }
@@ -290,7 +288,7 @@ module.exports = function style(s, gd, legend) {
         var trace = d[0].trace;
         var isWaterfall = trace.type === 'waterfall';
 
-        if(d[0]._distinct && isWaterfall) {
+        if (d[0]._distinct && isWaterfall) {
             var cont = d[0].trace[d[0].dir].marker;
             d[0].mc = cont.color;
             d[0].mlw = cont.line.width;
@@ -299,21 +297,28 @@ module.exports = function style(s, gd, legend) {
         }
 
         var ptsData = [];
-        if(trace.visible && isWaterfall) {
-            ptsData = d[0].hasTotals ?
-                [['increasing', 'M-6,-6V6H0Z'], ['totals', 'M6,6H0L-6,-6H-0Z'], ['decreasing', 'M6,6V-6H0Z']] :
-                [['increasing', 'M-6,-6V6H6Z'], ['decreasing', 'M6,6V-6H-6Z']];
+        if (trace.visible && isWaterfall) {
+            ptsData = d[0].hasTotals
+                ? [
+                      ['increasing', 'M-6,-6V6H0Z'],
+                      ['totals', 'M6,6H0L-6,-6H-0Z'],
+                      ['decreasing', 'M6,6V-6H0Z']
+                  ]
+                : [
+                      ['increasing', 'M-6,-6V6H6Z'],
+                      ['decreasing', 'M6,6V-6H-6Z']
+                  ];
         }
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendwaterfall')
-            .data(ptsData);
-        pts.enter().append('path').classed('legendwaterfall', true)
+        var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendwaterfall').data(ptsData);
+        pts.enter()
+            .append('path')
+            .classed('legendwaterfall', true)
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
         pts.exit().remove();
 
-        pts.each(function(dd) {
+        pts.each(function (dd) {
             var pt = d3.select(this);
             var cont = trace[dd[0]].marker;
             var lw = boundLineWidth(undefined, cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
@@ -322,7 +327,7 @@ module.exports = function style(s, gd, legend) {
                 .style('stroke-width', lw + 'px')
                 .call(Color.fill, cont.color);
 
-            if(lw) {
+            if (lw) {
                 pt.call(Color.stroke, cont.line.color);
             }
         });
@@ -342,22 +347,27 @@ module.exports = function style(s, gd, legend) {
         var markerLine = marker.line || {};
 
         // If bar has rounded corners, round corners of legend icon
-        var pathStr = marker.cornerradius ?
-            'M6,3a3,3,0,0,1-3,3H-3a3,3,0,0,1-3-3V-3a3,3,0,0,1,3-3H3a3,3,0,0,1,3,3Z' : // Square with rounded corners
-            'M6,6H-6V-6H6Z'; // Normal square
+        var pathStr = marker.cornerradius
+            ? 'M6,3a3,3,0,0,1-3,3H-3a3,3,0,0,1-3-3V-3a3,3,0,0,1,3-3H3a3,3,0,0,1,3,3Z'
+            : // Square with rounded corners
+              'M6,6H-6V-6H6Z'; // Normal square
 
-        var isVisible = (!desiredType) ? Registry.traceIs(trace, 'bar') :
-            (trace.visible && trace.type === desiredType);
+        var isVisible = !desiredType ? Registry.traceIs(trace, 'bar') : trace.visible && trace.type === desiredType;
 
-        var barpath = d3.select(lThis).select('g.legendpoints')
+        var barpath = d3
+            .select(lThis)
+            .select('g.legendpoints')
             .selectAll('path.legend' + desiredType)
             .data(isVisible ? [d] : []);
-        barpath.enter().append('path').classed('legend' + desiredType, true)
+        barpath
+            .enter()
+            .append('path')
+            .classed('legend' + desiredType, true)
             .attr('d', pathStr)
             .attr('transform', centerTransform);
         barpath.exit().remove();
 
-        barpath.each(function(d) {
+        barpath.each(function (d) {
             var p = d3.select(this);
             var d0 = d[0];
             var w = boundLineWidth(d0.mlw, marker.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
@@ -365,60 +375,82 @@ module.exports = function style(s, gd, legend) {
             p.style('stroke-width', w + 'px');
 
             var mcc = d0.mcc;
-            if(!legend._inHover && 'mc' in d0) {
+            if (!legend._inHover && 'mc' in d0) {
                 // not in unified hover but
                 // for legend use the color in the middle of scale
                 var cOpts = extractOpts(marker);
                 var mid = cOpts.mid;
-                if(mid === undefined) mid = (cOpts.max + cOpts.min) / 2;
+                if (mid === undefined) mid = (cOpts.max + cOpts.min) / 2;
                 mcc = Drawing.tryColorscale(marker, '')(mid);
             }
             var fillColor = mcc || d0.mc || marker.color;
 
             var markerPattern = marker.pattern;
             var pAttr = Drawing.getPatternAttr;
-            var patternShape = markerPattern && (
-                pAttr(markerPattern.shape, 0, '') || pAttr(markerPattern.path, 0, '')
-            );
+            let patternIndex = 0;
+            if (legend._inHover && d0._distinct && d0.index != null) {
+                patternIndex = d0.index;
+            }
+            const patternShape =
+                markerPattern &&
+                (pAttr(markerPattern.shape, patternIndex, '') || pAttr(markerPattern.path, patternIndex, ''));
 
-            if(patternShape) {
-                var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
-                var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
+            if (patternShape) {
+                const patternBGColor = pAttr(markerPattern.bgcolor, patternIndex, null);
+                const patternFGColor = pAttr(markerPattern.fgcolor, patternIndex, null);
                 var patternFGOpacity = markerPattern.fgopacity;
-                var patternSize = dimAttr(markerPattern.size, 8, 10);
-                var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
-                var patternID = 'legend-' + trace.uid;
+                const patternSize = legend._inHover
+                    ? dimAttr(pAttr(markerPattern.size, patternIndex, 8), 8, 10)
+                    : dimAttr(markerPattern.size, 8, 10);
+                const patternSolidity = legend._inHover
+                    ? dimAttr(pAttr(markerPattern.solidity, patternIndex, 0.5), 0.5, 1)
+                    : dimAttr(markerPattern.solidity, 0.5, 1);
+                const patternID = legend._inHover ? `hover-${trace.uid}-${patternIndex}` : `legend-${trace.uid}`;
                 p.call(
-                    Drawing.pattern, 'legend', gd, patternID,
-                    patternShape, patternSize, patternSolidity,
-                    mcc, markerPattern.fillmode,
-                    patternBGColor, patternFGColor, patternFGOpacity
+                    Drawing.pattern,
+                    'legend',
+                    gd,
+                    patternID,
+                    patternShape,
+                    patternSize,
+                    patternSolidity,
+                    mcc,
+                    markerPattern.fillmode,
+                    patternBGColor,
+                    patternFGColor,
+                    patternFGOpacity
                 );
             } else {
                 p.call(Color.fill, fillColor);
             }
 
-            if(w) Color.stroke(p, d0.mlc || markerLine.color);
+            if (w) Color.stroke(p, d0.mlc || markerLine.color);
         });
     }
 
     function styleBoxes(d) {
         var trace = d[0].trace;
 
-        var pts = d3.select(this).select('g.legendpoints')
+        var pts = d3
+            .select(this)
+            .select('g.legendpoints')
             .selectAll('path.legendbox')
             .data(trace.visible && Registry.traceIs(trace, 'box-violin') ? [d] : []);
-        pts.enter().append('path').classed('legendbox', true)
+        pts.enter()
+            .append('path')
+            .classed('legendbox', true)
             // if we want the median bar, prepend M6,0H-6
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', centerTransform);
         pts.exit().remove();
 
-        pts.each(function() {
+        pts.each(function () {
             var p = d3.select(this);
 
-            if((trace.boxpoints === 'all' || trace.points === 'all') &&
-                Color.opacity(trace.fillcolor) === 0 && Color.opacity((trace.line || {}).color) === 0
+            if (
+                (trace.boxpoints === 'all' || trace.points === 'all') &&
+                Color.opacity(trace.fillcolor) === 0 &&
+                Color.opacity((trace.line || {}).color) === 0
             ) {
                 var tMod = Lib.minExtend(trace, {
                     marker: {
@@ -432,10 +464,9 @@ module.exports = function style(s, gd, legend) {
             } else {
                 var w = boundLineWidth(undefined, trace.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-                p.style('stroke-width', w + 'px')
-                    .call(Color.fill, trace.fillcolor);
+                p.style('stroke-width', w + 'px').call(Color.fill, trace.fillcolor);
 
-                if(w) Color.stroke(p, trace.line.color);
+                if (w) Color.stroke(p, trace.line.color);
             }
         });
     }
@@ -443,54 +474,60 @@ module.exports = function style(s, gd, legend) {
     function styleCandles(d) {
         var trace = d[0].trace;
 
-        var pts = d3.select(this).select('g.legendpoints')
+        var pts = d3
+            .select(this)
+            .select('g.legendpoints')
             .selectAll('path.legendcandle')
             .data(trace.visible && trace.type === 'candlestick' ? [d, d] : []);
-        pts.enter().append('path').classed('legendcandle', true)
-            .attr('d', function(_, i) {
-                if(i) return 'M-15,0H-8M-8,6V-6H8Z'; // increasing
+        pts.enter()
+            .append('path')
+            .classed('legendcandle', true)
+            .attr('d', function (_, i) {
+                if (i) return 'M-15,0H-8M-8,6V-6H8Z'; // increasing
                 return 'M15,0H8M8,-6V6H-8Z'; // decreasing
             })
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
         pts.exit().remove();
 
-        pts.each(function(_, i) {
+        pts.each(function (_, i) {
             var p = d3.select(this);
             var cont = trace[i ? 'increasing' : 'decreasing'];
             var w = boundLineWidth(undefined, cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            p.style('stroke-width', w + 'px')
-                .call(Color.fill, cont.fillcolor);
+            p.style('stroke-width', w + 'px').call(Color.fill, cont.fillcolor);
 
-            if(w) Color.stroke(p, cont.line.color);
+            if (w) Color.stroke(p, cont.line.color);
         });
     }
 
     function styleOHLC(d) {
         var trace = d[0].trace;
 
-        var pts = d3.select(this).select('g.legendpoints')
+        var pts = d3
+            .select(this)
+            .select('g.legendpoints')
             .selectAll('path.legendohlc')
             .data(trace.visible && trace.type === 'ohlc' ? [d, d] : []);
-        pts.enter().append('path').classed('legendohlc', true)
-            .attr('d', function(_, i) {
-                if(i) return 'M-15,0H0M-8,-6V0'; // increasing
+        pts.enter()
+            .append('path')
+            .classed('legendohlc', true)
+            .attr('d', function (_, i) {
+                if (i) return 'M-15,0H0M-8,-6V0'; // increasing
                 return 'M15,0H0M8,6V0'; // decreasing
             })
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
         pts.exit().remove();
 
-        pts.each(function(_, i) {
+        pts.each(function (_, i) {
             var p = d3.select(this);
             var cont = trace[i ? 'increasing' : 'decreasing'];
             var w = boundLineWidth(undefined, cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            p.style('fill', 'none')
-                .call(Drawing.dashLine, cont.line.dash, w);
+            p.style('fill', 'none').call(Drawing.dashLine, cont.line.dash, w);
 
-            if(w) Color.stroke(p, cont.line.color);
+            if (w) Color.stroke(p, cont.line.color);
         });
     }
 
@@ -506,59 +543,64 @@ module.exports = function style(s, gd, legend) {
         var d0 = d[0];
         var trace = d0.trace;
 
-        var isVisible = (!desiredType) ? Registry.traceIs(trace, desiredType) :
-            (trace.visible && trace.type === desiredType);
+        var isVisible = !desiredType
+            ? Registry.traceIs(trace, desiredType)
+            : trace.visible && trace.type === desiredType;
 
-        var pts = d3.select(lThis).select('g.legendpoints')
+        var pts = d3
+            .select(lThis)
+            .select('g.legendpoints')
             .selectAll('path.legend' + desiredType)
             .data(isVisible ? [d] : []);
-        pts.enter().append('path').classed('legend' + desiredType, true)
+        pts.enter()
+            .append('path')
+            .classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', centerTransform);
         pts.exit().remove();
 
-        if(pts.size()) {
+        if (pts.size()) {
             var cont = trace.marker || {};
-            var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+            var lw = boundLineWidth(
+                pieCastOption(cont.line.width, d0.pts),
+                cont.line,
+                MAX_MARKER_LINE_WIDTH,
+                CST_MARKER_LINE_WIDTH
+            );
 
             var opt = 'pieLike';
-            var tMod = Lib.minExtend(trace, {marker: {line: {width: lw}}}, opt);
-            var d0Mod = Lib.minExtend(d0, {trace: tMod}, opt);
+            var tMod = Lib.minExtend(trace, { marker: { line: { width: lw } } }, opt);
+            var d0Mod = Lib.minExtend(d0, { trace: tMod }, opt);
 
             stylePie(pts, d0Mod, tMod, gd);
         }
     }
 
-    function styleSpatial(d) { // i.e. maninly traces having z and colorscale
+    function styleSpatial(d) {
+        // i.e. maninly traces having z and colorscale
         var trace = d[0].trace;
 
         var useGradient;
         var ptsData = [];
-        if(trace.visible) {
-            switch(trace.type) {
-                case 'histogram2d' :
-                case 'heatmap' :
+        if (trace.visible) {
+            switch (trace.type) {
+                case 'histogram2d':
+                case 'heatmap':
                     ptsData = [
                         ['M-15,-2V4H15V-2Z'] // similar to contour
                     ];
                     useGradient = true;
                     break;
-                case 'choropleth' :
-                case 'choroplethmapbox' :
-                case 'choroplethmap' :
-                    ptsData = [
-                        ['M-6,-6V6H6V-6Z']
-                    ];
+                case 'choropleth':
+                case 'choroplethmap':
+                    ptsData = [['M-6,-6V6H6V-6Z']];
                     useGradient = true;
                     break;
-                case 'densitymapbox' :
-                case 'densitymap' :
-                    ptsData = [
-                        ['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']
-                    ];
+                case 'densitymap':
+                    ptsData = [['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']];
                     useGradient = 'radial';
                     break;
-                case 'cone' :
+                case 'cone':
                     ptsData = [
                         ['M-6,2 A2,2 0 0,0 -6,6 V6L6,4Z'],
                         ['M-6,-6 A2,2 0 0,0 -6,-2 L6,-4Z'],
@@ -566,7 +608,7 @@ module.exports = function style(s, gd, legend) {
                     ];
                     useGradient = false;
                     break;
-                case 'streamtube' :
+                case 'streamtube':
                     ptsData = [
                         ['M-6,2 A2,2 0 0,0 -6,6 H6 A2,2 0 0,1 6,2 Z'],
                         ['M-6,-6 A2,2 0 0,0 -6,-2 H6 A2,2 0 0,1 6,-6 Z'],
@@ -574,79 +616,76 @@ module.exports = function style(s, gd, legend) {
                     ];
                     useGradient = false;
                     break;
-                case 'surface' :
+                case 'surface':
                     ptsData = [
                         ['M-6,-6 A2,3 0 0,0 -6,0 H6 A2,3 0 0,1 6,-6 Z'],
                         ['M-6,1 A2,3 0 0,1 -6,6 H6 A2,3 0 0,0 6,0 Z']
                     ];
                     useGradient = true;
                     break;
-                case 'mesh3d' :
-                    ptsData = [
-                        ['M-6,6H0L-6,-6Z'],
-                        ['M6,6H0L6,-6Z'],
-                        ['M-6,-6H6L0,6Z']
-                    ];
+                case 'mesh3d':
+                    ptsData = [['M-6,6H0L-6,-6Z'], ['M6,6H0L6,-6Z'], ['M-6,-6H6L0,6Z']];
                     useGradient = false;
                     break;
-                case 'volume' :
-                    ptsData = [
-                        ['M-6,6H0L-6,-6Z'],
-                        ['M6,6H0L6,-6Z'],
-                        ['M-6,-6H6L0,6Z']
-                    ];
+                case 'volume':
+                    ptsData = [['M-6,6H0L-6,-6Z'], ['M6,6H0L6,-6Z'], ['M-6,-6H6L0,6Z']];
                     useGradient = true;
                     break;
                 case 'isosurface':
-                    ptsData = [
-                        ['M-6,6H0L-6,-6Z'],
-                        ['M6,6H0L6,-6Z'],
-                        ['M-6,-6 A12,24 0 0,0 6,-6 L0,6Z']
-                    ];
+                    ptsData = [['M-6,6H0L-6,-6Z'], ['M6,6H0L6,-6Z'], ['M-6,-6 A12,24 0 0,0 6,-6 L0,6Z']];
                     useGradient = false;
                     break;
             }
         }
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legend3dandfriends')
-            .data(ptsData);
-        pts.enter().append('path').classed('legend3dandfriends', true)
+        var pts = d3.select(this).select('g.legendpoints').selectAll('path.legend3dandfriends').data(ptsData);
+        pts.enter()
+            .append('path')
+            .classed('legend3dandfriends', true)
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
         pts.exit().remove();
 
-        pts.each(function(dd, i) {
+        pts.each(function (dd, i) {
             var pt = d3.select(this);
 
             var cOpts = extractOpts(trace);
             var colorscale = cOpts.colorscale;
             var reversescale = cOpts.reversescale;
-            var fillGradient = function(s) {
-                if(s.size()) {
+            var fillGradient = function (s) {
+                if (s.size()) {
                     var gradientID = 'legendfill-' + trace.uid;
-                    Drawing.gradient(s, gd, gradientID,
+                    Drawing.gradient(
+                        s,
+                        gd,
+                        gradientID,
                         getGradientDirection(reversescale, useGradient === 'radial'),
-                        colorscale, 'fill');
+                        colorscale,
+                        'fill'
+                    );
                 }
             };
 
             var fillColor;
-            if(!colorscale) {
+            if (!colorscale) {
                 var color = trace.vertexcolor || trace.facecolor || trace.color;
-                fillColor = Lib.isArrayOrTypedArray(color) ? (color[i] || color[0]) : color;
+                fillColor = Lib.isArrayOrTypedArray(color) ? color[i] || color[0] : color;
             } else {
-                if(!useGradient) {
+                if (!useGradient) {
                     var len = colorscale.length;
                     fillColor =
-                        i === 0 ? colorscale[reversescale ? len - 1 : 0][1] : // minimum
-                        i === 1 ? colorscale[reversescale ? 0 : len - 1][1] : // maximum
-                            colorscale[Math.floor((len - 1) / 2)][1]; // middle
+                        i === 0
+                            ? colorscale[reversescale ? len - 1 : 0][1]
+                            : // minimum
+                              i === 1
+                              ? colorscale[reversescale ? 0 : len - 1][1]
+                              : // maximum
+                                colorscale[Math.floor((len - 1) / 2)][1]; // middle
                 }
             }
 
             pt.attr('d', dd[0]);
-            if(fillColor) {
+            if (fillColor) {
                 pt.call(Color.fill, fillColor);
             } else {
                 pt.call(fillGradient);
@@ -663,25 +702,25 @@ function getGradientDirection(reversescale, isRadial) {
 function getStyleGuide(d) {
     var trace = d[0].trace;
     var contours = trace.contours;
-    var showLine = subTypes.hasLines(trace);
+    var showLine = subTypes.hasLines(trace) || (trace.visible && trace.type === 'quiver');
     var showMarker = subTypes.hasMarkers(trace);
 
     var showFill = trace.visible && trace.fill && trace.fill !== 'none';
     var showGradientLine = false;
     var showGradientFill = false;
 
-    if(contours) {
+    if (contours) {
         var coloring = contours.coloring;
 
-        if(coloring === 'lines') {
+        if (coloring === 'lines') {
             showGradientLine = true;
         } else {
             showLine = coloring === 'none' || coloring === 'heatmap' || contours.showlines;
         }
 
-        if(contours.type === 'constraint') {
+        if (contours.type === 'constraint') {
             showFill = contours._operation !== '=';
-        } else if(coloring === 'fill' || coloring === 'heatmap') {
+        } else if (coloring === 'fill' || coloring === 'heatmap') {
             showGradientFill = true;
         }
     }
@@ -692,12 +731,12 @@ function getStyleGuide(d) {
         showGradientLine: showGradientLine,
         showGradientFill: showGradientFill,
         anyLine: showLine || showGradientLine,
-        anyFill: showFill || showGradientFill,
+        anyFill: showFill || showGradientFill
     };
 }
 
 function dimAttr(v, dflt, max) {
-    if(v && Lib.isArrayOrTypedArray(v)) return dflt;
-    if(v > max) return max;
+    if (v && Lib.isArrayOrTypedArray(v)) return dflt;
+    if (v > max) return max;
     return v;
 }

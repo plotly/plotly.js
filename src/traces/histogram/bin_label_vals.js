@@ -61,7 +61,7 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
         return function(v, isRightEdge) {
             var dateStr = pa.c2d(v, oneYear, calendar);
             var dashPos = dateStr.indexOf('-', dashExclude);
-            if(dashPos > 0) dateStr = dateStr.substr(0, dashPos);
+            if(dashPos > 0) dateStr = dateStr.slice(0, dashPos);
             var roundedV = pa.d2c(dateStr, 0, calendar);
 
             if(roundedV < v) {

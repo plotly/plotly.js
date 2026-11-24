@@ -28,6 +28,7 @@ var svgMockList = [
     ['layout-colorway', require('../../image/mocks/layout-colorway.json')],
     ['multicategory', require('../../image/mocks/multicategory.json')],
     ['polar_categories', require('../../image/mocks/polar_categories.json')],
+    ['quiver_categorical', require('../../image/mocks/quiver_categorical.json')],
     ['polar_direction', require('../../image/mocks/polar_direction.json')],
     ['polar_wind-rose', require('../../image/mocks/polar_wind-rose.json')],
     ['range_selector_style', require('../../image/mocks/range_selector_style.json')],

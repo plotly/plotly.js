@@ -6,6 +6,7 @@ var createError = require('regl-error2d');
 var Text = require('gl-text');
 
 var Lib = require('../../lib');
+const { rgbaString } = require('../../components/color');
 var selectMode = require('../../components/dragelement/helpers').selectMode;
 var prepareRegl = require('../../lib/prepare_regl');
 
@@ -27,11 +28,17 @@ function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var t = gs.t * plotGlPixelRatio;
     var w = gs.w * plotGlPixelRatio;
     var h = gs.h * plotGlPixelRatio;
+
+    const padL = (xaxis._padStart || 0) * plotGlPixelRatio;
+    const padR = (xaxis._padEnd || 0) * plotGlPixelRatio;
+    const padT = (yaxis._padStart || 0) * plotGlPixelRatio;
+    const padB = (yaxis._padEnd || 0) * plotGlPixelRatio;
+
     return [
-        l + xaxis.domain[0] * w,
-        b + yaxis.domain[0] * h,
-        (width - r) - (1 - xaxis.domain[1]) * w,
-        (height - t) - (1 - yaxis.domain[1]) * h
+        l + xaxis.domain[0] * w + padL,
+        b + yaxis.domain[0] * h + padB,
+        (width - r) - (1 - xaxis.domain[1]) * w - padR,
+        (height - t) - (1 - yaxis.domain[1]) * h - padT
     ];
 }
 
@@ -128,7 +135,10 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
             scene.line2d.update(scene.lineOptions);
         }
         if(scene.error2d) {
-            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []);
+            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || [])
+                .map(function(errorOptions) {
+                    return errorOptions || {positions: [], errors: []};
+                });
             scene.error2d.update(errorBatch);
         }
         if(scene.scatter2d) {
@@ -223,7 +233,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
                                     if(isNaN(xx) || isNaN(yy)) continue;
                                     pos.push(xx, yy);
                                 }
-                                fillOptions.fill = nextTrace.fillcolor;
+                                fillOptions.fill = rgbaString(nextTrace.fillcolor);
                             }
                         }
                     }
@@ -263,8 +273,8 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     var isSelectMode = selectMode(dragmode);
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
-    for(i = 0; i < count; i++) {
-        var cd0 = cdata[i][0];
+    for (const [cd0] of cdata) {
+        if (!cd0) continue;
         var trace = cd0.trace;
         var stash = cd0.t;
         var index = stash.index;
@@ -277,7 +287,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
-                var selPts = scene.selectBatch[index] = Lib.selIndices2selPoints(trace);
+                var selPts = scene.selectBatch[index] = trace.selectedpoints;
 
                 var selDict = {};
                 for(j = 0; j < selPts.length; j++) {

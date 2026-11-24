@@ -38,7 +38,7 @@ var argv = minimist(process.argv.slice(4), {
         failFast: false,
         doNotFailOnEmptyTestSuite: false,
         width: '1035',
-        height: '617',
+        height: '800',
         verbose: false,
         showSkipped: isCI
     }
@@ -69,7 +69,7 @@ if (argv.info) {
             '',
             'Other options:',
             '  - `--info`: show this info message',
-            '  - `--mathjax3`: to load mathjax v3 in relevant test',
+            '  - `--mathjax3`: to load mathjax v3 in relevant test (otherwise mathjax v4 is loaded)',
             '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
             '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
             '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
@@ -128,8 +128,8 @@ if (isFullSuite) {
 
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToTopojsonDist = path.join(__dirname, '..', '..', 'topojson', 'dist');
-var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v2');
 var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v3');
+var pathToMathJax4 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v4');
 var pathToVirtualWebgl = path.join(__dirname, '..', '..', 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js');
 
 var reporters = [];
@@ -200,10 +200,10 @@ func.defaultConfig = {
     // N.B. the rest of this field is filled below
     files: [
         pathToCustomMatchers,
-        // available to fetch from /base/node_modules/@plotly/mathjax-v2/
+        // available to fetch from /base/node_modules/@plotly/mathjax-v3/
         // more info: http://karma-runner.github.io/3.0/config/files.html
-        { pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true },
         { pattern: pathToMathJax3 + '/**', included: false, watched: false, served: true },
+        { pattern: pathToMathJax4 + '/**', included: false, watched: false, served: true },
         { pattern: pathToTopojsonDist + '/**', included: false, watched: false, served: true }
     ],
 
@@ -253,14 +253,22 @@ func.defaultConfig = {
     //
     // window-size values came from observing default size
     //
-    // '--ignore-gpu-blacklist' allow to test WebGL on CI (!!!)
+    // '--ignore-gpu-blocklist' allow to test WebGL on CI (!!!)
     customLaunchers: {
         _Chrome: {
             base: 'Chrome',
             flags: [
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
-                isCI ? '--ignore-gpu-blacklist' : '',
+                isCI ? '--ignore-gpu-blocklist' : '',
+                // The following two flags are needed only for the "NoCI" tests which run in GitHub Actions.
+                // The first is needed because the GPU is not available to those runners,
+                // and therefore we need to use SwiftShader instead (which is disabled by default as of Jan 2026,
+                // hence the need for a flag to manually enable it).
+                // The second flag is needed because the Chrome browser installed by the CI job runner
+                // fails without it.
+                isCI && process.env.GITHUB_ACTIONS ? '--enable-unsafe-swiftshader' : '',
+                isCI && process.env.GITHUB_ACTIONS ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
         },
@@ -300,7 +308,7 @@ func.defaultConfig = {
         tagPrefix: '@',
         skipTags: isCI ? 'noCI' : null,
 
-        mathjaxVersion: argv.mathjax3 ? 3 : 2,
+        mathjaxVersion: argv.mathjax3 ? 3 : 4,
 
         // See https://jasmine.github.io/api/3.4/Configuration.html
         jasmine: {
@@ -318,7 +326,7 @@ func.defaultConfig = {
         showSpecTiming: true
     },
 
-    // set to `true` e.g. for mapbox suites where:
+    // set to `true` e.g. for suites where:
     //   --tags=gl --skip-tags=noCI result in empty test run
     failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };

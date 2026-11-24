@@ -540,7 +540,7 @@ describe('range selector interactions:', function() {
     it('should be able to change its style on `relayout`', function(done) {
         var prefix = 'xaxis.rangeselector.';
 
-        checkButtonColor('rgb(238, 238, 238)', 'rgb(212, 212, 212)');
+        checkButtonColor('rgb(238, 238, 238)', 'rgb(213, 213, 213)');
 
         Plotly.relayout(gd, prefix + 'bgcolor', 'red')
         .then(function() {
@@ -578,7 +578,7 @@ describe('range selector interactions:', function() {
         var pos = getRectCenter(button.node());
 
         var fillColor = Color.rgb(gd._fullLayout.xaxis.rangeselector.bgcolor);
-        var activeColor = 'rgb(212, 212, 212)';
+        var activeColor = 'rgb(213, 213, 213)';
 
         expect(button.node().style.fill).toEqual(fillColor);
 

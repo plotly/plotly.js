@@ -13,7 +13,10 @@ module.exports = function calcLabels(trace, axis) {
         gridline = gridlines[i];
 
         if(['start', 'both'].indexOf(axis.showticklabels) !== -1) {
-            tobj = Axes.tickText(axis, gridline.value);
+            tobj = Axes.tickText(axis, gridline.value, false, false, {
+                first: i === 0,
+                last: i === gridlines.length - 1,
+            });
 
             extendFlat(tobj, {
                 prefix: prefix,
@@ -32,7 +35,10 @@ module.exports = function calcLabels(trace, axis) {
         }
 
         if(['end', 'both'].indexOf(axis.showticklabels) !== -1) {
-            tobj = Axes.tickText(axis, gridline.value);
+            tobj = Axes.tickText(axis, gridline.value, false, false, {
+                first: i === 0,
+                last: i === gridlines.length - 1,
+            });
 
             extendFlat(tobj, {
                 endAnchor: false,

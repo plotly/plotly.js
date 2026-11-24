@@ -25,11 +25,13 @@
 
     "map": {
       "domain": { "row": 0, "column": 0 },
-      "style": "carto-positron"
+      "style": "carto-positron",
+      "zoom": 1
     },
     "map2": {
       "domain": { "row": 0, "column": 1 },
-      "style": "carto-darkmatter"
+      "style": "carto-darkmatter",
+      "zoom": 1
     }
   }
 }

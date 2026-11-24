@@ -1,5 +1,4 @@
 import runSeries from 'run-series';
-import prependFile from 'prepend-file';
 
 import constants from './util/constants.js';
 import common from './util/common.js';
@@ -35,7 +34,7 @@ var tasks = [];
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDist, {
     }, function() {
-        prependFile.sync(pathToPlotlyDist, header, common.throwOnError);
+        common.prependFile(pathToPlotlyDist, header);
 
         done();
     });
@@ -46,7 +45,7 @@ tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDistMin, {
         minify: true,
     }, function() {
-        prependFile.sync(pathToPlotlyDistMin, header, common.throwOnError);
+        common.prependFile(pathToPlotlyDistMin, header);
 
         done();
     });
@@ -56,7 +55,7 @@ tasks.push(function(done) {
 tasks.push(function(done) {
     _bundle(pathToPlotlyStrict, pathToPlotlyStrictDist, {
     }, function() {
-        prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
+        common.prependFile(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'));
 
         done();
     });
@@ -67,7 +66,7 @@ tasks.push(function(done) {
     _bundle(pathToPlotlyStrict, pathToPlotlyStrictDistMin, {
         minify: true,
     }, function() {
-        prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
+        common.prependFile(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'));
 
         done();
     });
@@ -79,7 +78,7 @@ tasks.push(function(done) {
         noPlugins: true,
         standalone: 'PlotlyGeoAssets'
     }, function() {
-        prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
+        common.prependFile(pathToPlotlyGeoAssetsDist, header);
 
         done();
     });
@@ -90,7 +89,7 @@ tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDistWithMeta, {
         noCompressAttributes: true
     }, function() {
-        prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
+        common.prependFile(pathToPlotlyDistWithMeta, header);
 
         done();
     });

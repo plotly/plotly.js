@@ -13,7 +13,7 @@ module.exports = {
             'The boxes represent the spread between the `open` and `close` values and',
             'the lines represent the spread between the `low` and `high` values',
 
-            'Sample points where the close value is higher (lower) then the open',
+            'Sample points where the close value is higher (lower) than the open',
             'value are called increasing (decreasing).',
 
             'By default, increasing candles are drawn in green whereas',

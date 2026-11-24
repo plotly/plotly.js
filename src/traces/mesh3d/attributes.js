@@ -51,7 +51,7 @@ module.exports = extendFlat(
             editType: 'calc',
             description: [
                 'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
-                'vectors, representing the *second* vertex of a triangle. For example, `{i[m], j[m], k[m]}` ',
+                'vectors, representing the *second* vertex of a triangle. For example, `{i[m], j[m], k[m]}`',
                 'together represent face m (triangle m) in the mesh, where `j[m] = n` points to the triplet',
                 '`{x[n], y[n], z[n]}` in the vertex arrays. Therefore, each element in `j` represents a',
                 'point in space, which is the second vertex of a triangle.'
@@ -63,7 +63,7 @@ module.exports = extendFlat(
             description: [
                 'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
                 'vectors, representing the *third* vertex of a triangle. For example, `{i[m], j[m], k[m]}`',
-                'together represent face m (triangle m) in the mesh, where `k[m] = n` points to the triplet ',
+                'together represent face m (triangle m) in the mesh, where `k[m] = n` points to the triplet',
                 '`{x[n], y[n], z[n]}` in the vertex arrays. Therefore, each element in `k` represents a',
                 'point in space, which is the third vertex of a triangle.'
             ].join(' ')

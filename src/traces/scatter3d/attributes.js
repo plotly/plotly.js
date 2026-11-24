@@ -6,12 +6,12 @@ var colorAttributes = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var baseAttrs = require('../../plots/attributes');
-var DASHES = require('../../constants/gl3d_dashes');
+var DASHES = require('../../constants/gl3d_dashes').default;
 
-var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
+var MARKER_SYMBOLS = require('../../constants/gl3d_markers').default;
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var sortObjectKeys = require('../../lib/sort_object_keys');
+var sortObjectKeys = require('../../lib/sort_object_keys').default;
 
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerAttrs = scatterAttrs.marker;

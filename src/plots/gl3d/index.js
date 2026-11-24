@@ -132,7 +132,7 @@ exports.toSVG = function(gd) {
 exports.cleanId = function cleanId(id) {
     if(!id.match(/^scene[0-9]*$/)) return;
 
-    var sceneNum = id.substr(5);
+    var sceneNum = id.slice(5);
     if(sceneNum === '1') sceneNum = '';
 
     return SCENE + sceneNum;

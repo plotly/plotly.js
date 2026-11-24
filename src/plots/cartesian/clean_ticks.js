@@ -40,7 +40,7 @@ exports.dtick = function(dtick, axType) {
     }
 
     var prefix = dtick.charAt(0);
-    var dtickNum = dtick.substr(1);
+    var dtickNum = dtick.slice(1);
     dtickNum = isNumeric(dtickNum) ? Number(dtickNum) : 0;
 
     if((dtickNum <= 0) || !(

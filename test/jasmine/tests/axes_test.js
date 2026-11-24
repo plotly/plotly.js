@@ -7,17 +7,13 @@ var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var Loggers = require('../../../src/lib/loggers');
 var Color = require('../../../src/components/color');
-var tinycolor = require('tinycolor2');
 
 var handleTickValueDefaults = require('../../../src/plots/cartesian/tick_value_defaults');
 var Cartesian = require('../../../src/plots/cartesian');
 var Axes = require('../../../src/plots/cartesian/axes');
 var Fx = require('../../../src/components/fx');
 var supplyLayoutDefaults = require('../../../src/plots/cartesian/layout_defaults');
-var numerical = require('../../../src/constants/numerical');
-var BADNUM = numerical.BADNUM;
-var ONEDAY = numerical.ONEDAY;
-var ONEWEEK = numerical.ONEWEEK;
+const {BADNUM, MINUS_SIGN, ONEDAY, ONEHOUR, ONEWEEK} = require('../../../src/constants/numerical');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -467,11 +463,11 @@ describe('Test axes', function() {
                 yaxis: {}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            var lightLine = tinycolor(Color.lightLine).toRgbString();
+            var lightLine = Color.rgbaString(Color.lightLine);
             expect(layoutOut.xaxis.gridwidth).toBe(1);
-            expect(tinycolor(layoutOut.xaxis.gridcolor).toRgbString()).toBe(lightLine);
+            expect(Color.rgbaString(layoutOut.xaxis.gridcolor)).toBe(lightLine);
             expect(layoutOut.yaxis.gridwidth).toBe(1);
-            expect(tinycolor(layoutOut.yaxis.gridcolor).toRgbString()).toBe(lightLine);
+            expect(Color.rgbaString(layoutOut.yaxis.gridcolor)).toBe(lightLine);
         });
 
         it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {
@@ -566,11 +562,26 @@ describe('Test axes', function() {
             var frac = 100 * (0xe - 0x4) / (0xf - 0x4);
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.gridcolor)
-                .toEqual(tinycolor.mix('red', bgColor, frac).toRgbString());
+            expect(layoutOut.xaxis.gridcolor).toEqual(Color.mix('red', bgColor, frac));
             expect(layoutOut.yaxis.gridcolor).toEqual('blue');
-            expect(layoutOut.yaxis2.gridcolor)
-                .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
+            expect(layoutOut.yaxis2.gridcolor).toEqual(Color.mix('#444', bgColor, frac));
+        });
+
+        // axis.gridcolor is determined by mixing the axis color with the paper and plot background colors.
+        // If the two colors differ in alpha, the channel weight scales by that difference, so that
+        // the more-transparent color is weighted less.
+        it("should weight 'axis.gridcolor' channels by the alpha difference", () => {
+            layoutIn = {
+                paper_bgcolor: 'green',
+                plot_bgcolor: 'yellow',
+                xaxis: { showgrid: true, color: 'rgba(255, 0, 0, 0.5)' }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            // A plain interpolation gives 'rgba(255, 232, 0, 0.95)'. The half-transparent
+            // red then pulls green down almost three times as far.
+            expect(layoutOut.xaxis.gridcolor).toEqual('rgba(255, 247, 0, 0.95)');
         });
 
         it('should default to a dark color for tickfont when plotting background is light', function() {
@@ -583,7 +594,7 @@ describe('Test axes', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.tickfont.color).toEqual('#444');
+            expect(layoutOut.xaxis.tickfont.color).toEqual('rgb(68, 68, 68)');
         });
 
         it('should default to a light color for tickfont when plotting background is dark', function() {
@@ -596,7 +607,7 @@ describe('Test axes', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.tickfont.color).toEqual('#fff');
+            expect(layoutOut.xaxis.tickfont.color).toEqual('rgb(255, 255, 255)');
         });
 
         it('should not coerce ticklabelposition on *multicategory* axes for now', function() {
@@ -833,7 +844,7 @@ describe('Test axes', function() {
         it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
+                warnings.push(msg.slice(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {
@@ -868,7 +879,7 @@ describe('Test axes', function() {
         it('silently drops invalid scaleanchor values', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
+                warnings.push(msg.slice(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {
@@ -1174,6 +1185,33 @@ describe('Test axes', function() {
             _assertMatchingAxes(['yaxis', 'yaxis2'], false, [0, 1]);
             _assertMatchingAxes(['xaxis3', 'yaxis3'], false, [-1, 1]);
             _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [-1, 3]);
+        });
+
+        it('should not disable autorange on a matching group because an earlier group has a range', function() {
+            // shared x and y axes on a 2x2 grid, with a range on the x axes only
+            layoutIn = {
+                xaxis: {range: [0, 100], matches: 'x3'},
+                xaxis2: {range: [0, 100], matches: 'x4'},
+                xaxis3: {range: [0, 100]},
+                xaxis4: {range: [0, 100]},
+                yaxis: {},
+                yaxis2: {matches: 'y'},
+                yaxis3: {},
+                yaxis4: {matches: 'y3'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            layoutOut._subplots.yaxis.push('y2', 'y3', 'y4');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(4);
+            ['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'].forEach(function(n) {
+                expect(layoutOut[n].autorange).toBe(false, n);
+            });
+            ['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'].forEach(function(n) {
+                expect(layoutOut[n].autorange).toBe(true, n);
+            });
         });
 
         it('should match set axis range value for matching axes even when matching a *missing* axis', function() {
@@ -1722,13 +1760,72 @@ describe('Test axes', function() {
                 width: 600,
                 height: 600
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.12, 2]);
 
                 return Plotly.relayout(gd, {
                     'xaxis.insiderange': [1, 3]
                 });
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.879, 3]);
+            }).then(done, done.fail);
+        });
+    });
+
+    describe('minallowed / maxallowed', function() {
+        // regression test for https://github.com/plotly/plotly.js/issues/7717
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+        afterEach(destroyGraphDiv);
+
+        function expectForward(done, minallowed) {
+            Plotly.newPlot(gd, [{
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                y: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }], {
+                xaxis: { minallowed: minallowed }
+            }).then(function() {
+                var r = gd._fullLayout.xaxis.range;
+                expect(r[0]).toBeLessThan(r[1], 'axis should not be reversed for minallowed=' + minallowed);
+                expect(r[0]).toBe(minallowed, 'axis min should be pinned at minallowed');
+            }).then(done, done.fail);
+        }
+
+        it('does not reverse axis when minallowed exceeds default range max', function(done) {
+            expectForward(done, 7);
+        });
+
+        it('does not reverse axis when minallowed equals default range max', function(done) {
+            expectForward(done, 6);
+        });
+
+        it('does not reverse axis when minallowed is well above default range max', function(done) {
+            expectForward(done, 100);
+        });
+
+        it('keeps explicit autorange:reversed even when minallowed is set', function(done) {
+            Plotly.newPlot(gd, [{
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                y: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }], {
+                xaxis: { autorange: 'reversed', minallowed: 7 }
+            }).then(function() {
+                var r = gd._fullLayout.xaxis.range;
+                expect(r[0]).toBeGreaterThan(r[1], 'axis should remain reversed');
+                expect(r[1]).toBe(7, 'min slot (range[1] when reversed) should be minallowed');
+            }).then(done, done.fail);
+        });
+
+        it('does not reverse axis when maxallowed is below default range min', function(done) {
+            Plotly.newPlot(gd, [{
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                y: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }], {
+                xaxis: { maxallowed: -2 }
+            }).then(function() {
+                var r = gd._fullLayout.xaxis.range;
+                expect(r[0]).toBeLessThan(r[1], 'axis should not be reversed');
+                expect(r[1]).toBe(-2, 'axis max should be pinned at maxallowed');
             }).then(done, done.fail);
         });
     });
@@ -1812,6 +1909,61 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', [-0.5,1.5], [0.1, 0.9], [0.1, 0.9]);
             })
             .then(done, done.fail);
+        });
+
+        describe('a new range on a constrain:domain axis', () => {
+            const data = () => [{ x: [0, 20, 50, 80, 100], y: [0, 20, 50, 80, 100] }];
+            const layout = (xRange) => ({
+                width: 400,
+                height: 400,
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                xaxis: { range: xRange, constrain: 'domain' },
+                yaxis: { range: [0, 100], scaleanchor: 'x', scaleratio: 1 }
+            });
+
+            it('is applied by Plotly.react', (done) => {
+                Plotly.newPlot(gd, data(), layout([0, 100]))
+                    .then(() => Plotly.react(gd, data(), layout([20, 80])))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                        expect(gd._fullLayout.xaxis._inputRange).toEqual([20, 80]);
+                    })
+                    .then(done, done.fail);
+            });
+
+            it('is applied by Plotly.relayout with a whole axis object', (done) => {
+                Plotly.newPlot(gd, data(), layout([0, 100]))
+                    .then(() => Plotly.relayout(gd, { xaxis: layout([20, 80]).xaxis, yaxis: layout().yaxis }))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                        expect(gd._fullLayout.xaxis._inputRange).toEqual([20, 80]);
+                    })
+                    .then(done, done.fail);
+            });
+
+            [
+                ['dotted keys', { 'xaxis.range': [20, 80] }],
+                ['a whole axis object', { xaxis: layout([20, 80]).xaxis }]
+            ].forEach(([name, update]) => {
+                it(`lets the other axis rescale when Plotly.relayout sets one range with ${name}`, (done) => {
+                    Plotly.newPlot(gd, data(), layout([0, 100]))
+                        .then(() => Plotly.relayout(gd, update))
+                        .then(() => {
+                            assertRangeDomain('xaxis', [20, 80], [0, 1], [0, 1]);
+                            assertRangeDomain('yaxis', [20, 80], [0, 1], [0, 1]);
+                        })
+                        .then(done, done.fail);
+                });
+            });
+
+            it('keeps the drawn range when Plotly.react gets the same layout again', (done) => {
+                Plotly.newPlot(gd, data(), layout([20, 80]))
+                    .then(() => Plotly.react(gd, gd.data, gd.layout))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                    })
+                    .then(done, done.fail);
+            });
         });
 
         it('can change per-axis constrain:domain/range and constraintoward', function(done) {
@@ -3443,6 +3595,50 @@ describe('Test axes', function() {
             ]);
         });
 
+        it('snaps a near-zero tick to exactly tick0', () => {
+            const spec = {
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 0.2,
+                range: [-0.65, 0.65]
+            };
+
+            expect(mockCalc({ ...spec, tickformat: '~r' })).toEqual([
+                MINUS_SIGN + '0.6',
+                MINUS_SIGN + '0.4',
+                MINUS_SIGN + '0.2',
+                '0',
+                '0.2',
+                '0.4',
+                '0.6'
+            ]);
+
+            // the default numeric format was already fine; make sure it stays fine
+            expect(mockCalc(spec)).toEqual([
+                MINUS_SIGN + '0.6',
+                MINUS_SIGN + '0.4',
+                MINUS_SIGN + '0.2',
+                '0',
+                '0.2',
+                '0.4',
+                '0.6'
+            ]);
+        });
+
+        it('snaps ticks to non-tick0 grid positions', () => {
+            const textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 1,
+                dtick: 0.1,
+                range: [-0.05, 0.05],
+                tickformat: '~r'
+            });
+
+            expect(textOut).toEqual(['0']);
+        });
+
         it('reverts to "power" for SI/B exponentformat beyond the prefix range (log case)', function() {
             var textOut = mockCalc({
                 type: 'log',
@@ -3566,6 +3762,50 @@ describe('Test axes', function() {
                     oep + '4'
                 ]);
             });
+        });
+
+        it('formats tick labels correctly for small numbers in exponential notation', function() {
+            var textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'none',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-9,
+                range: [8.5e-9, 11.5e-9]
+            });
+
+            expect(textOut).toEqual([
+                '0.000000009', '0.00000001', '0.000000011'
+            ]);
+
+            textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'none',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-15,
+                range: [8.5e-15, 11.5e-15]
+            });
+
+            expect(textOut).toEqual([
+                '0.000000000000009', '0.00000000000001', '0.000000000000011'
+            ]);
+
+            textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'e',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-15,
+                range: [8.5e-15, 11.5e-15]
+            });
+
+            expect(textOut).toEqual([
+                '0.9e\u221214', '1e\u221214', '1.1e\u221214'
+            ]);
         });
 
         it('provides a new date suffix whenever the suffix changes', function() {
@@ -3770,6 +4010,40 @@ describe('Test axes', function() {
                 expect(textOut).toEqual(expectedText, axType);
                 expect(mockHoverText(ax, 1)).toBe('One');
                 expect(mockHoverText(ax, 19.999)).toBe('19.999');
+            });
+        });
+
+        it('applies prefixes and suffixes to array ticks without explicit text', () => {
+            ['linear', 'log', 'date', 'category'].forEach(axType => {
+                const vals = axType === 'date' ?
+                    ['2020-01-01', '2020-01-02', '2020-01-03'] :
+                    axType === 'category' ? ['a', 'b', 'c'] : [1, 2, 3];
+                const ax = {
+                    type: axType,
+                    tickmode: 'array',
+                    tickvals: vals,
+                    range: axType === 'log' ? [0, 1] :
+                        axType === 'category' ? [-0.5, 2.5] : [vals[0], vals[2]],
+                    tickprefix: '<',
+                    ticksuffix: '>',
+                    showtickprefix: 'all',
+                    showticksuffix: 'all',
+                    nticks: 10
+                };
+                if(axType === 'category') {
+                    ax._categories = vals;
+                    ax._categoriesMap = {a: 0, b: 1, c: 2};
+                }
+                const bare = mockCalc({...ax, tickprefix: '', ticksuffix: ''});
+                expect(mockCalc(ax)).toEqual(bare.map(text => `<${text}>`), axType);
+                ax.ticktext = ['custom'];
+                expect(mockCalc(ax)).toEqual(['custom', `<${bare[1]}>`, `<${bare[2]}>`], axType);
+                ax.showtickprefix = 'first';
+                ax.showticksuffix = 'last';
+                delete ax.ticktext;
+                expect(mockCalc(ax)).toEqual([`<${bare[0]}`, bare[1], `${bare[2]}>`], axType);
+                ax.showtickprefix = ax.showticksuffix = 'none';
+                expect(mockCalc(ax)).toEqual(bare, axType);
             });
         });
 
@@ -5815,6 +6089,63 @@ describe('Test axes', function() {
                 })
                 .then(done, done.fail);
             });
+
+            it('should merge a holiday rangebreak that overlaps two located breaks', (done) => {
+                const assertBreaks = (msg, exp) => {
+                    const xa = gd._fullLayout.xaxis;
+                    const brks = xa._rangebreaks.map((brk) => [brk.min, brk.max]);
+
+                    for(let i = 1; i < brks.length; i++) {
+                        expect(brks[i][0])
+                            .withContext(`${msg} | break ${i} starts before break ${i - 1} ends`)
+                            .not.toBeLessThan(brks[i - 1][1]);
+                    }
+                    expect(brks).withContext(`${msg} | merged break`).toContain(exp.merged.map(Lib.dateTime2ms));
+                    expect(xa._lBreaks).withContext(`${msg} | total break length`).toBe(exp.lBreaks);
+                    expect(xa._m2).withContext(`${msg} | l2p slope`).toBeGreaterThan(0);
+                };
+                const layout = (range, rangebreaks) => ({xaxis: {range, rangebreaks}});
+
+                // Thanksgiving 2023 is a Thursday. Its break bridges the overnight breaks before and after it.
+                const thanksgivingRange = ['2023-11-20 09:30', '2023-11-24 13:00'];
+                const thanksgiving = [
+                    {pattern: 'day of week', bounds: [6, 1]},
+                    {pattern: 'hour', bounds: [16, 9.5]},
+                    {values: ['2023-11-23']}
+                ];
+                const thanksgivingBreaks = {
+                    merged: ['2023-11-22 16:00', '2023-11-24 09:30'],
+                    lBreaks: 76.5 * ONEHOUR
+                };
+
+                // Christmas 2020 is a Friday. Its break bridges the Thursday overnight break and the weekend break.
+                const christmasRange = ['2020-12-14 09:00', '2020-12-31 15:00'];
+                const christmas = [
+                    {pattern: 'hour', bounds: [15, 9]},
+                    {pattern: 'day of week', bounds: [6, 1]},
+                    {values: ['2020-12-25']}
+                ];
+
+                Plotly.newPlot(gd, [{x: thanksgivingRange}], layout(thanksgivingRange, thanksgiving))
+                    .then(() => {
+                        assertBreaks('Thanksgiving', thanksgivingBreaks);
+
+                        const reversed = thanksgiving.slice().reverse();
+                        return Plotly.react(gd, [{x: thanksgivingRange}], layout(thanksgivingRange, reversed));
+                    })
+                    .then(() => {
+                        assertBreaks('Thanksgiving, reversed rangebreaks', thanksgivingBreaks);
+
+                        return Plotly.react(gd, [{x: christmasRange}], layout(christmasRange, christmas));
+                    })
+                    .then(() => {
+                        assertBreaks('Christmas', {
+                            merged: ['2020-12-24 15:00', '2020-12-28 09:00'],
+                            lBreaks: 336 * ONEHOUR
+                        });
+                    })
+                    .then(done, done.fail);
+            });
         });
 
         describe('during calcTicks', function() {
@@ -6878,6 +7209,55 @@ describe('Test axes', function() {
                 })
                 .then(done, done.fail);
             });
+        });
+
+        [
+            [-1, 1],
+            [-4, 4]
+        ].forEach((ticklabelindex) => {
+            it(`with *ticklabelindex* ${ticklabelindex}, should label the partial periods at both range ends`, async () => {
+                await Plotly.newPlot(gd, [{ x: ['2017-01-01', '2017-12-31'] }], {
+                    width: 1000,
+                    xaxis: {
+                        range: ['2017-02-05', '2017-09-25'],
+                        dtick: 'M3',
+                        tickformat: '%b',
+                        ticklabelmode: 'period',
+                        ticklabelindex,
+                        minor: { dtick: 'M1' }
+                    }
+                });
+
+                const labels = gd._fullLayout.xaxis._vals.filter((d) => d.text).map((d) => d.text);
+                expect(labels).toEqual(['Feb', 'Mar', 'May', 'Jun', 'Aug', 'Sep']);
+            });
+        });
+
+        it('with *ticklabelindex*, should keep weekly minor ticks on their tick0 when major ticks are monthly', async () => {
+            await Plotly.newPlot(gd, [{ x: ['2017-01-01', '2017-06-30'] }], {
+                width: 1000,
+                xaxis: {
+                    range: ['2017-01-10', '2017-05-31'],
+                    dtick: 'M1',
+                    tickformat: '%b %d',
+                    ticklabelmode: 'period',
+                    ticklabelindex: -1,
+                    minor: { ticks: 'outside', dtick: ONEWEEK, tick0: '2016-07-03' }
+                }
+            });
+
+            const ax = gd._fullLayout.xaxis;
+            const minorTicks = ax._vals.filter((d) => d.minor && !d.noTick);
+            expect(minorTicks.length).toBe(20);
+            minorTicks.forEach((d) => {
+                // 2016-07-03 is a Sunday
+                expect(new Date(d.x).getUTCDay()).withContext(ax.c2d(d.x)).toBe(0);
+            });
+
+            // The last period ends on the hidden major tick of June 1
+            const labels = ax._vals.filter((d) => d.text);
+            expect(labels.map((d) => d.text)).toEqual(['Jan 29', 'Feb 26', 'Mar 26', 'Apr 30', 'May 28']);
+            expect(ax.c2d(labels[4].periodX)).toBe('2017-05-30');
         });
     });
 
@@ -8152,11 +8532,11 @@ describe('more react tests', function() {
 
         Plotly.newPlot(gd, fig1)
         .then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.12, 2]);
 
             return Plotly.react(gd, fig2);
         }).then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.173, 2]);
         }).then(done, done.fail);
     });
 });
@@ -8356,5 +8736,501 @@ describe('test tickmode calculator', function() {
                 _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
             }).then(done, done.fail);
         });
+    });
+
+    describe('sync', function() {
+        it('shows the exponent on a synced overlaying axis with showexponent *first*/*last*', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {y: [0, 6]},
+                    {y: [0, 60000], yaxis: 'y2'}
+                ],
+                layout: {
+                    yaxis2: {
+                        overlaying: 'y',
+                        exponentformat: 'SI',
+                        showexponent: 'last'
+                    }
+                }
+            }).then(function() {
+                var ax = gd._fullLayout.yaxis2;
+                expect(ax.tickmode).toBe('sync');
+
+                var labels = ax._vals
+                    .filter(function(d) { return !d.minor; })
+                    .map(function(d) { return d.text; });
+
+                // the multiplier (e.g. 'k') must still appear on the labelled tick
+                expect(labels.some(function(t) { return /k$/.test(t); }))
+                    .toBe(true, 'expected an SI prefix in: ' + JSON.stringify(labels));
+            }).then(done, done.fail);
+        });
+    });
+});
+
+describe('axis domainpad', () => {
+    let gd;
+
+    beforeEach(() => { gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+
+    // two stacked subplots with a small gap between them - the shape that makes
+    // subplot titles overlap in https://github.com/plotly/plotly.py/issues/5606
+    function twoRows(layoutPatch) {
+        return Lib.extendDeep({
+            width: 800,
+            height: 600,
+            margin: {l: 40, r: 20, t: 20, b: 40},
+            xaxis: {domain: [0, 1], anchor: 'y'},
+            yaxis: {domain: [0, 0.49], anchor: 'x'},
+            xaxis2: {domain: [0, 1], anchor: 'y2'},
+            yaxis2: {domain: [0.51, 1], anchor: 'x2'}
+        }, layoutPatch || {});
+    }
+
+    const twoRowsData = [
+        {y: [1, 2, 3], xaxis: 'x', yaxis: 'y'},
+        {y: [3, 1, 2], xaxis: 'x2', yaxis: 'y2'}
+    ];
+
+    it('should default every side to zero and leave the plot area alone', (done) => {
+        Plotly.newPlot(gd, twoRowsData, twoRows())
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            const ya = gd._fullLayout.yaxis;
+
+            expect(xa.domainpad.left).toBe(0);
+            expect(xa.domainpad.right).toBe(0);
+            expect(ya.domainpad.top).toBe(0);
+            expect(ya.domainpad.bottom).toBe(0);
+
+            // gs.h is 540 here, so the [0, 0.49] band is 264.6px tall
+            expect(ya._length).toBeCloseTo(264.6, 2);
+            expect(ya._offset).toBeCloseTo(295.4, 2);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should only coerce the two sides that point along the axis', (done) => {
+        Plotly.newPlot(gd, twoRowsData, twoRows({
+            xaxis: {domain: [0, 1], anchor: 'y', domainpad: {left: 10, top: 99}},
+            yaxis: {domain: [0, 0.49], anchor: 'x', domainpad: {top: 20, left: 99}}
+        }))
+        .then(() => {
+            // the sides that mean something are kept
+            expect(gd._fullLayout.xaxis.domainpad.left).toBe(10);
+            expect(gd._fullLayout.yaxis.domainpad.top).toBe(20);
+            // the ones that do not are never coerced, so they stay undefined
+            expect(gd._fullLayout.xaxis.domainpad.top).toBeUndefined();
+            expect(gd._fullLayout.yaxis.domainpad.left).toBeUndefined();
+        })
+        .then(done, done.fail);
+    });
+
+    it('should take the padding off the plot area, one side at a time', (done) => {
+        let basicOffset, basicLength;
+
+        Plotly.newPlot(gd, twoRowsData, twoRows())
+        .then(() => {
+            basicOffset = gd._fullLayout.yaxis2._offset;
+            basicLength = gd._fullLayout.yaxis2._length;
+
+            return Plotly.relayout(gd, {'yaxis2.domainpad.top': 30});
+        })
+        .then(() => {
+            const ya2 = gd._fullLayout.yaxis2;
+            // padding the top pushes the plot area down and makes it shorter
+            expect(ya2._offset).toBeCloseTo(basicOffset + 30, 2);
+            expect(ya2._length).toBeCloseTo(basicLength - 30, 2);
+
+            return Plotly.relayout(gd, {'yaxis2.domainpad.top': 0, 'yaxis2.domainpad.bottom': 30});
+        })
+        .then(() => {
+            const ya2 = gd._fullLayout.yaxis2;
+            // padding the bottom leaves the top edge where it was
+            expect(ya2._offset).toBeCloseTo(basicOffset, 2);
+            expect(ya2._length).toBeCloseTo(basicLength - 30, 2);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should pad x axes from the left and the right', (done) => {
+        let basicOffset, basicLength;
+
+        Plotly.newPlot(gd, twoRowsData, twoRows())
+        .then(() => {
+            basicOffset = gd._fullLayout.xaxis._offset;
+            basicLength = gd._fullLayout.xaxis._length;
+
+            return Plotly.relayout(gd, {'xaxis.domainpad.left': 15, 'xaxis.domainpad.right': 25});
+        })
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            expect(xa._offset).toBeCloseTo(basicOffset + 15, 2);
+            expect(xa._length).toBeCloseTo(basicLength - 40, 2);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should reserve the same pixels whatever the figure height is', (done) => {
+        // this is the point of the attribute - a plot fraction cannot do it
+        Plotly.newPlot(gd, twoRowsData, twoRows({
+            yaxis2: {domain: [0.51, 1], anchor: 'x2', domainpad: {top: 28}}
+        }))
+        .then(() => {
+            expect(gd._fullLayout.yaxis2._offset).toBeCloseTo(48, 2);
+            return Plotly.relayout(gd, {height: 300});
+        })
+        .then(() => {
+            expect(gd._fullLayout.yaxis2._offset).toBeCloseTo(48, 2);
+            return Plotly.relayout(gd, {height: 1200});
+        })
+        .then(() => {
+            expect(gd._fullLayout.yaxis2._offset).toBeCloseTo(48, 2);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should scale the padding back rather than run the plot area down to nothing', (done) => {
+        // six rows each asking for 60px inside a 200px tall figure is far more
+        // padding than there is room for. setScale throws on a negative length,
+        // so the padding has to give way instead.
+        const data = [];
+        const layout = {width: 800, height: 200, margin: {l: 40, r: 20, t: 20, b: 40}};
+
+        for(let i = 0; i < 6; i++) {
+            const num = i === 0 ? '' : (i + 1);
+            data.push({y: [1, 2, 3], xaxis: 'x' + num, yaxis: 'y' + num});
+            layout['xaxis' + (i + 1)] = {domain: [0, 1], anchor: 'y' + num};
+            layout['yaxis' + (i + 1)] = {
+                domain: [i / 6 + 0.005, (i + 1) / 6 - 0.005],
+                anchor: 'x' + num,
+                domainpad: {top: 60}
+            };
+        }
+
+        Plotly.newPlot(gd, data, layout)
+        .then(() => {
+            for(let j = 1; j <= 6; j++) {
+                // the first axis is stored as `yaxis`, not `yaxis1`
+                const ya = gd._fullLayout[j === 1 ? 'yaxis' : 'yaxis' + j];
+                expect(ya._length).toBeGreaterThan(0);
+                expect(isFinite(ya._m)).toBe(true);
+            }
+        })
+        .then(done, done.fail);
+    });
+
+    it('should give an overlaying axis the same padding as the axis underneath', (done) => {
+        Plotly.newPlot(gd, [
+            {y: [1, 2, 3]},
+            {y: [4, 5, 6], yaxis: 'y2'}
+        ], {
+            width: 800,
+            height: 600,
+            margin: {l: 40, r: 20, t: 20, b: 40},
+            yaxis: {domain: [0, 1], domainpad: {top: 30}},
+            yaxis2: {overlaying: 'y', side: 'right', domainpad: {top: 5, bottom: 12}}
+        })
+        .then(() => {
+            const ya = gd._fullLayout.yaxis;
+            const ya2 = gd._fullLayout.yaxis2;
+
+            expect(ya._offset).toBeCloseTo(20 + 30, 2);
+            // the two have to end up on exactly the same plot area
+            expect(ya2._offset).toBeCloseTo(ya._offset, 2);
+            expect(ya2._length).toBeCloseTo(ya._length, 2);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should let a domain referenced annotation sit in the space it reserved', (done) => {
+        // this is how a subplot title stops running into the subplot above it
+        Plotly.newPlot(gd, twoRowsData, twoRows({
+            yaxis2: {domain: [0.51, 1], anchor: 'x2', domainpad: {top: 28}},
+            annotations: [{
+                text: 'subplot title',
+                xref: 'x2 domain', x: 0.5,
+                yref: 'y2 domain', y: 1,
+                xanchor: 'center', yanchor: 'bottom',
+                showarrow: false,
+                font: {size: 16}
+            }]
+        }))
+        .then(() => {
+            const ya2 = gd._fullLayout.yaxis2;
+            const annBox = d3Select(gd).select('.annotation').node().getBoundingClientRect();
+            const gdBox = gd.getBoundingClientRect();
+
+            const annTop = annBox.top - gdBox.top;
+            const annBottom = annBox.bottom - gdBox.top;
+
+            // the title ends where the plot area starts ...
+            expect(annBottom).toBeCloseTo(ya2._offset, 0);
+            // ... and fits inside the band we set aside for it
+            expect(annTop).toBeGreaterThan(ya2._offset - 28);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should keep a scaleanchor ratio exact when the padded axis is not the one that shrinks', (done) => {
+        // constrain:'domain' shrinks a domain until the two axes share a scale.
+        // It works in domain fractions, and a fraction still maps straight onto
+        // pixels for any axis without padding, so this case comes out exact.
+        Plotly.newPlot(gd, [{x: [0, 10], y: [0, 10], mode: 'markers'}], {
+            width: 800, height: 600, margin: {l: 40, r: 20, t: 20, b: 40},
+            xaxis: {domain: [0, 1], range: [0, 10], constrain: 'domain'},
+            yaxis: {
+                domain: [0, 1], range: [0, 10], constrain: 'domain',
+                scaleanchor: 'x', scaleratio: 1,
+                domainpad: {top: 60}
+            }
+        })
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            const ya = gd._fullLayout.yaxis;
+            expect(Math.abs(ya._m) / Math.abs(xa._m)).toBeCloseTo(1, 6);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should keep a scaleanchor ratio exact when the domain constraint shrinks the padded axis', (done) => {
+        // The solver shrinks a domain fraction, and it expects the drawn length to change
+        // in the same proportion. domainpad removes a fixed number of pixels from the end,
+        // so only (span - padding) scales. updateDomain must divide only that part,
+        // or the ratio comes out about 2.3% too wide.
+        Plotly.newPlot(gd, [{x: [0, 10], y: [0, 10], mode: 'markers'}], {
+            width: 800, height: 600, margin: {l: 40, r: 20, t: 20, b: 40},
+            xaxis: {
+                domain: [0, 1], range: [0, 10], constrain: 'domain',
+                domainpad: {left: 60}
+            },
+            yaxis: {
+                domain: [0, 1], range: [0, 10], constrain: 'domain',
+                scaleanchor: 'x', scaleratio: 1
+            }
+        })
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            const ya = gd._fullLayout.yaxis;
+            expect(Math.abs(ya._m) / Math.abs(xa._m)).toBeCloseTo(1, 6);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should keep a rangeslider lined up with the padded x axis', (done) => {
+        // the slider maps to the x range, so it has to sit under the plot area,
+        // not under the unpadded domain
+        Plotly.newPlot(gd, [{y: [1, 2, 3]}], {
+            width: 800, height: 500, margin: {l: 40, r: 20, t: 20, b: 40},
+            xaxis: {
+                domain: [0, 1],
+                domainpad: {left: 60, right: 30},
+                rangeslider: {visible: true}
+            },
+            yaxis: {domain: [0, 1]}
+        })
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            expect(xa.rangeslider._width).toBeCloseTo(xa._length, 2);
+
+            const bg = d3Select(gd).select('.rangeslider-bg').node();
+            const bgBox = bg.getBoundingClientRect();
+            const gdBox = gd.getBoundingClientRect();
+
+            expect(bgBox.left - gdBox.left).toBeCloseTo(xa._offset, 0);
+            expect(bgBox.right - gdBox.left).toBeCloseTo(xa._offset + xa._length, 0);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should land in the same place whatever kind of axis it is', (done) => {
+        // domainpad is geometry only, so the axis type and the source of the domain must
+        // not change the result. Calculate the expected offset and length here, and do
+        // not read them back from the axis, so that the test does not repeat setScale.
+        function expected(ax, gs) {
+            const isY = ax._id.charAt(0) === 'y';
+            const pad = ax.domainpad || {};
+            const band = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+            let p0 = (isY ? pad.top : pad.left) || 0;
+            let p1 = (isY ? pad.bottom : pad.right) || 0;
+
+            // same backing off the clamp does when the pads do not fit
+            const total = p0 + p1;
+            const maxTotal = Math.max(0, band - 2);
+            if(total > maxTotal) {
+                const k = maxTotal / total;
+                p0 *= k;
+                p1 *= k;
+            }
+
+            return {
+                offset: (isY ? gs.t + (1 - ax.domain[1]) * gs.h : gs.l + ax.domain[0] * gs.w) + p0,
+                length: band - p0 - p1
+            };
+        }
+
+        function check(label) {
+            const fl = gd._fullLayout;
+            const gs = fl._size;
+
+            Object.keys(fl).forEach((key) => {
+                if(!/^[xy]axis[0-9]*$/.test(key)) return;
+                const ax = fl[key];
+                if(ax._offset === undefined) return;
+
+                const want = expected(ax, gs);
+                expect(ax._offset).withContext(label + ' ' + key + ' offset').toBeCloseTo(want.offset, 2);
+                expect(ax._length).withContext(label + ' ' + key + ' length').toBeCloseTo(want.length, 2);
+                expect(ax._length).withContext(label + ' ' + key + ' length sign').toBeGreaterThan(0);
+                expect(isFinite(ax._m)).withContext(label + ' ' + key + ' slope').toBe(true);
+            });
+
+            // and the subplot background has to sit exactly on its axes
+            for(const id in fl._plots) {
+                const sp = fl._plots[id];
+                if(!sp.bg) continue;
+                const node = sp.bg.node();
+                expect(+node.getAttribute('x')).withContext(label + ' bg x').toBeCloseTo(sp.xaxis._offset - gs.p, 1);
+                expect(+node.getAttribute('y')).withContext(label + ' bg y').toBeCloseTo(sp.yaxis._offset - gs.p, 1);
+                expect(+node.getAttribute('width')).withContext(label + ' bg w').toBeCloseTo(sp.xaxis._length + 2 * gs.p, 1);
+                expect(+node.getAttribute('height')).withContext(label + ' bg h').toBeCloseTo(sp.yaxis._length + 2 * gs.p, 1);
+            }
+        }
+
+        const base = {width: 800, height: 600, margin: {l: 50, r: 25, t: 25, b: 45}};
+
+        function plot(patch) {
+            return Plotly.newPlot(gd, patch.data, Lib.extendDeep({}, base, patch.layout));
+        }
+
+        plot({
+            data: [{y: [1, 10, 100]}],
+            layout: {
+                yaxis: {type: 'log', domain: [0, 1], domainpad: {top: 30, bottom: 15}},
+                xaxis: {domain: [0, 1], domainpad: {left: 20}}
+            }
+        })
+        .then(() => {
+            check('log');
+            return plot({
+                data: [{x: ['2020-01-01', '2020-06-01', '2021-01-01'], y: [1, 2, 3]}],
+                layout: {
+                    xaxis: {domain: [0, 1], domainpad: {left: 35, right: 15}},
+                    yaxis: {domain: [0, 1], autorange: 'reversed', domainpad: {top: 22}}
+                }
+            });
+        })
+        .then(() => {
+            check('date and reversed');
+            return plot({
+                data: [{y: [1, 2, 3]}, {y: [3, 2, 1], xaxis: 'x2', yaxis: 'y2'}],
+                layout: {
+                    xaxis: {domain: [0, 1], anchor: 'y'},
+                    yaxis: {domain: [0, 1], anchor: 'x', domainpad: {top: 24}},
+                    xaxis2: {domain: [0.6, 0.95], anchor: 'y2', domainpad: {left: 10, right: 10}},
+                    yaxis2: {domain: [0.6, 0.95], anchor: 'x2', domainpad: {top: 12, bottom: 6}}
+                }
+            });
+        })
+        .then(() => {
+            check('inset');
+            return plot({
+                data: [
+                    {y: [1, 2, 3]},
+                    {y: [2, 1, 3], xaxis: 'x2', yaxis: 'y2'},
+                    {y: [3, 1, 2], xaxis: 'x3', yaxis: 'y3'},
+                    {y: [1, 3, 2], xaxis: 'x4', yaxis: 'y4'}
+                ],
+                layout: {
+                    grid: {rows: 2, columns: 2, pattern: 'independent'},
+                    yaxis: {domainpad: {top: 20}},
+                    yaxis2: {domainpad: {top: 20}},
+                    yaxis3: {domainpad: {top: 20}},
+                    yaxis4: {domainpad: {top: 20}}
+                }
+            });
+        })
+        .then(() => {
+            check('layout.grid');
+            // pads far bigger than the band they sit in
+            return plot({
+                data: [{y: [1, 2, 3]}],
+                layout: {
+                    xaxis: {domain: [0, 0.05], domainpad: {left: 400, right: 400}},
+                    yaxis: {domain: [0, 0.05], domainpad: {top: 400, bottom: 400}}
+                }
+            });
+        })
+        .then(() => {
+            check('pad bigger than the band');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should leave every number exactly as it was when no padding is set', (done) => {
+        // At its default, the padding must have no effect at all. A rebuild of the plot rect
+        // from _offset and _length moves webgl output by a fraction of a pixel,
+        // and that is enough to move rasterized markers and fail an image baseline.
+        // Thus compare with ===, not with toBeCloseTo.
+        Plotly.newPlot(gd, [
+            {y: [1, 2, 3]},
+            {y: [2, 1, 3], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            width: 600, height: 500, margin: {l: 80, r: 80, t: 100, b: 80},
+            xaxis: {domain: [0, 0.3103448275862069], anchor: 'y'},
+            yaxis: {domain: [0.6896551724137931, 1], anchor: 'x'},
+            xaxis2: {domain: [0.3448275862068966, 0.6551724137931034], anchor: 'y2'},
+            yaxis2: {domain: [0, 0.3103448275862069], anchor: 'x2'}
+        })
+        .then(() => {
+            const fl = gd._fullLayout;
+            const gs = fl._size;
+
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach((name) => {
+                const ax = fl[name];
+                const isY = name.charAt(0) === 'y';
+                const wantOffset = isY ?
+                    gs.t + (1 - ax.domain[1]) * gs.h :
+                    gs.l + ax.domain[0] * gs.w;
+                const wantLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+
+                expect(ax._offset).withContext(name + ' offset').toBe(wantOffset);
+                expect(ax._length).withContext(name + ' length').toBe(wantLength);
+                expect(ax._padStart).withContext(name + ' padStart').toBe(0);
+                expect(ax._padEnd).withContext(name + ' padEnd').toBe(0);
+            });
+        })
+        .then(done, done.fail);
+    });
+
+    it('should not drift when the axis gets rescaled again and again', (done) => {
+        // setScale runs several times per draw, so the padding has to be read
+        // fresh each time rather than piled onto the previous result
+        function offsetAndLength() {
+            const ya2 = gd._fullLayout.yaxis2;
+            return [ya2._offset, ya2._length];
+        }
+        let first;
+
+        Plotly.newPlot(gd, twoRowsData, twoRows({
+            yaxis2: {domain: [0.51, 1], anchor: 'x2', domainpad: {top: 28}}
+        }))
+        .then(() => {
+            first = offsetAndLength();
+            return Plotly.relayout(gd, {'yaxis2.range': [0, 5]});
+        })
+        .then(() => {
+            expect(offsetAndLength()).toBeCloseToArray(first, 2);
+            return Plotly.relayout(gd, {'yaxis2.autorange': true});
+        })
+        .then(() => {
+            expect(offsetAndLength()).toBeCloseToArray(first, 2);
+            return Plotly.restyle(gd, {y: [[5, 1, 9]]}, [1]);
+        })
+        .then(() => {
+            expect(offsetAndLength()).toBeCloseToArray(first, 2);
+        })
+        .then(done, done.fail);
     });
 });

@@ -19,7 +19,7 @@ var attrs = (module.exports = overrideAll(
             flags: [],
             arrayOk: false,
             description: [
-                'Determines which trace information appear on hover.',
+                'Determines what trace information appears on hover.',
                 'If `none` or `skip` are set, no information is displayed upon hovering.',
                 'But, if `none` is set, click and hover events are still fired.',
                 'Note that this attribute is superseded by `node.hoverinfo` and `node.hoverinfo`',
@@ -33,7 +33,23 @@ var attrs = (module.exports = overrideAll(
             valType: 'enumerated',
             values: ['v', 'h'],
             dflt: 'h',
-            description: 'Sets the orientation of the Sankey diagram.'
+            description: [
+                'Sets the orientation of the Sankey diagram.',
+                'With `h` (the default), the flow runs horizontally.',
+                'With `v`, the flow runs vertically.',
+                'Use `direction` to control which side the sources are placed on.'
+            ].join(' ')
+        },
+
+        direction: {
+            valType: 'enumerated',
+            values: ['forward', 'reversed'],
+            dflt: 'forward',
+            description: [
+                'Sets the direction of the flow along the `orientation` axis.',
+                'With `forward` (the default), sources are on the left (horizontal) or top (vertical).',
+                'With `reversed`, sources are on the right (horizontal) or bottom (vertical).',
+            ].join(' ')
         },
 
         valueformat: {
@@ -94,12 +110,22 @@ var attrs = (module.exports = overrideAll(
             x: {
                 valType: 'data_array',
                 dflt: [],
-                description: 'The normalized horizontal position of the node.'
+                description: [
+                    'The normalized position of the node center along the flow axis, measured from the source end.',
+                    'For `orientation` *h* the flow axis is horizontal.',
+                    'For `orientation` *v* the flow axis is vertical.',
+                    'With `direction` *reversed* the source end is the right or bottom edge.'
+                ].join(' ')
             },
             y: {
                 valType: 'data_array',
                 dflt: [],
-                description: 'The normalized vertical position of the node.'
+                description: [
+                    'The normalized position of the node center across the flow axis.',
+                    'For `orientation` *h* the value counts down from the top edge.',
+                    'For `orientation` *v* the value counts from the left edge.',
+                    'The value does not depend on `direction`.'
+                ].join(' ')
             },
             color: {
                 valType: 'color',
@@ -150,7 +176,7 @@ var attrs = (module.exports = overrideAll(
                 values: ['all', 'none', 'skip'],
                 dflt: 'all',
                 description: [
-                    'Determines which trace information appear when hovering nodes.',
+                    'Determines what trace information appears when hovering nodes.',
                     'If `none` or `skip` are set, no information is displayed upon hovering.',
                     'But, if `none` is set, click and hover events are still fired.'
                 ].join(' ')
@@ -169,6 +195,15 @@ var attrs = (module.exports = overrideAll(
                 values: ['justify', 'left', 'right', 'center'],
                 dflt: 'justify',
                 description: 'Sets the alignment method used to position the nodes along the horizontal axis.'
+            },
+            sort: {
+                valType: 'enumerated',
+                values: ['auto', 'input'],
+                dflt: 'auto',
+                description: [
+                    'For `auto` (the default), the vertical order of nodes will be determined automatically by the layout.',
+                    'For `input`, the vertical order of nodes is kept the same as the order in the input array.'
+                ].join(' ')
             },
             description: 'The nodes of the Sankey plot.'
         },
@@ -242,7 +277,7 @@ var attrs = (module.exports = overrideAll(
                 values: ['all', 'none', 'skip'],
                 dflt: 'all',
                 description: [
-                    'Determines which trace information appear when hovering links.',
+                    'Determines what trace information appears when hovering links.',
                     'If `none` or `skip` are set, no information is displayed upon hovering.',
                     'But, if `none` is set, click and hover events are still fired.'
                 ].join(' ')
@@ -283,6 +318,15 @@ var attrs = (module.exports = overrideAll(
                     ]
                 })
             }),
+            sort: {
+                valType: 'enumerated',
+                values: ['auto', 'input'],
+                dflt: 'auto',
+                description: [
+                    'For `auto` (the default), the order of links attached to each node is determined automatically by the layout.',
+                    'For `input`, the order of links at each node is kept the same as the order in the input array.'
+                ].join(' ')
+            },
             description: 'The links of the Sankey plot.'
         }
     },

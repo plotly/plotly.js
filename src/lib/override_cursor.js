@@ -19,7 +19,7 @@ module.exports = function overrideCursor(el3, csr) {
             for(var i = 0; i < classes.length; i++) {
                 var cls = classes[i];
                 if(cls.indexOf('cursor-') === 0) {
-                    el3.attr(STASHATTR, cls.substr(7))
+                    el3.attr(STASHATTR, cls.slice(7))
                         .classed(cls, false);
                 }
             }

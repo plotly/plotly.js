@@ -41,9 +41,12 @@ module.exports = {
         editType: 'plot',
         arrayOk: false,
         description: [
-            'Determines which trace information appear on the graph.',
+            'Determines what trace information appears on the graph.',
             'In the case of having multiple funnels, percentages & totals',
-            'are computed separately (per trace).'
+            'are computed separately (per trace).',
+            'Flags are rendered in a fixed order; use `texttemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
         ].join(' ')
     },
     // TODO: incorporate `label` and `value` in the eventData

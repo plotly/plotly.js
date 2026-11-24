@@ -3,8 +3,6 @@
     {
       "uid": "ab6939",
       "yaxis": "y",
-      "ysrc": "jackp:17616:013c39",
-      "xsrc": "jackp:17616:7ad609",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -153,8 +151,6 @@
     {
       "uid": "f17ffc",
       "yaxis": "y",
-      "ysrc": "jackp:17616:ee32d5",
-      "xsrc": "jackp:17616:0d67c1",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -335,8 +331,6 @@
     {
       "uid": "dace31",
       "yaxis": "y",
-      "ysrc": "jackp:17616:3908ce",
-      "xsrc": "jackp:17616:45a03c",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -469,8 +463,6 @@
     {
       "uid": "c6e1cb",
       "yaxis": "y",
-      "ysrc": "jackp:17616:1e013b",
-      "xsrc": "jackp:17616:4b5447",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -581,8 +573,6 @@
     {
       "uid": "c62c21",
       "yaxis": "y",
-      "ysrc": "jackp:17616:479c89",
-      "xsrc": "jackp:17616:548eee",
       "marker": {
         "color": "rgb(148, 103, 189)",
         "line": {
@@ -605,8 +595,6 @@
     {
       "uid": "08893d",
       "yaxis": "y2",
-      "ysrc": "jackp:17616:36d993",
-      "xsrc": "jackp:17616:6d7fe8",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -745,8 +733,6 @@
     {
       "uid": "fa9571",
       "yaxis": "y2",
-      "ysrc": "jackp:17616:89729a",
-      "xsrc": "jackp:17616:512573",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -895,8 +881,6 @@
     {
       "uid": "7677a5",
       "yaxis": "y2",
-      "ysrc": "jackp:17616:567114",
-      "xsrc": "jackp:17616:2bf765",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -1017,8 +1001,6 @@
     {
       "uid": "59b4c9",
       "yaxis": "y2",
-      "ysrc": "jackp:17616:42cadc",
-      "xsrc": "jackp:17616:1ea406",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -1125,8 +1107,6 @@
     {
       "uid": "524443",
       "yaxis": "y2",
-      "ysrc": "jackp:17616:b896d3",
-      "xsrc": "jackp:17616:0f5f52",
       "marker": {
         "color": "rgb(148, 103, 189)",
         "line": {
@@ -1150,8 +1130,6 @@
     {
       "uid": "0481fb",
       "yaxis": "y3",
-      "ysrc": "jackp:17616:474ec3",
-      "xsrc": "jackp:17616:36d4e6",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -1276,8 +1254,6 @@
     {
       "uid": "ea480c",
       "yaxis": "y3",
-      "ysrc": "jackp:17616:d4eb68",
-      "xsrc": "jackp:17616:856c9d",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -1412,8 +1388,6 @@
     {
       "uid": "b16b7f",
       "yaxis": "y3",
-      "ysrc": "jackp:17616:6e5c39",
-      "xsrc": "jackp:17616:f6b328",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -1533,8 +1507,6 @@
     {
       "uid": "c6d9fa",
       "yaxis": "y3",
-      "ysrc": "jackp:17616:b8c075",
-      "xsrc": "jackp:17616:e7d470",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -1649,8 +1621,6 @@
     {
       "uid": "c631a8",
       "yaxis": "y3",
-      "ysrc": "jackp:17616:63bc1a",
-      "xsrc": "jackp:17616:106531",
       "marker": {
         "color": "rgb(148, 103, 189)",
         "line": {
@@ -1677,8 +1647,6 @@
     {
       "uid": "b906f7",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:292289",
-      "xsrc": "jackp:17616:878a2c",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -1817,8 +1785,6 @@
     {
       "uid": "d2a84e",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:c068e9",
-      "xsrc": "jackp:17616:0d9a13",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -1977,8 +1943,6 @@
     {
       "uid": "732989",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:262a53",
-      "xsrc": "jackp:17616:30666d",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -2101,8 +2065,6 @@
     {
       "uid": "6a8130",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:cecf5b",
-      "xsrc": "jackp:17616:8d8322",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -2150,8 +2112,6 @@
       "showlegend": false,
       "uid": "29557f",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:1f8d2e",
-      "xsrc": "jackp:17616:1dd020",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -2169,8 +2129,6 @@
       "showlegend": false,
       "uid": "3e367a",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:1f8d2e",
-      "xsrc": "jackp:17616:1dd020",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -2188,8 +2146,6 @@
       "showlegend": false,
       "uid": "337db2",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:1f8d2e",
-      "xsrc": "jackp:17616:1dd020",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -2207,8 +2163,6 @@
       "showlegend": false,
       "uid": "daacfd",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:1f8d2e",
-      "xsrc": "jackp:17616:1dd020",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -2226,8 +2180,6 @@
       "showlegend": false,
       "uid": "ec7e38",
       "yaxis": "y4",
-      "ysrc": "jackp:17616:1f8d2e",
-      "xsrc": "jackp:17616:1dd020",
       "marker": {
         "color": "rgb(148, 103, 189)",
         "line": {
@@ -2244,8 +2196,6 @@
     {
       "uid": "4c0c61",
       "yaxis": "y5",
-      "ysrc": "jackp:17616:e2020b",
-      "xsrc": "jackp:17616:097e51",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -2382,8 +2332,6 @@
     {
       "uid": "0224d9",
       "yaxis": "y5",
-      "ysrc": "jackp:17616:7a9127",
-      "xsrc": "jackp:17616:0baf91",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -2542,8 +2490,6 @@
     {
       "uid": "631b1f",
       "yaxis": "y5",
-      "ysrc": "jackp:17616:8e2b9c",
-      "xsrc": "jackp:17616:87a56a",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -2674,8 +2620,6 @@
     {
       "uid": "92020c",
       "yaxis": "y5",
-      "ysrc": "jackp:17616:d23bb6",
-      "xsrc": "jackp:17616:b1d52c",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -2788,8 +2732,6 @@
     {
       "uid": "537fed",
       "yaxis": "y5",
-      "ysrc": "jackp:17616:3c7520",
-      "xsrc": "jackp:17616:b91412",
       "marker": {
         "color": "rgb(148, 103, 189)",
         "line": {
@@ -2818,8 +2760,6 @@
     {
       "uid": "f44104",
       "yaxis": "y6",
-      "ysrc": "jackp:17616:3c2a0b",
-      "xsrc": "jackp:17616:19613b",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -2958,8 +2898,6 @@
     {
       "uid": "8fb1ff",
       "yaxis": "y6",
-      "ysrc": "jackp:17616:aca112",
-      "xsrc": "jackp:17616:1f9da8",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -3124,8 +3062,6 @@
     {
       "uid": "e676c7",
       "yaxis": "y6",
-      "ysrc": "jackp:17616:24335b",
-      "xsrc": "jackp:17616:2f0d1f",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -3258,8 +3194,6 @@
     {
       "uid": "0df67e",
       "yaxis": "y6",
-      "ysrc": "jackp:17616:ab87d8",
-      "xsrc": "jackp:17616:5cf5f8",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -3376,8 +3310,6 @@
     {
       "uid": "182eac",
       "yaxis": "y6",
-      "ysrc": "jackp:17616:601f7d",
-      "xsrc": "jackp:17616:12eb26",
       "marker": {
         "color": "rgb(148, 103, 189)",
         "line": {
@@ -3404,8 +3336,6 @@
     {
       "uid": "376ffd",
       "yaxis": "y7",
-      "ysrc": "jackp:17616:375858",
-      "xsrc": "jackp:17616:725e8e",
       "marker": {
         "color": "rgb(31, 119, 180)",
         "line": {
@@ -3516,8 +3446,6 @@
     {
       "uid": "5d7bed",
       "yaxis": "y7",
-      "ysrc": "jackp:17616:a2b0f6",
-      "xsrc": "jackp:17616:9cbb59",
       "marker": {
         "color": "rgb(255, 127, 14)",
         "line": {
@@ -3630,8 +3558,6 @@
     {
       "uid": "1b9a1f",
       "yaxis": "y7",
-      "ysrc": "jackp:17616:93c145",
-      "xsrc": "jackp:17616:4bf754",
       "marker": {
         "color": "rgb(44, 160, 44)",
         "line": {
@@ -3742,8 +3668,6 @@
     {
       "uid": "26c716",
       "yaxis": "y7",
-      "ysrc": "jackp:17616:ec6fcf",
-      "xsrc": "jackp:17616:6fd863",
       "marker": {
         "color": "rgb(214, 39, 40)",
         "line": {
@@ -3850,8 +3774,6 @@
     {
       "uid": "db52b5",
       "yaxis": "y7",
-      "ysrc": "jackp:17616:e406b3",
-      "xsrc": "jackp:17616:1f1b53",
       "marker": {
         "color": "rgb(148, 103, 189)",
         "line": {

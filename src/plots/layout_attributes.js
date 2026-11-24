@@ -318,17 +318,6 @@ module.exports = {
             'other locales may alter this default.'
         ].join(' ')
     },
-    hidesources: {
-        valType: 'boolean',
-        dflt: false,
-        editType: 'plot',
-        description: [
-            'Determines whether or not a text link citing the data source is',
-            'placed at the bottom-right cored of the figure.',
-            'Has only an effect only on graphs that have been generated via',
-            'forked graphs from the Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise).'
-        ].join(' ')
-    },
     showlegend: {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object

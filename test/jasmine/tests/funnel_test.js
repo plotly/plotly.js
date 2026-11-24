@@ -1271,6 +1271,7 @@ describe('A funnel plot', function() {
         textinfo: 'value+percent initial+percent previous+percent total',
     }], 'text.bartext', [
       ['txt: %{value}', ['txt: 3', 'txt: 2', 'txt: 1']],
+      ['%{percentTotal}', ['50%', '33%', '17%']],
       ['%{value}-%{percentInitial}-%{percentPrevious}-%{percentTotal:0.3f}', ['3-100%-100%-0.500', '2-67%-67%-0.333', '1-33%-50%-0.167']]
     ]);
 });
@@ -1664,7 +1665,7 @@ describe('funnel uniformtext', function() {
                 if(pos0 !== -1) {
                     pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0, pos1));
+                    scale = +(transform.slice(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);

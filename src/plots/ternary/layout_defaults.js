@@ -65,6 +65,10 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
         return Lib.coerce(containerIn, containerOut, axAttrs, attr, dflt);
     }
 
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(containerIn, containerOut, axAttrs, attr, dflt);
+    }
+
     coerce('uirevision', ternaryLayoutOut.uirevision);
 
     containerOut.type = 'linear'; // no other types allowed for ternary
@@ -122,4 +126,19 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
 
     coerce('hoverformat');
     coerce('layer');
+
+    var spikecolor = coerce2('spikecolor');
+    var spikethickness = coerce2('spikethickness');
+    var spikedash = coerce2('spikedash');
+    var spikemode = coerce2('spikemode');
+    var spikesnap = coerce2('spikesnap');
+    var showSpikes = coerce('showspikes', !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
+
+    if(!showSpikes) {
+        delete containerOut.spikecolor;
+        delete containerOut.spikethickness;
+        delete containerOut.spikedash;
+        delete containerOut.spikemode;
+        delete containerOut.spikesnap;
+    }
 }

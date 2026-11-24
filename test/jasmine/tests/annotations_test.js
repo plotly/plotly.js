@@ -1289,7 +1289,7 @@ describe('annotation effects', function() {
             // AJ loosened this test - expected '2017-02-02 06:36:46.8112'
             // but when I run it I get '2017-02-02 06:28:39.9586'.
             // must be different fonts altering autoranging
-            expect(gd._fullLayout.annotations[0].y.substr(0, 10)).toBe('2017-02-02');
+            expect(gd._fullLayout.annotations[0].y.slice(0, 10)).toBe('2017-02-02');
         })
         .then(done, done.fail);
     });
@@ -1440,11 +1440,11 @@ describe('annotation effects', function() {
         .then(function() {
             expect(gd._fullLayout.annotations[0].hoverlabel).toEqual({
                 bgcolor: '#444',
-                bordercolor: '#fff',
+                bordercolor: 'rgb(255, 255, 255)',
                 font: {
                     family: 'Arial, sans-serif',
                     size: 13,
-                    color: '#fff',
+                    color: 'rgb(255, 255, 255)',
                     weight: 'normal',
                     style: 'normal',
                     variant: 'normal',

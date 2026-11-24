@@ -78,6 +78,19 @@ module.exports = {
             'If false, hover interactions are disabled.'
         ].join(' ')
     },
+    hoversort: {
+        valType: 'enumerated',
+        values: ['trace', 'value descending', 'value ascending'],
+        dflt: 'trace',
+        editType: 'none',
+        description: [
+            'Determines the order of items shown in unified hover labels.',
+            'If *trace*, items are sorted by trace index.',
+            'If *value descending*, items are sorted by value from largest to smallest.',
+            'If *value ascending*, items are sorted by value from smallest to largest.',
+            'Only applies when `hovermode` is *x unified* or *y unified*.'
+        ].join(' ')
+    },
     hoversubplots: {
         valType: 'enumerated',
         values: ['single', 'overlaying', 'axis'],
@@ -91,6 +104,33 @@ module.exports = {
             'when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.',
         ].join(' ')
     },
+    hoveranywhere: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'none',
+        description: [
+            'If true, `plotly_hover` events will fire for any cursor position',
+            'within the plot area, not just over traces.',
+            'When the cursor is not over a trace, the event will have an empty `points` array',
+            'but will include `xvals` and `yvals` with cursor coordinates in data space,',
+            'and `xPixel` and `yPixel` with cursor coordinates in pixels,',
+            'relative to the top-left corner of the graph div.',
+            'A `plotly_unhover` event fires when the cursor leaves the plot area.'
+        ].join(' ')
+    },
+    clickanywhere: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'none',
+        description: [
+            'If true, `plotly_click` events will fire for any click position',
+            'within the plot area, not just over traces.',
+            'When clicking where there is no trace data, the event will have an empty `points` array',
+            'but will include `xvals` and `yvals` with click coordinates in data space,',
+            'and `xPixel` and `yPixel` with click coordinates in pixels,',
+            'relative to the top-left corner of the graph div.'
+        ].join(' ')
+    },
     hoverdistance: {
         valType: 'integer',
         min: -1,
@@ -102,7 +142,10 @@ module.exports = {
             'This is only a real distance for hovering on point-like objects,',
             'like scatter points. For area-like objects (bars, scatter fills, etc)',
             'hovering is on inside the area and off outside, but these objects',
-            'will not supersede hover on point-like objects in case of conflict.'
+            'will not supersede hover on point-like objects in case of conflict.',
+            'For hovermodes *x*, *y*, *x unified* and *y unified*',
+            'on a category axis, only points that fall in the hovered category',
+            'are shown in the hover label, regardless of this distance.'
         ].join(' ')
     },
     spikedistance: {
@@ -148,7 +191,7 @@ module.exports = {
             editType: 'none',
             description: [
                 'Sets the horizontal alignment of the text content within hover label box.',
-                'Has an effect only if the hover label text spans more two or more lines'
+                'Has an effect only if the hover label text spans two or more lines'
             ].join(' ')
         },
         namelength: {

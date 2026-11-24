@@ -1,12 +1,12 @@
 # Alternative ways to require or build plotly.js
-Depending on your needs you may require/import one of [the distributed plotly.js packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) or [a plotly.js/lib index file](https://github.com/plotly/plotly.js/tree/master/lib) and integrate it into your application.
+Depending on your needs you may require/import one of [the distributed plotly.js packages](https://github.com/plotly/plotly.js/blob/main/dist/README.md) or [a plotly.js/lib index file](https://github.com/plotly/plotly.js/tree/main/lib) and integrate it into your application.
 
 The sections below provide additional info in respect to alternative building frameworks.
 
 ---
 ## Angular CLI
 
-Since Angular uses webpack under the hood and doesn't allow easily to change it's webpack configuration, there is some work needed using a `custom-webpack` builder to get things going.
+Since Angular uses webpack under the hood and doesn't easily allow changing its webpack configuration, there is some work needed using a `custom-webpack` builder to get things going.
 
 1. Install [`@angular-builders/custom-webpack`](https://www.npmjs.com/package/@angular-builders/custom-webpack) and [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader)
 2. Create a new `extra-webpack.config.js` beside `angular.json`.
@@ -28,7 +28,7 @@ module.exports = {
 };
 ```
 
-3. Change the builder in `angular.json` to `"@angular-builders/custom-webpack:browser` and configure it correctly to use our new webpack config.
+3. Change the builder in `angular.json` to `"@angular-builders/custom-webpack:browser"` and configure it correctly to use our new webpack config.
 
 > angular.json
 ```json

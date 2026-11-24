@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { localDevConfig } from '../esbuild-config.js';
 
+import { generateSchemaTypes } from './generate_schema_types.mjs';
 import constants from './util/constants.js';
 import plotlyNode from './util/plotly_node.mjs';
 
@@ -42,8 +43,8 @@ function makeSchema(plotlyPath, schemaPath) {
     const Plotly = plotlyNode(plotlyPath);
     const obj = Plotly.PlotSchema.get();
     const sortedObj = sortObject(obj);
-    const plotSchemaRaw = JSON.stringify(obj, null, 1);
-    const plotSchemaStr = JSON.stringify(sortedObj, null, 1);
+    const plotSchemaRaw = JSON.stringify(obj, null, 2);
+    const plotSchemaStr = JSON.stringify(sortedObj, null, 2);
 
     fs.writeFileSync(schemaPath, plotSchemaStr);
 
@@ -70,3 +71,9 @@ await build(localDevConfig);
 
 // output plot-schema JSON
 makeSchema(pathToPlotly, pathToSchema);
+
+// generate TypeScript types from the schema
+// and write to `src/types/generated/schema.d.ts`
+const schema = JSON.parse(fs.readFileSync(pathToSchema, 'utf-8'));
+const pathToGeneratedTypes = path.join(constants.pathToSrc, 'types/generated/schema.d.ts');
+generateSchemaTypes(schema, pathToGeneratedTypes);

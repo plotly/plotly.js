@@ -140,7 +140,6 @@
     "dragmode": "zoom",
     "hovermode": "x",
     "separators": ".,",
-    "hidesources": false,
     "showlegend": false
   }
 }

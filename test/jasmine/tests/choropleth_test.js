@@ -177,6 +177,10 @@ describe('Test choropleth hover:', function() {
             fontFamily: 'Arial'
         };
 
+        // Tests here were written for `fitbounds: false`, so set that explicitly
+        fig.layout ||= {};
+        fig.layout.geo = Lib.extendDeep({}, fig.layout.geo, { fitbounds: false });
+
         return Plotly.newPlot(gd, fig)
         .then(function() {
             if(hasCssTransform) {

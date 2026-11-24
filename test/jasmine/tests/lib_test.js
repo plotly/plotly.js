@@ -728,6 +728,49 @@ describe('Test lib.js:', function () {
             expect(computed).toEqual(expected);
         });
         */
+
+        it('does not modify inherited objects or the prototype chain', () => {
+            const payloads = [
+                '{"toString.call": 1}',
+                '{"hasOwnProperty.call": 1}',
+                '{"toString.marker": 1}',
+                '{"constructor[0].x": 1}',
+                '{"constructor.prototype.polluted": 1}',
+                '{"__proto__.polluted": 1}',
+                '{"x.__proto__.polluted": 1}',
+                '{"__proto__": {"polluted": 1}}'
+            ];
+            const targets = [Object.prototype, Object, Object.prototype.toString, Object.prototype.hasOwnProperty];
+            const ownNames = () => targets.map((target) => Object.getOwnPropertyNames(target));
+            const before = ownNames();
+            const originalProcess = window.process;
+            let after;
+            let prototypesKept = true;
+
+            try {
+                [undefined, { versions: {} }].forEach((process) => {
+                    window.process = process;
+                    [Lib.expandObjectPaths, (obj) => Lib.extendDeepNoArrays({}, obj)].forEach((fn) => {
+                        payloads.forEach((payload) => {
+                            const input = JSON.parse(payload);
+                            fn(input);
+                            prototypesKept = prototypesKept && Object.getPrototypeOf(input) === Object.prototype;
+                        });
+                    });
+                });
+                after = ownNames();
+            } finally {
+                window.process = originalProcess;
+                targets.forEach((target, i) => {
+                    Object.getOwnPropertyNames(target)
+                        .filter((name) => !before[i].includes(name))
+                        .forEach((name) => delete target[name]);
+                });
+            }
+
+            expect(after).toEqual(before);
+            expect(prototypesKept).toBe(true);
+        });
     });
 
     describe('coerce', function () {
@@ -1941,6 +1984,61 @@ describe('Test lib.js:', function () {
         });
     });
 
+    describe('slugify', function () {
+        it('lowercases, trims, and hyphenates whitespace', function () {
+            expect(Lib.slugify('  Hello World  ')).toBe('hello-world');
+            expect(Lib.slugify('Multiple   Spaces\tand\ntabs')).toBe('multiple-spaces-and-tabs');
+        });
+
+        it('strips html/pseudo-html tags', function () {
+            expect(Lib.slugify('<b>Revenue</b> by <i>year</i>')).toBe('revenue-by-year');
+        });
+
+        it('removes illegal filename characters', function () {
+            expect(Lib.slugify('a/b\\c:d*e?f"g|h$i%j&k!l@m#n~o.p^q`r\'s,t'))
+                .toBe('abcdefghijklmnopqrst');
+            expect(Lib.slugify('a>b<c)d(e]f[g}h{i')).toBe('abcdefghi');
+            expect(Lib.slugify('a=b+c;d')).toBe('abcd');
+            expect(Lib.slugify('a_b😀c★d©e')).toBe('abcde');
+        });
+
+        it('removes control characters and emoji glue', function () {
+            expect(Lib.slugify('a\x00b\x07c\x1Fd')).toBe('abcd');
+            expect(Lib.slugify('a👨‍👩‍👧b❤️c')).toBe('abc');
+        });
+
+        it('preserves unicode letters (accents, CJK)', function () {
+            expect(Lib.slugify('Café 北京')).toBe('café-北京');
+        });
+
+        it('drops unpaired surrogates so the result is valid UTF-8', function () {
+            expect(Lib.slugify('lone\uD800surrogate')).toBe('lonesurrogate');
+            expect(Lib.slugify('trail\uDC00ing')).toBe('trailing');
+        });
+
+        it('handles null/undefined/empty input', function () {
+            expect(Lib.slugify(undefined)).toBe('');
+            expect(Lib.slugify(null)).toBe('');
+            expect(Lib.slugify('')).toBe('');
+        });
+
+        it('caps length at 60 code points by default', function () {
+            expect(Lib.slugify('a'.repeat(100))).toBe('a'.repeat(60));
+            expect(Lib.slugify('a'.repeat(60)).length).toBe(60);
+            expect(Lib.slugify('short')).toBe('short');
+        });
+
+        it('respects an explicit maxLen and strips a dangling hyphen from the cut', function () {
+            expect(Lib.slugify('hello world foo bar', 11)).toBe('hello-world');
+            expect(Lib.slugify('hello world', 6)).toBe('hello');
+        });
+
+        it('never splits a surrogate pair when capping length', function () {
+            // each CJK char is one code point (a surrogate pair); the cap counts code points
+            expect(Lib.slugify('𠀀𠀀𠀀𠀀𠀀', 3)).toBe('𠀀𠀀𠀀');
+        });
+    });
+
     describe('isPlotDiv', function () {
         it('should work on plain objects', function () {
             expect(Lib.isPlotDiv({})).toBe(false);
@@ -2103,6 +2201,34 @@ describe('Test lib.js:', function () {
             it('with level 0', function () {
                 config.notifyOnLogging = 0;
                 _run([]);
+            });
+        });
+
+        describe('should respect notifier config option', function () {
+            var query = '.notifier-note';
+
+            beforeEach(function (done) {
+                d3SelectAll(query).each(function () {
+                    d3Select(this).select('button').node().click();
+                });
+                setTimeout(done, 1000);
+            });
+
+            it('with true', function () {
+                var gd = { _context: { displayNotifier: true } };
+                Lib.notifier('test message', 'long', gd);
+                expect(d3SelectAll(query).size()).toBe(1);
+            });
+
+            it('with false', function () {
+                var gd = { _context: { displayNotifier: false } };
+                Lib.notifier('test message', 'long', gd);
+                expect(d3SelectAll(query).size()).toBe(0);
+            });
+
+            it('when gd has no _context', function () {
+                Lib.notifier('test message', 'long');
+                expect(d3SelectAll(query).size()).toBe(1);
             });
         });
     });
@@ -2701,8 +2827,9 @@ describe('Test lib.js:', function () {
             for (var i = 0; i < 15; i++) {
                 Lib.hovertemplateString({ fallback: '', template: '%{idontexist}' });
             }
-            // Expect 11 since the suppression warning also calls Lib.warn
-            expect(Lib.warn.calls.count()).toBe(11);
+            // Depending on prior tests, the suppression warning may already be reached once.
+            expect(Lib.warn.calls.count()).toBeGreaterThanOrEqual(10);
+            expect(Lib.warn.calls.count()).toBeLessThanOrEqual(11);
         });
 
         // This test must come after the warning count since it will affect the count
@@ -2845,7 +2972,7 @@ describe('Test lib.js:', function () {
         });
 
         it('puts simple subplots in the right order', function () {
-            ['scene', 'geo', 'ternary', 'mapbox', 'map'].forEach(function (v) {
+            ['scene', 'geo', 'ternary', 'map'].forEach(function (v) {
                 var a = [v + '100', v + '43', v, v + '10', v + '2'];
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);
@@ -3336,12 +3463,6 @@ describe('Queue', function () {
                 expect(gd.undoQueue.queue[0].undo.args[0][1]['title.text']).toEqual(null);
                 expect(gd.undoQueue.queue[0].redo.args[0][1]['title.text']).toEqual('A title');
 
-                return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });
-            })
-            .then(function () {
-                expect(gd.undoQueue.queue[1].undo.args[0][1]).toEqual({ 'transforms[0]': null });
-                expect(gd.undoQueue.queue[1].redo.args[0][1]).toEqual({ 'transforms[0]': { type: 'filter' } });
-
                 return Plotly.relayout(gd, 'updatemenus[0]', { buttons: [] });
             })
             .then(function () {
@@ -3353,12 +3474,6 @@ describe('Queue', function () {
             .then(function () {
                 expect(gd.undoQueue.queue[1].undo.args[0][1]).toEqual({ 'updatemenus[0]': { buttons: [] } });
                 expect(gd.undoQueue.queue[1].redo.args[0][1]).toEqual({ 'updatemenus[0]': null });
-
-                return Plotly.restyle(gd, 'transforms[0]', null);
-            })
-            .then(function () {
-                expect(gd.undoQueue.queue[1].undo.args[0][1]).toEqual({ 'transforms[0]': [{ type: 'filter' }] });
-                expect(gd.undoQueue.queue[1].redo.args[0][1]).toEqual({ 'transforms[0]': null });
             })
             .then(done, done.fail);
     });

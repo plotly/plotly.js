@@ -261,7 +261,7 @@ describe('dates', function() {
             for(var i = -1; i <= 1; i += 0.001) {
                 var tenths = Math.round(i * 10);
                 var base = i < -0.05 ? '1969-12-31 23:59:59.99' : '1970-01-01 00:00:00.00';
-                var expected = (base + String(tenths + 200).substr(1))
+                var expected = (base + String(tenths + 200).slice(1))
                     .replace(/0+$/, '')
                     .replace(/ 00:00:00[\.]$/, '');
                 expect(Lib.ms2DateTime(i)).toBe(expected, i);

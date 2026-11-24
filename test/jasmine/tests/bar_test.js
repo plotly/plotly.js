@@ -33,6 +33,7 @@ var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
 var BAR_TEXT_SELECTOR = '.bars .bartext';
+const checkContrastingText = require('../assets/check_contrasting_text');
 
 describe('Bar.supplyDefaults', function() {
     'use strict';
@@ -312,7 +313,7 @@ describe('Bar.supplyDefaults', function() {
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.marker.pattern.bgcolor).toBe('green');
-        expect(traceOut.marker.pattern.fgcolor).toBe('#fff');
+        expect(traceOut.marker.pattern.fgcolor).toBe('rgb(255, 255, 255)');
         expect(traceOut.marker.pattern.fgopacity).toBe(0.5);
     });
 
@@ -1411,6 +1412,34 @@ describe('A bar plot', function() {
         .then(done, done.fail);
     });
 
+    it('should keep zero-value outside labels on the same side as negative bars', function(done) {
+        var data = [{
+            y: [-10, 0, -30],
+            type: 'bar',
+            text: ['a', 'zero', 'c'],
+            textposition: 'outside'
+        }];
+
+        Plotly.newPlot(gd, data).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsBelowPath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .then(done, done.fail);
+    });
+
     it('should show bar texts (horizontal case)', function(done) {
         var data = [{
             x: [10, -20, 30],
@@ -2170,7 +2199,7 @@ describe('A bar plot', function() {
 
     function getArea(path) {
         var pos = path
-            .substr(1, path.length - 2)
+            .slice(1, path.length - 1)
             .replace('V', ',')
             .replace('H', ',')
             .replace('V', ',')
@@ -3258,7 +3287,7 @@ describe('bar uniformtext', function() {
                 if(pos0 !== -1) {
                     pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0, pos1));
+                    scale = +(transform.slice(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
@@ -3353,3 +3382,15 @@ describe('bar uniformtext', function() {
         .then(done, done.fail);
     });
 });
+
+checkContrastingText(
+    'bar',
+    {
+        y: [3, 2, 1],
+        text: ['A', 'B', 'C'],
+        textposition: 'inside',
+        marker: { color: '#3D9970' }
+    },
+    BAR_TEXT_SELECTOR,
+    '#3D9970'
+);
