@@ -891,6 +891,12 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
     const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
     legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
 
+    // Margins do not expand for a container legend, so keep the legend inside the container
+    if (yref === 'container') {
+        const roomHeight = getContainerRoom(legendObj.y, yanchor) * fullLayout.height;
+        legendObj._maxHeight = Math.max(Math.min(legendObj._maxHeight, roomHeight), 30);
+    }
+
     var toggleRectWidth = 0;
     legendObj._width = 0;
     legendObj._height = 0;
@@ -932,6 +938,13 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
             isRightOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'right') ? gs.r + gs.w : hw) :
             gs.w,
         2 * textGap);
+
+        // The plot-area rules above do not apply to a container legend, so use the room on its anchor side
+        if (legendObj.xref === 'container') {
+            const roomWidth = getContainerRoom(legendObj.x, xanchor) * fullLayout.width;
+            legendObj._maxWidth = Math.max(roomWidth, 2 * textGap);
+        }
+
         var maxItemWidth = 0;
         var combinedItemWidth = 0;
         traces.each(function(d) {
@@ -1148,4 +1161,24 @@ function getYanchor(legendObj) {
     return Lib.isBottomAnchor(legendObj) ? 'bottom' :
         Lib.isMiddleAnchor(legendObj) ? 'middle' :
         'top';
+}
+
+/**
+ * Get the fraction of the container that a legend has room to fill on its anchor side.
+ *
+ * @param pos - Legend `x` or `y` as a fraction of the container
+ * @param anchor - Legend anchor from `getXanchor` or `getYanchor`
+ * @returns The room as a fraction of the container width or height
+ */
+function getContainerRoom(pos, anchor) {
+    switch (anchor) {
+        case 'left':
+        case 'bottom':
+            return 1 - pos;
+        case 'right':
+        case 'top':
+            return pos;
+        default:
+            return 2 * Math.min(pos, 1 - pos);
+    }
 }
