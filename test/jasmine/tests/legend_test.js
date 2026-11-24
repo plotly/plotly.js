@@ -1619,7 +1619,7 @@ describe('legend relayout update', function () {
         }
 
         Plotly.newPlot(gd, fig)
-            .then(_assert('base', [539, 0], [91, 390]))
+            .then(_assert('base', [539, 0], [101, 225]))
             .then(function() { return Plotly.relayout(gd, 'legend.y', 0.6); })
             .then(function() { return Plotly.relayout(gd, 'legend.yanchor', 'bottom'); })
             .then(_assert('after moving legend towards the top edge', [539, 0], [101, 180]))
@@ -1627,6 +1627,25 @@ describe('legend relayout update', function () {
             .then(function() { return Plotly.relayout(gd, 'legend.yanchor', 'top'); })
             .then(_assert('after moving legend towards the bottom edge', [539, 270], [101, 180]))
             .then(done, done.fail);
+    });
+
+    it('should constrain horizontal legend width when xref is container', async () => {
+        const fig = {
+            data: Array.from({ length: 20 }, () => ({ x: [1, 2, 3], y: [1, 2, 3] })),
+            layout: {
+                legend: { orientation: 'h', xref: 'container', yref: 'container', x: 0.5 }
+            }
+        };
+
+        await Plotly.newPlot(gd, fig);
+
+        const { width } = gd._fullLayout;
+        const legend = d3Select('g.legend');
+        const x = Drawing.getTranslate(legend).x;
+        const w = +legend.select('rect.bg').attr('width');
+
+        expect(x).toBeCloseTo(width / 2, 0, 'legend x');
+        expect(x + w).toBeLessThanOrEqual(width, 'fits in x');
     });
 });
 

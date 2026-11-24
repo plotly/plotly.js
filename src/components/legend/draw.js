@@ -865,9 +865,6 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
         legendObj = fullLayout[legendId];
     }
     var gs = fullLayout._size;
-    const plotBottom = gs.b;
-    const plotTop = gs.b + gs.h;
-    const plotHeight = gs.h;
 
     var isVertical = helpers.isVertical(legendObj);
     var isGrouped = helpers.isGrouped(legendObj);
@@ -880,58 +877,25 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
     var endPad = 2 * (bw + itemGap);
 
     var yanchor = getYanchor(legendObj);
-    let isBelowPlotArea, isAbovePlotArea;
+    var isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
+    var isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
 
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    const { orientation, yref, y } = legendObj;
-    let { maxheight, maxwidth } = legendObj;
-    let yPixels;
-    let referenceHeight;
-    let useFullLayoutHeight;
+    const { orientation, yref } = legendObj;
+    let { maxheight } = legendObj;
+    const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v" || yref !== "paper"
+    // Set default maxheight here since it depends on values passed in by user
+    maxheight ||= useFullLayoutHeight ? 0.5 : 1;
+    const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
+    legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
 
-    if (yref === 'paper') {
-        // Calculate pixel value of y position
-        yPixels = (y * plotHeight) + plotBottom;
-        // Check if legend anchor point is below or above plot area
-        isBelowPlotArea = yPixels < plotBottom || (yPixels === plotBottom && yanchor === 'top');
-        isAbovePlotArea = yPixels > plotTop || (yPixels === plotTop && yanchor === 'bottom');
-        useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v";
-        // Use the appropriate reference height
-        referenceHeight = useFullLayoutHeight ? fullLayout.height : plotHeight;
+    // Margins do not expand for a container legend, so keep the legend inside the container
+    if (yref === 'container') {
+        const roomHeight = getContainerRoom(legendObj.y, yanchor) * fullLayout.height;
+        legendObj._maxHeight = Math.max(Math.min(legendObj._maxHeight, roomHeight), 30);
     }
-    else {
-        // Calculate pixel value of y position
-        yPixels = y * fullLayout.height;
-        // Check if legend anchor point is below or above plot area
-        isBelowPlotArea = yPixels < plotBottom || (yPixels === plotBottom && yanchor === 'top');
-        isAbovePlotArea = yPixels > plotTop || (yPixels === plotTop && yanchor === 'bottom');
-        // Use the container height as the reference height
-        useFullLayoutHeight = false;
-        referenceHeight = fullLayout.height;
-    }
-    
-    // Set default maxheight if not provided by user
-    maxheight ||= (useFullLayoutHeight) ? 0.5 : 1;
-    // Convert maxheight to pixels if it's a ratio (≤1), otherwise use as-is
-    if (maxheight <= 1) {
-        maxheight = maxheight * referenceHeight;
-    }
-    
-    // Calculate the maximum available height based on the anchor point
-    let maxAvailableHeight;
-    if (yanchor === 'top') {
-        maxAvailableHeight = yPixels;
-    } else if (yanchor === 'bottom') {
-        maxAvailableHeight = fullLayout.height - yPixels;
-    } else {
-        // If yanchor is 'middle'
-        maxAvailableHeight = 2 * Math.min(yPixels, fullLayout.height - yPixels);
-    }
-
-    maxheight = Math.min(maxheight, maxAvailableHeight);
-    legendObj._maxHeight = Math.max(maxheight, 30);
 
     var toggleRectWidth = 0;
     legendObj._width = 0;
@@ -961,28 +925,24 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
         }
     } else {
         var xanchor = getXanchor(legendObj);
-        if(legendObj.xref === 'paper') {
-            var isLeftOfPlotArea = legendObj.x < 0 || (legendObj.x === 0 && xanchor === 'right');
-            var isRightOfPlotArea = legendObj.x > 1 || (legendObj.x === 1 && xanchor === 'left');
-            var isBeyondPlotAreaY = isAbovePlotArea || isBelowPlotArea;
-            var hw = fullLayout.width / 2;
+        var isLeftOfPlotArea = legendObj.x < 0 || (legendObj.x === 0 && xanchor === 'right');
+        var isRightOfPlotArea = legendObj.x > 1 || (legendObj.x === 1 && xanchor === 'left');
+        var isBeyondPlotAreaY = isAbovePlotArea || isBelowPlotArea;
+        var hw = fullLayout.width / 2;
 
-            // - if placed within x-margins, extend the width of the plot area
-            // - else if below/above plot area and anchored in the margin, extend to opposite margin,
-            // - otherwise give it the maximum potential margin-push value
-            legendObj._maxWidth = Math.max(
-                isLeftOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'left') ? gs.l + gs.w : hw) :
-                isRightOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'right') ? gs.r + gs.w : hw) :
-                gs.w,
-                2 * textGap);
-        } else {
-            if(xanchor === 'right')
-                maxwidth = legendObj.x * fullLayout.width;
-            else if(xanchor === 'left')
-                maxwidth = (1 - legendObj.x) * fullLayout.width;
-            else // if (xanchor === 'center')
-                maxwidth = 2 * Math.min(1 - legendObj.x, legendObj.x) * fullLayout.width;
-            legendObj._maxWidth = Math.max(maxwidth, 2 * textGap);
+        // - if placed within x-margins, extend the width of the plot area
+        // - else if below/above plot area and anchored in the margin, extend to opposite margin,
+        // - otherwise give it the maximum potential margin-push value
+        legendObj._maxWidth = Math.max(
+            isLeftOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'left') ? gs.l + gs.w : hw) :
+            isRightOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'right') ? gs.r + gs.w : hw) :
+            gs.w,
+        2 * textGap);
+
+        // The plot-area rules above do not apply to a container legend, so use the room on its anchor side
+        if (legendObj.xref === 'container') {
+            const roomWidth = getContainerRoom(legendObj.x, xanchor) * fullLayout.width;
+            legendObj._maxWidth = Math.max(roomWidth, 2 * textGap);
         }
 
         var maxItemWidth = 0;
@@ -1201,4 +1161,24 @@ function getYanchor(legendObj) {
     return Lib.isBottomAnchor(legendObj) ? 'bottom' :
         Lib.isMiddleAnchor(legendObj) ? 'middle' :
         'top';
+}
+
+/**
+ * Get the fraction of the container that a legend has room to fill on its anchor side.
+ *
+ * @param pos - Legend `x` or `y` as a fraction of the container
+ * @param anchor - Legend anchor from `getXanchor` or `getYanchor`
+ * @returns The room as a fraction of the container width or height
+ */
+function getContainerRoom(pos, anchor) {
+    switch (anchor) {
+        case 'left':
+        case 'bottom':
+            return 1 - pos;
+        case 'right':
+        case 'top':
+            return pos;
+        default:
+            return 2 * Math.min(pos, 1 - pos);
+    }
 }
