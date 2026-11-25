@@ -1183,8 +1183,8 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('should start the transitions of all bars at the same time', function(done) {
-        // enough bars that drawing them takes more than a millisecond
+    it('should keep stacked bars together during a transition', function(done) {
+        // the bottom trace shrinks to nothing, moving every other bar
         function makeData(v) {
             var data = [];
             for(var i = 0; i < 20; i++) {
@@ -1195,37 +1195,53 @@ describe('Plotly.react transitions:', function() {
             return data;
         }
 
-        // the start time d3 keeps for each bar's pending or running transition
-        function getStartTimes() {
-            var times = [];
-            gd.querySelectorAll('.bars .point path').forEach(function(node) {
-                var lock = node.__transition__ || {};
-                Object.keys(lock).forEach(function(k) {
-                    if(lock[k] && lock[k].time) times.push(lock[k].time);
-                });
+        // bounding boxes of the bars in the first stack, from the bottom up
+        function getBoxes() {
+            var boxes = [];
+            gd.querySelectorAll('.bars').forEach(function(trace) {
+                boxes.push(trace.querySelector('.point path').getBBox());
             });
-            return times;
+            return boxes;
+        }
+
+        var initialHeight;
+        var sawMidTransition = false;
+        var maxGap = 0;
+
+        function sample() {
+            var boxes = getBoxes();
+            var h = boxes[0].height;
+            if(h > 1 && h < initialHeight - 1) sawMidTransition = true;
+
+            for(var i = 0; i + 1 < boxes.length; i++) {
+                var gap = boxes[i].y - (boxes[i + 1].y + boxes[i + 1].height);
+                maxGap = Math.max(maxGap, Math.abs(gap));
+            }
         }
 
         // fixed axis ranges, so that only the traces are transitioned
         var layout = {
             barmode: 'stack',
             xaxis: {range: [-1, 20]},
-            yaxis: {range: [0, 25]},
+            yaxis: {range: [0, 40]},
             transition: {duration: 300}
         };
         var transitionPromise;
 
-        Plotly.newPlot(gd, makeData(1), layout)
+        Plotly.newPlot(gd, makeData(20), layout)
         .then(function() {
-            transitionPromise = Plotly.react(gd, makeData(2), layout);
+            initialHeight = getBoxes()[0].height;
+            transitionPromise = Plotly.react(gd, makeData(0), layout);
         })
+        .then(delay(100))
+        .then(sample)
         .then(delay(50))
+        .then(sample)
+        .then(delay(50))
+        .then(sample)
         .then(function() {
-            var times = getStartTimes();
-            expect(times.length).toBe(400, '# of bars in transition');
-            expect(Math.max.apply(null, times) - Math.min.apply(null, times))
-                .toBe(0, 'spread of start times');
+            expect(sawMidTransition).toBe(true, 'sampled mid-transition');
+            expect(maxGap).toBeLessThan(0.1, 'largest gap between neighbouring bars');
             return transitionPromise;
         })
         .then(done, done.fail);
