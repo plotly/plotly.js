@@ -1182,4 +1182,52 @@ describe('Plotly.react transitions:', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should start the transitions of all bars at the same time', function(done) {
+        // enough bars that drawing them takes more than a millisecond
+        function makeData(v) {
+            var data = [];
+            for(var i = 0; i < 20; i++) {
+                var y = [];
+                for(var j = 0; j < 20; j++) y.push(i === 0 ? v : 1);
+                data.push({type: 'bar', y: y});
+            }
+            return data;
+        }
+
+        // the start time d3 keeps for each bar's pending or running transition
+        function getStartTimes() {
+            var times = [];
+            gd.querySelectorAll('.bars .point path').forEach(function(node) {
+                var lock = node.__transition__ || {};
+                Object.keys(lock).forEach(function(k) {
+                    if(lock[k] && lock[k].time) times.push(lock[k].time);
+                });
+            });
+            return times;
+        }
+
+        // fixed axis ranges, so that only the traces are transitioned
+        var layout = {
+            barmode: 'stack',
+            xaxis: {range: [-1, 20]},
+            yaxis: {range: [0, 25]},
+            transition: {duration: 300}
+        };
+        var transitionPromise;
+
+        Plotly.newPlot(gd, makeData(1), layout)
+        .then(function() {
+            transitionPromise = Plotly.react(gd, makeData(2), layout);
+        })
+        .then(delay(50))
+        .then(function() {
+            var times = getStartTimes();
+            expect(times.length).toBe(400, '# of bars in transition');
+            expect(Math.max.apply(null, times) - Math.min.apply(null, times))
+                .toBe(0, 'spread of start times');
+            return transitionPromise;
+        })
+        .then(done, done.fail);
+    });
 });
