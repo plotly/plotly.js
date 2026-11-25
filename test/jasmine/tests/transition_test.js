@@ -1183,3 +1183,74 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 });
+
+describe('Plotly.react transitions on several graphs:', function() {
+    var gd, gd2;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        gd2 = createGraphDiv('graph2');
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        Plotly.purge(gd2);
+        document.body.removeChild(gd2);
+        destroyGraphDiv();
+    });
+
+    it('should not complete a scatter transition when another graph starts one', function(done) {
+        var duration = 300;
+        var layout = {transition: {duration: duration}};
+        var t0, elapsed;
+
+        Plotly.newPlot(gd, [{y: [1, 2, 1]}], layout)
+        .then(function() { return Plotly.newPlot(gd2, [{y: [1, 2, 1]}], layout); })
+        .then(function() {
+            t0 = Date.now();
+            var first = Plotly.react(gd, [{y: [2, 1, 2]}], layout).then(function() {
+                elapsed = Date.now() - t0;
+            });
+            var second = Plotly.react(gd2, [{y: [2, 1, 2]}], layout);
+            return Promise.all([first, second]);
+        })
+        .then(function() {
+            expect(elapsed).toBeGreaterThan(duration - 50, 'time until the first graph resolved');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should keep a sunburst\'s leaving slices when another graph starts a transition', function(done) {
+        function makeData(level) {
+            return [{
+                type: 'sunburst',
+                labels: ['A', 'B', 'C', 'D', 'E'],
+                parents: ['', 'A', 'A', 'B', 'B'],
+                level: level
+            }];
+        }
+
+        var layout = {transition: {duration: 300}};
+        var promises;
+
+        function countSlices() { return gd.querySelectorAll('.sunburst .slice').length; }
+
+        Plotly.newPlot(gd, makeData(''), layout)
+        .then(function() { return Plotly.newPlot(gd2, makeData(''), layout); })
+        .then(function() {
+            expect(countSlices()).toBe(5, '# of slices before');
+            promises = [Plotly.react(gd, makeData('B'), layout), Plotly.react(gd2, makeData('B'), layout)];
+        })
+        .then(delay(100))
+        .then(function() {
+            // A and C are leaving; they are removed by the redraw at the end of the transition
+            expect(countSlices()).toBe(5, '# of slices mid-transition');
+            return Promise.all(promises);
+        })
+        .then(delay(50))
+        .then(function() {
+            expect(countSlices()).toBe(3, '# of slices after');
+        })
+        .then(done, done.fail);
+    });
+});
