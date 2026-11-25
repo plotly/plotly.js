@@ -4,127 +4,109 @@ This document is for maintainers who publish plotly.js. For contributor workflow
 
 plotly.js follows [semver](https://semver.org). A release that adds functionality bumps the minor version. A minor version can go past 9, so `v1.22.0` is valid.
 
-Do every step below for each release, unless indicated otherwise.
+Two GitHub Actions workflows do the release:
 
-## Update README, CHANGELOG, and CITATION
+1. [`prepare-release`](.github/workflows/prepare-release.yml) builds the release files and opens a release pull request. A maintainer starts it by hand.
+2. [`publish-release`](.github/workflows/publish-release.yml) starts when the release pull request merges. It builds and packs the release files, waits for approval, and then tags the merge commit and publishes the release to npm, the Plotly CDN, and GitHub.
 
-- Open [GitHub Actions](https://github.com/plotly/plotly.js/actions?query=branch%3Amain) and confirm that the `main` branch passes the tests
-- Run `git switch main && git pull`
-- Run `git status` and confirm that the working tree is clean
-- Run `git switch -c release-vX.Y.Z`, where `X.Y.Z` is the new version number
-- Run `npx check-node-version --node 22 --npm 10` to confirm the tooling versions before you install
-- Run `npm ci`
-- Run `npm run preversion`
-- Update the version number and the release date in [README.md](README.md) and [CITATION.cff](CITATION.cff). Skip this step for a release candidate.
-  - Use find-and-replace in the README. The version number appears in three `https://cdn.plot.ly/plotly-X.Y.Z...` script URLs.
-  - Update the `version` field and the `date-released` field in [CITATION.cff](CITATION.cff)
-- Run `npm run use-draftlogs` to copy the `draftlogs/` folder into [CHANGELOG.md](CHANGELOG.md)
+The workflows tag and publish nothing before the approval. Until then, you can stop a release at no cost. Close the pull request, delete the branch, and start again.
 
-  > [!NOTE]
-  > `npm run use-draftlogs` accepts a filename that ends in `_add.md`, `_remove.md`, `_deprecate.md`, `_change.md`, or `_fix.md`. This will raise an error for any other name; rename files if necessary.
+## Make a release
 
-- Review [CHANGELOG.md](CHANGELOG.md). Replace the placeholder heading `## [X.Y.Z] -- UNRELEASED` with the real version number and release date.
-  - Follow [keepachangelog](https://keepachangelog.com/) style
-  - Correct typos and add missing entries and extra details
-  - Open `https://github.com/plotly/plotly.js/compare/vX.Y.Q...main` to view every commit since the previous release `vX.Y.Q`
-  - Confirm that every draftlog entry uses the link template `[[#1234](https://github.com/plotly/plotly.js/pull/1234)]`
-  - Credit a community contributor at the end of that entry: **', with thanks to @<USERNAME> for the contribution!'**
-- Run `npm run empty-draftlogs` to empty the `draftlogs/` folder. Skip this step for a release candidate.
-- Run `git add -u . && git commit -m "chore: Updates for release vX.Y.Z"`
+1. Open the [`prepare-release`](https://github.com/plotly/plotly.js/actions/workflows/prepare-release.yml) workflow and click "Run workflow"
+2. Enter the version:
+   - `patch`, `minor`, or `major` to bump the current version
+   - an exact version, such as `4.2.0`
+   - a release candidate, such as `4.2.0-rc.0`
+3. Click "Run workflow"
+4. Wait for the workflow to open the pull request `chore: Release vX.Y.Z`. The workflow does these steps:
+   - It stops if `npm audit` reports a vulnerability of any severity. To continue, fix the vulnerability on `main`, then run the workflow again. See [If a vulnerability has no fix](#if-a-vulnerability-has-no-fix).
+   - It bumps the version in `package.json` and `package-lock.json`. It stops if the new version is not higher than the current version.
+   - It writes the draftlogs into [CHANGELOG.md](CHANGELOG.md)
+   - It empties `draftlogs/` and updates the version in [README.md](README.md) and [CITATION.cff](CITATION.cff)
+   - It runs `npm run build` and commits `dist/`
+5. Review the pull request:
+   - Read the new section in `CHANGELOG.md` in the pull request diff. Follow [keepachangelog](https://keepachangelog.com/) style. To fix an entry, commit the change to `CHANGELOG.md` on the release branch.
+   - Make sure that each community contribution has a credit line
+6. Wait for CI to pass, and get an approval
+7. Merge the pull request
 
-## Update package.json and generate the release build
+   > [!CAUTION]
+   > If `main` changes before you merge, the release includes those changes, but the new `CHANGELOG.md` section does not list them. Their draftlogs stay for the next release. To list them in this release, close the pull request, delete the branch, and run `prepare-release` again.
 
-- Run `npm version vX.Y.Z` from the repository root (for a release candidate, include the prerelease part, as in `npm version v4.2.0-rc.0`). The command runs these steps in order:
-  - Run the `preversion` script, which tests the Node.js and `npm` versions, tests for `npm link`ed packages, and walks the dependency tree
-  - Bump the version in `package.json`
-  - Run the `version` script, which runs `npm run build` and then `git add -A lib dist build src/version.js`
-  - `git commit`, with the message `'X.Y.Z'`
-  - `git tag -a`, with the tag `'vX.Y.Z'`
-  - The `postversion` script, which prints _Version bumped and committed. If ok, run: git push && git push --tags_
+8. Open the [`publish-release`](https://github.com/plotly/plotly.js/actions/workflows/publish-release.yml) run for the merge commit. Its `build` job runs `npm run build` on the merge commit and packs every release file. The published files come from this build, not from the committed `dist/`.
+9. Click "Review deployments", select `release`, and approve. The `publish` job then does these steps:
+   - It tags the merge commit `vX.Y.Z`
+   - It publishes `plotly.js` and the 19 bundle and locale packages to npm, with the dist-tag `latest`, or `rc` for a release candidate
+   - It uploads the bundles to the Plotly CDN. Then it makes sure that the CDN serves `plotly-X.Y.Z.js` and `plotly-X.Y.Z.min.js`.
+   - It creates the GitHub release from the CHANGELOG section
+10. Post a link to the release, `https://github.com/plotly/plotly.js/releases/tag/vX.Y.Z`, in the team announcement channels
 
-  The build writes the `dist/` files: main bundles, partial bundles, locales, plot-schema, and geo assets. The build also writes the generated build files under [`build/`](build/README.md) and the package version file in `src/`.
+> [!WARNING]
+> The approval in step 9 is the last point at which you can stop the release. npm does not let you change or reuse a published version. To correct a bad release, publish a new patch release. If necessary, run `npm deprecate plotly.js@X.Y.Z "<reason>"` for the bad version.
 
-  > [!NOTE]
-  > The `npm ls` step inside `preversion` fails if the dependencies under `node_modules/` don't meet the requirements listed in `package.json`. Run `npm ci` to fix this issue.
+## If a vulnerability has no fix
 
-- Run `git show HEAD` to review the commit
-  - The output shows the new CDN bundle links and the new bundle sizes in `dist/README.md`, plus the new code in the dist bundles
-  - Carefully review the new bundle sizes in `dist/README.md`. If a bundle size has changed unexpectedly, or the diff contains any other unexpected change, run `git reset --hard HEAD^` and `git tag -d vX.Y.Z` to undo the last commit and tag. Investigate the issue before proceeding.
-- If everything looks good, run `git push && git push --tags` to push the release branch and the release tag
-- Open a pull request against `main`, and assign the `no-draftlog` label
-- Wait for CI to pass, and get an approval
-- Merge the pull request with a merge commit
+Fix every `npm audit` finding before a release when a fix exists. If a finding has no fix yet and the release cannot wait, skip the audit:
 
-  > [!CAUTION]
-  > Do not squash merge, since that will result in the tagged commit `vX.Y.Z` not being part of `main`
+1. Run `prepare-release` with `skip-audit` selected
+2. In `skip-audit-reason`, explain why the release cannot wait. For example, name the advisory and say why it does not affect plotly.js.
+3. Review the "Security audit" section in the release pull request. It shows the reason and the `npm audit` output.
 
-## Publish the release
+The workflow stops if you select `skip-audit` without a reason.
 
-- Run `git switch main && git pull` after the pull request merges
-- Run `git branch --contains vX.Y.Z` and confirm that the output includes `main`
+## Make a release candidate
 
-### Publish to npm
+Follow the steps in [Make a release](#make-a-release), with a version such as `4.2.0-rc.0`. A release candidate differs from a full release in these ways:
 
-- Run `npm access list packages | grep plotly` to confirm your permission to publish the plotly.js packages
-  - The output lists the Plotly packages that you can update
-- If that command returns no result, authenticate with npm:
-  - Confirm your membership in the `plotly` npm organization. If you're not a member, contact the Libraries team for next steps.
-  - Run `npm login`
-  - Complete the authentication flow with the credentials for your account
-  - Confirm in the terminal that the command finished
-  - Run `npm access list packages | grep plotly` again, and read the list of Plotly packages
-- Run `npm pack --dry-run`. This shows what will be included in the published package without actually publishing.
-  - Compare the package size against the previous release. An unexpected large change can be an indicator that something was added/removed that shouldn't have been.
-  - Look for any files that don't belong in the release (usually at the project root level). If you find any, investigate why they're showing up. One resolution option is updating [.npmignore](.npmignore).
-- For a full release, run `npm publish`. This will publish the new version to the [npm registry](https://www.npmjs.com/package/plotly.js).
-- For a release candidate, run `npm publish --tag rc` instead
-- You will be prompted by npm to authorize publishing before proceeding. If you see an option to allow publishing without a challenge for the next few minutes, enable it. This will allow for easy partial bundle publishing that immediately follows completion of the `publish` step.
-
-  > [!NOTE]
-  > Before the `publish` step starts, the `prepack` and `postpack` scripts will run. These manage converting TS files to JS before packing and removing them after packing. After the `publish` step completes, the `postpublish` script will run. This kicks off `tasks/sync_packages.js`, which publishes the partial bundles.
-
-### Publish to the Plotly CDN
-
-- Run `aws --version` and confirm that the output starts with `aws-cli/2`
-- If the command is not found, or the output shows version 1, install AWS CLI v2:
-  - On macOS, run `brew install awscli`
-  - On Linux or Windows, follow the [AWS CLI install guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-- Run `./tasks/cdn_publish.sh` to upload the new release files to the CDN bucket on S3
-- If that step fails with an authentication error, run `aws configure` and enter the credentials for the plotly.js CDN bucket
-
-### Publish to GitHub
-
-- Open the [releases page](https://github.com/plotly/plotly.js/releases) and click "Draft a new release"
-- Select the tag for the release
-- Set the title to `vX.Y.Z`, the same text as the tag
-- Copy the description from the matching section of the CHANGELOG. Add extra context if necessary.
-- For a release candidate, select the "This is a pre-release" box
-- Click "Publish release"
-
-## Post-release tasks
-
-- Post a link to the release tag, `https://github.com/plotly/plotly.js/releases/tag/vX.Y.Z`, in the team announcement channels
+- The draftlogs stay in `draftlogs/`, so that the full release includes them
+- README.md and CITATION.cff keep the previous version
+- npm gets the dist-tag `rc`, and the GitHub release is a pre-release
 
 ## Make a maintenance release
 
-At times it may be required to patch an older version of plotly.js (for a security fix, etc.). This example patches `v3.7.0` and publishes `3.7.1`.
+A maintenance release patches an older major version, for example for a security fix. The workflows release only from `main`, so a maintainer makes a maintenance release by hand, with the tooling of the older version. This example patches `v3.7.0` and publishes `3.7.1`.
 
-- Run `git show v3.7.0:package.json` and read the `preversion` script for the toolchain
-  - A v3 tag needs Node.js 18. A v4 tag needs Node.js 22.
-- Run `git switch -c maintenance-v3.7.1 v3.7.0`
-- Run `npm ci`
-- Find the commits on `main` that fixed the bugs in question. This example uses `a34ad3`.
-- Run `git cherry-pick a34ad3`, fix the merge conflicts, and test the behavior
-- To apply several patches at once, use GitHub's `.patch` URLs with `git am`
-- Run `npm version patch`. The command bumps the version to `3.7.1`, runs `npm run build`, commits, and adds the tag `v3.7.1`.
-- Run `git show HEAD` to review the version commit
-- Run `git push && git push --tags`
-- Run `DRYRUN=1 npm publish --tag maintenance`
-  - `DRYRUN` prevents publishing of the partial bundles via `tasks/sync_packages.js`. The patched bundle will still be published.
-- Run `npm view plotly.js versions` and confirm that the list holds `3.7.1`
-- Run `npm dist-tag ls plotly.js` and confirm that `latest` still points at the current release
+1. Run `git show v3.7.0:package.json` and read the `preversion` script for the toolchain. A v3 tag needs Node.js 18.
+2. Run `git switch -c maintenance-v3.7.1 v3.7.0`
+3. Run `npm ci`
+4. Find the commits on `main` that fix the bugs. This example uses `a34ad3`.
+5. Run `git cherry-pick a34ad3`, fix the merge conflicts, and test the behavior. To apply several patches at once, use the GitHub `.patch` URLs with `git am`.
+6. Run `npm version patch`. The command bumps the version to `3.7.1`, runs `npm run build`, commits, and adds the tag `v3.7.1`.
+7. Run `git show HEAD` to review the version commit
+8. Run `git push origin maintenance-v3.7.1 v3.7.1`
+9. Run `npm login`, and confirm your access with `npm access list packages | grep plotly`
+10. Run `DRYRUN=1 npm publish --tag maintenance`. The `DRYRUN` variable stops the `postpublish` script from publishing the bundle packages, so only `plotly.js` gets the patch.
+11. Run `npm view plotly.js versions` and confirm that the list holds `3.7.1`
+12. Run `npm dist-tag ls plotly.js` and confirm that `latest` still points at the current release
 
-### Notes on maintenance releases
+> [!WARNING]
+> If you run `npm publish` without `--tag maintenance`, the maintenance release takes the `latest` dist-tag. A clean `npm install plotly.js` then installs `3.7.1` instead of the current release. To correct this, run `npm dist-tag add plotly.js@<current version> latest`.
 
-- The `--tag` argument in the `npm publish` step is **very important**. Without that argument, the maintenance release takes the `latest` tag on npm. A clean `npm install plotly.js` then installs `3.7.1` instead of the current release from `main`.
-- Do not push a maintenance release to the CDN. This policy encourages every user to run the current plotly.js release.
+Do not upload a maintenance release to the CDN. This policy encourages every user to run the current plotly.js release.
+
+## If a publish step fails
+
+Every step in the `publish` job skips the work that is already done. The job reuses the files from the `build` job of the same run. The npm and GitHub steps make sure that the version is not already published before they publish. The CDN step uploads the files again and overwrites them.
+
+1. Read the failed step in the `publish-release` run, and fix the cause. For example, renew a credential or wait for an npm outage to end.
+2. Click "Re-run failed jobs"
+3. Approve the `release` environment again
+
+If a fix needs a code change, run the publish workflow from `main` with "Run workflow" after the fix merges. The workflow resumes when the tag `vX.Y.Z` points at the commit, and stops when the tag points at an older commit. In that case, publish a new patch release instead.
+
+## Publish by hand
+
+Use these steps only if GitHub Actions is not available. Merge the release pull request first.
+
+1. Run `git switch main && git pull`, then `npm ci` and `npm run build`
+2. Run `git tag -a vX.Y.Z -m vX.Y.Z && git push origin vX.Y.Z`
+3. Run `npm login`, and confirm your access with `npm access list packages | grep plotly`
+4. Run `npm publish --tag <dist-tag>`, where `<dist-tag>` is `latest`, or `rc` for a release candidate
+5. Run `npm run sync-packages -- --tag <dist-tag>` to publish the bundle and locale packages
+
+   > [!NOTE]
+   > `DRYRUN=1 npm run sync-packages` packs each package with `npm publish --dry-run` and publishes nothing.
+
+6. Run `./tasks/cdn_publish.sh` with AWS credentials for the CDN bucket
+7. Run `gh release create vX.Y.Z --verify-tag --title vX.Y.Z --notes "$(node tasks/release_notes.mjs)"`
