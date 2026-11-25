@@ -64,13 +64,27 @@ jobs:
           fi
 
           MISSING_LINK=""
+          BAD_INDENT_FILES=""
           while IFS= read -r f; do
             [ -z "$f" ] && continue
             content=$(gh api -H 'Accept: application/vnd.github.raw' "/repos/$REPO/contents/$f?ref=$HEAD_SHA")
             if ! echo "$content" | grep -qE "\[\[#${PR_NUMBER}\]\(https://github\.com/plotly/plotly\.js/(pull|issues)/${PR_NUMBER}\)\]"; then
               MISSING_LINK="$MISSING_LINK$f"$'\n'
             fi
+            # The first line is the top-level entry. Later lines can need indentation.
+            if echo "$content" | head -n 1 | grep -qE '^[[:space:]]'; then
+              BAD_INDENT_FILES="$BAD_INDENT_FILES$f"$'\n'
+            fi
           done <<< "$ADDED"
+
+          if [ -n "$BAD_INDENT_FILES" ]; then
+            echo "::error::Draftlog entry(ies) with leading whitespace on the first line:"
+            printf '%s' "$BAD_INDENT_FILES" | sed 's/^/  - /'
+            echo ""
+            echo "Start the first line with '- ' and no leading whitespace."
+            echo "See draftlogs/README.md for an example."
+            exit 1
+          fi
 
           if [ -n "$MISSING_LINK" ]; then
             echo "::error::Draftlog entry(ies) missing a link to this PR (#${PR_NUMBER}):"

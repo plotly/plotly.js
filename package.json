@@ -1,7 +1,7 @@
 {
   "name": "plotly.js",
   "version": "4.3.0",
-  "description": "The open source javascript graphing library that powers plotly",
+  "description": "The open source JavaScript graphing library that also powers plotly.py and Plotly Dash",
   "license": "MIT",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -78,9 +78,7 @@
     "start": "node devtools/test_dashboard/server.mjs",
     "baseline": "node test/image/make_baseline.mjs",
     "preversion": "check-node-version --node 22 --npm 10 && npm-link-check && npm ls --omit=dev --all",
-    "version": "npm run build && git add -A lib dist build src/version.js",
-    "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
-    "postpublish": "node tasks/sync_packages.js",
+    "sync-packages": "node tasks/sync_packages.js",
     "prepack": "tsc -b tsconfig.build.json --force",
     "postpack": "tsc -b tsconfig.build.json --clean"
   },
@@ -155,7 +153,6 @@
     "karma-chrome-launcher": "^3.2.0",
     "karma-esbuild": "^2.3.0",
     "karma-firefox-launcher": "^2.1.3",
-    "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^3.3.1",
     "karma-jasmine-spec-tags": "^1.3.0",
     "karma-spec-reporter": "^0.0.37",

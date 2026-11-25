@@ -1,0 +1,208 @@
+name: prepare-release
+
+# Builds the release files and opens a release pull request. Merging that pull request
+# starts the publish-release workflow. See RELEASE.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version: patch, minor, major, or an exact version such as 4.2.0 or 4.2.0-rc.0'
+        required: true
+      skip-audit:
+        description: 'Continue when npm audit reports a vulnerability that has no fix yet'
+        type: boolean
+        default: false
+      skip-audit-reason:
+        description: 'Why the release cannot wait for a fix. Necessary when you skip the audit.'
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate the inputs
+        env:
+          VERSION: ${{ inputs.version }}
+          SKIP_AUDIT: ${{ inputs.skip-audit }}
+          SKIP_AUDIT_REASON: ${{ inputs.skip-audit-reason }}
+        run: |
+          set -euo pipefail
+          if [ "$SKIP_AUDIT" = "true" ] && [ -z "${SKIP_AUDIT_REASON// /}" ]; then
+            echo "::error::Enter a reason in skip-audit-reason when you skip the audit."
+            exit 1
+          fi
+          if ! [[ "$VERSION" =~ ^(patch|minor|major|[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?)$ ]]; then
+            echo "::error::Invalid version '$VERSION'. Use patch, minor, major, X.Y.Z, or X.Y.Z-rc.N."
+            exit 1
+          fi
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Check the tooling and the dependency tree
+        run: npm run preversion
+
+      # A finding of any severity stops the release. The build tools produce dist/, so the audit includes dev dependencies.
+      # With skip-audit, the release continues and the release pull request shows the findings and the reason.
+      - name: Audit the dependencies
+        id: audit
+        env:
+          SKIP_AUDIT: ${{ inputs.skip-audit }}
+        run: |
+          set -uo pipefail
+          if npm audit > "$RUNNER_TEMP/audit.txt"; then
+            cat "$RUNNER_TEMP/audit.txt"
+            exit 0
+          fi
+          cat "$RUNNER_TEMP/audit.txt"
+          if [ "$SKIP_AUDIT" != "true" ]; then
+            echo "::error::npm audit reported vulnerabilities. Fix them on main, or run this workflow again with skip-audit."
+            exit 1
+          fi
+          echo "::warning::npm audit reported vulnerabilities. The release continues because skip-audit is set."
+          echo "skipped=true" >> "$GITHUB_OUTPUT"
+
+      - name: Bump the version
+        id: version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          OLD_VERSION=$(node -p "require('./package.json').version")
+          npm version "$VERSION" --no-git-tag-version --ignore-scripts
+          NEW_VERSION=$(node -p "require('./package.json').version")
+
+          # A lower version is a typo. A maintenance release of an older version is a manual process.
+          if ! node -e '
+            const parse = (v) => {
+              const m = v.match(/^(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?$/);
+              if (!m) throw new Error(`Unsupported version ${v}`);
+              // A release sorts after each of its release candidates
+              return [+m[1], +m[2], +m[3], m[4] === undefined ? Infinity : +m[4]];
+            };
+            const [next, prev] = process.argv.slice(1).map(parse);
+            const i = next.findIndex((n, j) => n !== prev[j]);
+            process.exit(i !== -1 && next[i] > prev[i] ? 0 : 1);
+          ' "$NEW_VERSION" "$OLD_VERSION"; then
+            echo "::error::Version $NEW_VERSION is not higher than the current version $OLD_VERSION on main"
+            exit 1
+          fi
+
+          if git rev-parse -q --verify "refs/tags/v$NEW_VERSION" > /dev/null; then
+            echo "::error::Tag v$NEW_VERSION already exists"
+            exit 1
+          fi
+          if git ls-remote --exit-code --heads origin "release-v$NEW_VERSION" > /dev/null; then
+            echo "::error::Branch release-v$NEW_VERSION already exists. Close its pull request and delete the branch, then run this workflow again."
+            exit 1
+          fi
+
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare the release files
+        run: node tasks/prepare_release.mjs
+
+      - name: Build dist/
+        run: npm run build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Write the pull request body
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          REPO: ${{ github.repository }}
+          AUDIT_SKIPPED: ${{ steps.audit.outputs.skipped }}
+          SKIP_AUDIT_REASON: ${{ inputs.skip-audit-reason }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Description"
+            echo
+            echo "Updates for release v$VERSION."
+            echo
+            echo "### Notes"
+            echo
+            echo "- Merging this pull request starts the [publish-release](https://github.com/$REPO/actions/workflows/publish-release.yml) workflow, which waits for approval before it publishes"
+            echo "- Review the new changelog entry and make sure that attributions are correct"
+            echo "- If \`main\` changes before you merge, this changelog entry does not list those changes. To list them, close this pull request, delete the branch, and run [prepare-release](https://github.com/$REPO/actions/workflows/prepare-release.yml) again"
+
+            if [ "$AUDIT_SKIPPED" = "true" ]; then
+              echo
+              echo "### Security audit"
+              echo
+              echo "> [!WARNING]"
+              echo "> \`npm audit\` reported vulnerabilities, and the release skipped the audit check."
+              echo ">"
+              echo "> Reason: $SKIP_AUDIT_REASON"
+              echo
+              echo "<details><summary>npm audit output</summary>"
+              echo
+              echo '```'
+              head -n 200 "$RUNNER_TEMP/audit.txt"
+              echo '```'
+              echo
+              echo "</details>"
+            fi
+          } > "$RUNNER_TEMP/pr-body.md"
+
+      # A pull request that GITHUB_TOKEN opens does not start CI, so the release app opens it
+      - name: Generate a release app token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          client-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: plotly
+          repositories: plotly.js
+
+      - name: Commit and push the release branch
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          BOT_ID=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+
+          git switch -c "release-v$VERSION"
+          git add CHANGELOG.md README.md CITATION.cff draftlogs package.json package-lock.json
+          git add -A lib dist build src/version.js
+          git commit -m "chore: Release v$VERSION"
+          git push "https://x-access-token:${APP_TOKEN}@github.com/${REPO}.git" "release-v$VERSION"
+
+      - name: Open the release pull request
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          URL=$(gh pr create --repo "$REPO" --base main --head "release-v$VERSION" \
+            --title "chore: Release v$VERSION" --label no-draftlog --body-file "$RUNNER_TEMP/pr-body.md")
+          echo "### Release pull request: $URL" >> "$GITHUB_STEP_SUMMARY"

@@ -1,29 +1,22 @@
-var fs = require('fs');
-var path = require('path');
-var constants = require('./util/constants');
+const fs = require('fs');
+const path = require('path');
+const { pathToDraftlogs, pathToChangelog } = require('./util/constants');
 
-var pathToDraftlogs = constants.pathToDraftlogs;
-var pathToChangelog = constants.pathToChangelog;
+const getArg = (name) => {
+    const i = process.argv.indexOf(name);
+    return i === -1 ? undefined : process.argv[i + 1];
+};
 
-var chZero = '0'.charCodeAt(0);
-var chNine = '9'.charCodeAt(0);
+const startsWithNumber = (v) => /^[0-9]/.test(v);
 
-function startsWithNumber(v) {
-    var ch = v.charCodeAt(0);
-    return chZero <= ch && ch <= chNine;
-}
+const allLogs = fs.readdirSync(pathToDraftlogs).filter(startsWithNumber);
 
-var allLogs = fs.readdirSync(pathToDraftlogs).filter(startsWithNumber);
+if (!allLogs.length) process.exit(0);
 
-var len = allLogs.length;
-if(!len) process.exit(0);
+const writeAfterMe = 'where X.Y.Z is the semver of most recent plotly.js release.';
+const [head, foot] = fs.readFileSync(pathToChangelog, 'utf-8').split(writeAfterMe);
 
-var writeAfterMe = 'where X.Y.Z is the semver of most recent plotly.js release.';
-var changelog = fs.readFileSync(pathToChangelog).toString().split(writeAfterMe);
-var head = changelog[0];
-var foot = changelog[1];
-
-var all = {
+const all = {
     Added: [],
     Removed: [],
     Deprecated: [],
@@ -31,56 +24,49 @@ var all = {
     Fixed: []
 };
 
-var ENTER = '\n';
+const suffixToKey = {
+    '_add.md': 'Added',
+    '_remove.md': 'Removed',
+    '_deprecate.md': 'Deprecated',
+    '_change.md': 'Changed',
+    '_fix.md': 'Fixed'
+};
 
-var skippedFiles = [];
-for(var i = 0; i < len; i++) {
-    var filename = allLogs[i];
-    var message = fs.readFileSync(path.join(pathToDraftlogs, filename), { encoding: 'utf-8' }).toString();
-    // trim empty lines
-    message = message.split(ENTER).filter(function(e) { return !!e; }).join(ENTER);
+const ENTER = '\n';
 
-    if(filename.endsWith('_add.md')) {
-        all.Added.push(message);
-    } else if(filename.endsWith('_remove.md')) {
-        all.Removed.push(message);
-    } else if(filename.endsWith('_deprecate.md')) {
-        all.Deprecated.push(message);
-    } else if(filename.endsWith('_change.md')) {
-        all.Changed.push(message);
-    } else if(filename.endsWith('_fix.md')) {
-        all.Fixed.push(message);
+const skippedFiles = [];
+for (const filename of allLogs) {
+    // Trim empty lines and leading whitespace of first line
+    const message = fs
+        .readFileSync(path.join(pathToDraftlogs, filename), 'utf-8')
+        .split(ENTER)
+        .filter((e) => !!e)
+        .join(ENTER)
+        .trimStart();
+
+    const suffix = Object.keys(suffixToKey).find((s) => filename.endsWith(s));
+    if (suffix) {
+        all[suffixToKey[suffix]].push(message);
     } else {
         skippedFiles.push(filename);
     }
 }
 
-var draftNewChangelog = [
+const draftNewChangelog = [
     head + writeAfterMe,
     '',
-    '## [X.Y.Z] -- UNRELEASED'
+    `## [${getArg('--version') ?? 'X.Y.Z'}] -- ${getArg('--date') ?? 'UNRELEASED'}`
 ];
 
-var append = function(key) {
-    var newMessages = all[key];
-    if(!newMessages.length) return;
-    draftNewChangelog.push('');
-    draftNewChangelog.push('### ' + key);
-    draftNewChangelog.push(newMessages.join(ENTER));
-};
-
-append('Added');
-append('Removed');
-append('Deprecated');
-append('Changed');
-append('Fixed');
+for (const [key, newMessages] of Object.entries(all)) {
+    if (!newMessages.length) continue;
+    draftNewChangelog.push('', `### ${key}`, newMessages.join(ENTER));
+}
 
 draftNewChangelog.push(foot);
 
-fs.writeFileSync(pathToChangelog, draftNewChangelog.join(ENTER), { encoding: 'utf-8' });
+fs.writeFileSync(pathToChangelog, draftNewChangelog.join(ENTER), 'utf-8');
 
-if(skippedFiles.length) {
-    throw JSON.stringify({
-        skippedFiles: skippedFiles
-    }, null, 2);
+if (skippedFiles.length) {
+    throw JSON.stringify({ skippedFiles }, null, 2);
 }
