@@ -16029,6 +16029,17 @@
           "editType": "ticks",
           "valType": "number"
         }
+      },
+      "zoomdirection": {
+        "description": "When `dragmode` is set to *zoom*, this limits the zoombox drag. Combine *h* for horizontal, *v* for vertical, and *d* for diagonal with *+*. The default *h+v+d* sets no limit. Also applies when Shift turns *pan* into a zoombox drag.",
+        "dflt": "h+v+d",
+        "editType": "none",
+        "flags": [
+          "h",
+          "v",
+          "d"
+        ],
+        "valType": "flaglist"
       }
     }
   },
