@@ -1,0 +1,29 @@
+name: Check issue template
+
+# The check reads the labels from each file in .github/ISSUE_TEMPLATE/.
+# CAUTION: If you delete or rename a label that a template applies, issues from that template arrive without the label and this workflow closes them.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-issue-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts
+            .github/automation-messages
+            .github/ISSUE_TEMPLATE
+
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          script: |
+            const { default: checkIssueTemplate } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-issue-template.mjs`);
+            await checkIssueTemplate({ github, context, core });

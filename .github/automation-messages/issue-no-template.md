@@ -1,0 +1,1 @@
+Thanks for the report. This issue does not use one of our issue templates, so we closed it. The templates ask for the details that we need to triage an issue. Open a new issue from a template: https://github.com/plotly/plotly.js/issues/new/choose

@@ -1,0 +1,35 @@
+name: Check PR linked issue
+
+# WARNING: pull_request_target runs with a write token. Never check out or run code from the pull request in this workflow.
+on:
+  pull_request_target:
+    types: [opened, reopened, edited]
+
+concurrency:
+  group: check-pr-linked-issue-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: write
+
+jobs:
+  check-pr-linked-issue:
+    # An edit to a closed pull request must not post another comment
+    if: github.event.pull_request.state == 'open'
+    runs-on: ubuntu-latest
+    steps:
+      # pull_request_target checks out the base branch, not the pull request
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts
+            .github/automation-messages
+
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          script: |
+            const { default: checkPrLinkedIssue } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-pr-linked-issue.mjs`);
+            await checkPrLinkedIssue({ github, context, core });
