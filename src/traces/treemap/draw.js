@@ -40,7 +40,7 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
             onComplete = makeOnCompleteCallback();
         }
 
-        var transition = d3.transition()
+        var transition = d3.select(gd).transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)
             .each('end', function() { onComplete && onComplete(); })

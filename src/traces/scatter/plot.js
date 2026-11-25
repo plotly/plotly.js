@@ -45,7 +45,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
             onComplete = makeOnCompleteCallback();
         }
 
-        var transition = d3.transition()
+        var transition = d3.select(gd).transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)
             .each('end', function() {

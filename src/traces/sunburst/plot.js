@@ -50,6 +50,7 @@ exports.plot = function (gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
         }
 
         var transition = d3
+            .select(gd)
             .transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)

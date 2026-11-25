@@ -1339,7 +1339,7 @@ function dragDimensionEnd(d) {
 
     // Perform transition
     // ------------------
-    var transition = d3.transition()
+    var transition = d3.select(d.parcatsViewModel.graphDiv).transition()
         .duration(300)
         .ease('cubic-in-out');
 

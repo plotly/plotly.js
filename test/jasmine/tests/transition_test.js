@@ -1144,6 +1144,39 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
+    it('should keep transitions on separate graphs independent', function(done) {
+        var gd2 = createGraphDiv('graph2');
+        var data1 = [{y: [1, 2, 3]}];
+        var data2 = [{y: [3, 2, 1]}];
+        var layout = {transition: {duration: 50}};
+        var transitionTime;
+
+        var interrupted = false;
+        gd.on('plotly_transitioninterrupted', function() { interrupted = true; });
+        gd.on('plotly_transitioned', function() {
+            expect(Date.now() - transitionTime).toBeGreaterThan(20);
+            expect(interrupted).toBe(false);
+        });
+
+        Plotly.newPlot(gd, data1, layout)
+        .then(function() {
+            return Plotly.newPlot(gd2, data2, layout);
+        })
+        .then(function() {
+            transitionTime = Date.now();
+            return Promise.all([
+                Plotly.react(gd, [{y: [2, 3, 4]}], layout),
+                Plotly.react(gd2, [{y: [4, 3, 2]}], layout)
+            ]);
+        })
+        .then(function() {
+            expect(interrupted).toBe(false);
+            Plotly.purge(gd2);
+            destroyGraphDiv();
+        })
+        .then(done, done.fail);
+    });
+
     it('should update ranges of date and category axes', function(done) {
         Plotly.newPlot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
