@@ -1,138 +1,121 @@
 # Contributing to Plotly.js
 
-Thanks for your interest in contributing to Plotly.js! We are actively looking for
-diverse contributors, with diverse backgrounds and skills.
-
-This document outlines the general way that changes get made to this library and by whom,
-and then provides specific technical information about how to set up a development
-environment for doing development and running tests.
+Thanks for your interest in contributing to Plotly.js! This document outlines the general way that changes get made to this library and by whom, and then provides specific technical information about how to set up a development environment for doing development and running tests.
 
 ## Code of Conduct
 
-Please check out our [Code of Conduct](code_of_conduct.md). Don't tl:dr; it
-but the general idea is to be nice.
+Please check out our [Code of Conduct](code_of_conduct.md). Don't tl;dr it but the general idea is to be nice.
 
-## Plotly.js vs Plotly.py and Plotly.R
+## Plotly.js vs Plotly.py
 
-[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](https://plotly.com/r), respectively, for clarity). There also exist Plotly.js-powered libraries for other languages such as Julia, Scala, Rust, .NET and even C++!
+[Plotly.js](https://plotly.com/javascript) is a standalone JavaScript data visualization library, and it also powers [Plotly.py](https://plotly.com/python). There are also community maintained Plotly.js-powered libraries for other languages such as R, Julia, Scala, Rust, .NET and even C++!
 
-The basic architecture of Plotly.js is to accept [JSON](https://json.org/) representation of figures that adhere to the [figure schema](https://plotly.com/javascript/reference/index/) and draw interactive graphical representations of these figures in a browser. Libraries in other languages like Python and R provide idiomatic interfaces for users of those languages to create and manipulate these JSON structures, and arrange for them to be rendered in a browser context by Plotly.js. This means that in many cases, when a Python or R user wishes to add a feature to the library they know as `plotly`, the relevant changes must be implemented in Plotly.js, in this repo.
+The basic architecture of Plotly.js is to accept a [JSON](https://json.org/) representation of figures that adhere to the [figure schema](https://plotly.com/javascript/reference/index/) and draw interactive graphical representations of these figures in a browser. Libraries in other languages provide interfaces for users to create and manipulate these JSON structures, and render them with Plotly.js.
 
 ## How do changes get made to Plotly.js?
 
- A **new feature** is composed of additions to the schema - adding new attributes, adding entire new trace types, or just adding new values to existing attributes - along with the associated drawing code. This project has a strong commitment to backwards-compatibility,  so changing the graphical output for existing schema attributes and values, or changing the default value of an attribute, is generally only done as a mostly-backwards-compatible **bug fix**, for cases when the current graphical output is incorrect, nonsensical or otherwise very problematic.  Non-schema-related features and bug fixes are possible as well, usually around performance, security, bundling, function signatures etc, and generally follow the same principles.
+A **new feature** is composed of additions to the schema - adding new attributes, adding entire new trace types, or just adding new values to existing attributes - along with the associated drawing code.
 
-The basic process for adding new features or fixing bugs is as follows. Please note that this is a bit of an idealized outline and that things often don't proceed in a clean/linear fashion and that's ok :)
+This project has a strong commitment to backwards-compatibility. Therefore updates that change the current expected behavior of the library are limited to major releases or may not be accepted at all. The one exception to this is when a bug fix changes the library behavior for cases when the current graphical output is incorrect, nonsensical or otherwise problematic.
 
-1. **Discussion** - A community member or maintainer creates an issue to discuss the use-case for the new feature. This usually entails describing the desired graphical output and discussing how close the current system can get to specifying or drawing such a figure. If the issue is perceived to be a bug, the discussion revolves around understanding how the current behaviour is incorrect or problematic, and how existing users of the system would be impacted by a change in this behaviour.
-2. **Proposal** - If the current system cannot specify or draw such a figure, or if the way to do it is too onerous, a good next step would be to discuss or propose a specific change to the schema: new attributes to be added or new accepted values to new attributes, along with a prose description of the proposed drawing code. If the issue is determined to be a bug rather than a feature, the same type of proposal is required: a definition of which attributes and values will be impacted by the proposed change. A good proposal includes discussion of whether or not existing attributes can be modified rather than adding new attributes and details about which trace types or subplot types are impacted by the change. Note: sometimes community contributors skip this step and go straight to development & review (below), but going through a proposal can help speed along the review process!
-3. **Iteration** - The maintainers of the library or any other interested community member will then give feedback on the proposal, usually focused on consistency with the rest of the schema, and helping define a test plan to further elaborate potential edge cases.
-4. **Approval** - After a number of iterations, the maintainers of the library will generally approve a proposal with an informal "this seems like something we would accept a pull request for" comment in the issue.
-5. **Development** - A community member or maintainer creates a branch and makes the appropriate modifications to the code and tests and opens a pull request. This can be more or less time-consuming and challenging, depending on the nature of the change.
-6. **Review** - The maintainers of the library will review the pull request, working with the original authors to ensure the code is ready for merging. This can involve quite a few iterations and exploration of edge cases, additions of tests etc, but the maintainers are very happy to have outside contributors and will try to make this as painless as possible. Starting out with a previously-discussed proposal (see above) generally helps make this smoother as it reduces the likelihood of overlooked requirements that would prevent a merge.
-7. **Long-term Maintenance** - Once the code is merged, the maintainers of the library will generally look after its maintenance, performance, security, bug fixes etc, although the original author of a feature is always welcome and encouraged to participate in this process!
+The [contribution flowchart](#contribution-flowchart) at the end of this document shows these steps as a diagram. The basic process for adding new features or fixing bugs is as follows:
 
-### The Plotly.js Maintainers
+1. **Discussion** - A user creates an issue to discuss the use-case for the new feature or bug fix.
+  - Search the open and closed issues first. A closed issue often records the reason that we declined an idea.
+  - New issues must use one of the provided templates. Those not using a template will be closed.
+  - We may approve issues that report or request:
+    - A bug or regression that could affect many users
+    - A feature that will improve or expand the library
+    - A performance problem in a realistic figure
+    - An attribute description that is wrong or incomplete
+  - We usually decline issues that report or request:
+    - A problem that no user ran into, found only in the code or with a tool
+    - A refactor, rename, formatting change, or syntax update
+    - A typo in code comments, tests, or other text that users do not see
+    - A change to current behavior outside a major release, unless the current output is incorrect
+  - Only a maintainer can approve an issue. Reactions and agreement from other users do not count as approval.
+2. **Issue Approval** - Work should not begin until the plan from the discussion is approved. Maintainers will add the `ready-for-pr` label at this point.
+  - A maintainer can confirm a bug but leave the issue without the `ready-for-pr` label. We do not accept pull requests for such an issue until a maintainer adds the label.
+  - Anyone can work on a `ready-for-pr` issue that has no assignee.
+  - To reserve an issue, comment on the issue and ask for it. A maintainer then assigns you. Only the assignee can open a pull request for an assigned issue.
+  - An issue has one assignee at a time.
+  - If you can no longer work on the issue, say so in the issue so that a maintainer can assign someone else.
+3. **Pull Request** - Anyone can now create a pull request for an unassigned issue. For an assigned issue, only the assignee can. Every pull request needs a linked issue. Pull requests without a linked issue will not be accepted.
+  - Link the issue with a closing keyword in the pull request body, for example `Closes #1234`.
+  - The linked issue must have the `ready-for-pr` label.
+  - We close a pull request for an issue that is assigned to another user.
+  - A workflow checks each new pull request and closes it if a check fails. Fix the problem, then ask a maintainer to reopen the pull request.
+  - Keep the pull request to the approved plan. Open a new issue for other changes.
+  - If a coding agent wrote the change, review the code and look at the rendered plot before you open the pull request.
+4. **Review** - Maintainers will review the pull request, working with the original authors to ensure the code is ready for merging.
+  - After a maintainer review, respond with a comment, a review, or a reaction. A push alone does not count as a response.
+  - If the author does not respond, a workflow adds the `stale` label and posts a warning, and later closes the pull request.
 
-The current Plotly.js maintainers are all employees of Plotly (the company) and one of their primary responsibilities is ensuring the process above runs smoothly. It is worth noting that maintainers and non-maintainer Plotly employees all follow the process above: proposing changes, iterating on proposals and eventually developing and reviewing each other's pull requests. As mentioned above, maintainers look after bug fixes, performance, security, documentation and concerns that impact the long-term prospects for this library.  In terms of development work, maintainers tend to prioritize issues that do or are likely to impact Plotly customers, as well as on [sponsored features or bug fixes](https://plot.ly/products/consulting-and-oem/). Sponsored work proceeds via the process listed above, albeit with the option of conducting portions of the "discussion" step in a confidential setting if desired. Please note that maintainers are happy and eager to help with community-led pull requests, independent of customer-driven development priorities :)
+### Plotly.js Documentation
 
-### The Plotly.js Community
-The Plotly.js community, construed fairly broadly, includes the maintainers and all users of Plotly.js and associated projects ([Plotly.py](https://plotly.com/python), [Dash](https://dash.plotly.com/), [Plotly.R](https://plotly.com/r), [Chart Studio](https://plotly.com/chart-studio) and many others). The community includes people from any background, domain, affiliation and level of technical expertise, for example (but not limited to!) employees of small or large companies or startups; employees or students of universities or other educational institutions; government employees and contractors; employees and volunteers of non-profits; individual hobbyists etc.
+[Proposing changes to the documentation of Plotly.js or associated projects](https://github.com/plotly/graphing-library-docs/blob/master/README.md) is an extremely valuable form of contribution.
 
-**Anyone in the community is encouraged to contribute to every step of the process described above!**  Creating issues to report bugs or suggest new behaviours is a valuable contribution to this project, as is proposing a concrete set of changes to address issues created by anyone at any time. In  the same way, giving feedback on proposals created by anyone in the community is valuable, as is, of course, development and review work. [Proposing changes to the documentation of Plotly.js or associated projects](https://github.com/plotly/graphing-library-docs/blob/master/README.md) is an extremely valuable form of contribution, as is [asking or answering questions on our community forum](https://community.plotly.com/), as it creates a record of a question and discussion, which others can stumble across later and use to further their own work.
+Another source of information for the library is our community forum, where users [ask and answer questions](https://community.plotly.com/). Participating in these discussions is seen as another form of documentation, as it creates a record of a question and discussion, which others can stumble across later and use to further their own work.
 
 
 ## Opening issues
 
-Please read the [issue guidelines](./.github/ISSUE_TEMPLATE/) in the appropriate template.
+Please follow the [issue guidelines](./.github/ISSUE_TEMPLATE/) in the appropriate template.
 
 ## Making pull requests
 
-Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
+Please follow the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md) and the notes in the steps above. The [contribution flowchart](#contribution-flowchart) shows the checks that a pull request must pass.
 
 ## Using a coding agent
 
-If you prepare a contribution with a coding agent, point it at [AGENTS.md](AGENTS.md).
-That file and the [.agents](.agents/) folder state the rules an agent follows in this
-repository, including the steps it must leave to a human.
+If you prepare a contribution with a coding agent, point it at [AGENTS.md](AGENTS.md). That file and the [.agents](.agents/) folder state the rules an agent follows in this repository, including the steps it must leave to a human.
 
-## GitHub labels
+## Repo organization
 
-We use the following [labels](https://github.com/plotly/plotly.js/labels) to track issues and PRs:
-
-| Label | Purpose |
-|--------|---------|
-| `type: bug` | bug report confirmed by a plotly team member |
-| `type: regression` | bug that introduced a change in behavior from one version to the next |
-| `type: feature` | planned feature additions |
-| `type: new trace type` | subset of `type: feature` reserved for planned new trace types |
-| `type: translation` | localization-related tasks |
-| `type: performance` | performance related tasks |
-| `type: maintenance` | source code cleanup resulting in no enhancement for users |
-| `type: documentation` | API doc or attribute description improvements |
-| `type: community` | issue left open for community input and pull requests |
-| `type: duplicate` | *self-explanatory* |
-| `type: wontfix` | *self-explanatory* |
-| `status: discussion needed` | Issue or PR that required discussion among maintainers before moving forward |
-| `status: in progress` | PRs that required some initial feedback but not ready to merge |
-| `status: reviewable` | PRs that are completed from the author's perspective |
-| `status: on hold` | PRs that are put on hold |
-| `no-draftlog` | PR opted out of the [draftlog](./draftlogs/README.md) check |
+- Distributed files are in `dist/`
+- CommonJS entry points are in `lib/`: one per trace type, plus `index*.js` files that register the traces for the full and partial bundles
+- Source files are in `src/`
+- Build and repo management scripts are in `tasks/`
+- All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
+- Tests are in `test/`; they are partitioned into `image` and `jasmine` tests
+- Test dashboard and image viewer code is in `devtools/`
+- Built files are in `build/` (mostly git-ignored, with a few exceptions: see `build/README.md`)
 
 ## Development
 
 #### Prerequisites
 
-- git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v22.x.
-  Upgrading and managing node versions can be easily done using
-  [`nvm`](https://github.com/nvm-sh/nvm) or its Windows alternatives.
-- [`npm`](https://www.npmjs.com/) v10.x and up to ensure that the
-  [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
-  used and updated correctly.
-- [`python3`](https://www.python.org/downloads/)
-Note: For M1 Mac users specifically, you might need to install some [extra dependencies](https://github.com/Automattic/node-canvas/issues/1733#issuecomment-761703018). 
+- [git](https://git-scm.com/)
+- [node.js](https://nodejs.org/en/), at the version in [.nvmrc](./.nvmrc)
+- [npm](https://www.npmjs.com/)
+- [Python](https://www.python.org/downloads/)
+- [uv](https://docs.astral.sh/uv/)
 
-#### Step 1: Fork the plotly.js repository, clone your fork and step into it
+Dependencies can be seen in [package.json](./package.json).
+
+#### Step 1: Clone your fork and create a dev branch
+
+Fork the repository on GitHub, then clone your fork. The `upstream` remote lets you merge the latest changes from `main` into your branch.
 
 ```bash
-git clone --depth 1 git@github.com:<your-GitHub-username>/plotly.js.git
+git clone git@github.com:<your-GitHub-username>/plotly.js.git
 cd plotly.js
+git remote add upstream https://github.com/plotly/plotly.js.git
+# Please do not use main for your dev branch
+git switch -c dev-branch-name
 ```
 
-#### Step 2: Switch to a dev branch
+#### Step 2: Set up the project
 
 ```bash
-# please do not use main for your dev branch
-git checkout dev-branch-name
-```
-
-#### Step 3: Install dependencies
-
-```bash
-npm install
-```
-
-#### Step 4: Setup test environment
-
-```bash
+npm ci
 npm run pretest
-```
-
-#### Step 5: Start the test dashboard
-
-```bash
 npm start
 ```
 
-This command bundles up the source files and opens up a tab in your browser.
+#### Step 3: Open up the console and start developing
 
-#### Step 6: Open up the console and start developing
-
-A typical workflow is to make some modifications to the source, update the
-test dashboard, inspect and debug the changes, then repeat. The test dashboard
-comes bundled with some useful tools while developing - all bundled under the
-`Tabs` object:
+A typical workflow is to make some modifications to the source, update the test dashboard, inspect and debug the changes, then repeat. The test dashboard comes bundled with some useful tools while developing - all bundled under the `Tabs` object:
 
 | Method/Property        | Description |
 |------------------------|-------------|
@@ -144,59 +127,45 @@ comes bundled with some useful tools while developing - all bundled under the
 | `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
 | `Tabs.purge()` | Destroys all plots. |
 
-View [the source](https://github.com/plotly/plotly.js/blob/main/devtools/test_dashboard/devtools.js) for more info.
+View [the source](./devtools/test_dashboard/devtools.js) for more info.
 
 Three additional helpers exist that are refreshed every second:
 
-* `gd` - this is the default plot div
-* `fullData` - shortcut to `gd._fullData`
-* `fullLayout` - shortcut to `gd._fullLayout`
+- `gd` - this is the default plot div
+- `fullData` - shortcut to `gd._fullData`
+- `fullLayout` - shortcut to `gd._fullLayout`
 
-There is also a search bar in the top right of the dashboard. This fuzzy-searches
-image mocks based on their file name and trace type.
+There is also a search bar in the top right of the dashboard. This fuzzy-searches image mocks based on their file name and trace type.
 
-#### Step 7: Regenerate plot-schema in "test" folder then review & commit potential changes
+#### Step 4: Review & commit potential changes made to test/plot-schema.json
 
 ```bash
 npm run schema
 ```
 
-#### Step 8: Review & commit potential changes made to test/plot-schema.json
+If you are editing attribute descriptions or implementing a new feature, this command will update the proposed changes to the API in the schema located in the test folder.
 
-> If you are editing attribute descriptions or implementing a new feature this file located in the test folder records the proposed changes to the API. Note that there is another plot-schema.json file located in the dist folder, which should only be updated by the maintainers at release time.
+> Note that there is another plot-schema.json file located in the dist folder, which should only be updated by the maintainers at release time.
 
 **IMPORTANT:** please do not change and commit any files in the "dist" folder
 
-#### Step 9: REGL - Review & commit potential changes to precompiled regl shaders
+#### Step 5: REGL - Review & commit potential changes to precompiled regl shaders
 
-If you are implementing a new feature that involves regl shaders, or if you are
-making changes that affect the usage of regl shaders, you will need to regenerate the precompiled regl shader code. In practice, that means edits under:
+If you are implementing a new feature that involves regl shaders, or if you are making changes that affect the usage of regl shaders, you will need to regenerate the precompiled regl shader code. In practice, that means edits under:
 
 - `src/traces/{scattergl,scatterpolargl,splom,parcoords}/`
 - `src/lib/prepare_regl.js`
 - `stackgl_modules/` (where the `regl-*` shader libs live)
 - `devtools/regl_codegen/`
 
-CI's `check-regl-codegen` job uses this same list as its trigger — see [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the authoritative version.
+CI's `check-regl-codegen` job uses this same list as its trigger - see [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the authoritative version.
 
-This is needed because regl performs codegen in runtime which breaks CSP
-compliance, and so for strict builds we pre-generate regl shader code here.
+This is needed because regl performs codegen in runtime which breaks CSP compliance, and so for strict builds we pre-generate regl shader code here.
 
-The CI pipeline will automatically detect when regl-related files have changed and
-run the codegen process. If the precompiled shaders are out of date, the
-`check-regl-codegen` job will fail and upload a `regl-codegen` artifact containing
-the updated files. The artifact represents the full desired state of the codegen
-output (CI wipes the output directory before regenerating, so any orphaned shader
-files are pruned). To fix this:
+The CI pipeline will automatically detect when regl-related files have changed and run the codegen process. If the precompiled shaders are out of date, the `check-regl-codegen` job will fail and upload a `regl-codegen` artifact containing the updated files. The artifact represents the full desired state of the codegen output (CI wipes the output directory before regenerating, so any orphaned shader files are pruned). To fix this:
 
 1. Download the `regl-codegen` artifact from the failed workflow run
-2. Delete `src/generated/regl-codegen/` in your working tree, then unzip the
-   artifact into `src/` so it replaces (rather than merges into) the existing
-   directory. Note that `actions/upload-artifact` strips the longest common
-   parent path from the uploaded paths, so the zip's root contains
-   `generated/regl-codegen/` and `traces/{scattergl,scatterpolargl,splom,parcoords}/regl_precompiled.js`
-   directly — extracting into `src/` restores the correct layout and
-   overwrites the four `regl_precompiled.js` files in one step.
+2. Delete `src/generated/regl-codegen/` in your working tree, then unzip the artifact into `src/` so it replaces (rather than merges into) the existing directory. Note that `actions/upload-artifact` strips the longest common parent path from the uploaded paths, so the zip's root contains `generated/regl-codegen/` and `traces/{scattergl,scatterpolargl,splom,parcoords}/regl_precompiled.js` directly - extracting into `src/` restores the correct layout and overwrites the four `regl_precompiled.js` files in one step.
 3. Commit and push the changes to your pull request
 
 Alternatively, you can regenerate the code locally:
@@ -206,36 +175,15 @@ rm -rf src/generated/regl-codegen/*
 npm run regl-codegen
 ```
 
-The `rm -rf` step is needed to clean up any orphaned shader files left over from
-previous changes. `npm run regl-codegen` will prompt you to open
-a browser window, run through the mocks for each regl-using trace
-(`parcoords`, `scattergl`, `scatterpolargl`, `splom`), and store the captured
-shader code into
-[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/main/src/generated/regl-codegen).
-The four `src/traces/{parcoords,scattergl,scatterpolargl,splom}/regl_precompiled.js`
-files are rewritten in the same pass so their imports point at the freshly
-generated shader files. Commit any changes that result — both the
-`src/generated/regl-codegen/` updates and any modified `regl_precompiled.js`
-files.
-
-#### Other npm scripts that may be of interest in development
-
-- `npm run preprocess`: regenerates the sources that the build depends on, and
-  must be run manually when their inputs change. Commit the result.
-  `build/README.md` describes the committed files under `build/` and what
-  triggers each one. Note that the `preprocess` step is always run automatically
-  as part of `npm run build`.
+The `rm -rf` step is needed to clean up any orphaned shader files left over from previous changes. `npm run regl-codegen` will prompt you to open a browser window, run through the mocks for each regl-using trace (`parcoords`, `scattergl`, `scatterpolargl`, `splom`), and store the captured shader code into [src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/main/src/generated/regl-codegen). The four `src/traces/{parcoords,scattergl,scatterpolargl,splom}/regl_precompiled.js` files are rewritten in the same pass so their imports point at the freshly generated shader files. Commit any changes that result - both the `src/generated/regl-codegen/` updates and any modified `regl_precompiled.js` files.
 
 ## Testing
 
-Both Jasmine and image tests are run on
-[GitHub Actions](https://github.com/plotly/plotly.js/actions/workflows/ci.yml) on every push to this
-repo.
+Both Jasmine and image tests are run on [GitHub Actions](https://github.com/plotly/plotly.js/actions/workflows/ci.yml) for every pull request and every push to `main`.
 
 ### Jasmine tests
 
-Jasmine tests are run in a browser using
-[karma](https://github.com/karma-runner/karma). To run them locally:
+Jasmine tests are run in a browser using [karma](https://github.com/karma-runner/karma). To run them locally:
 
 ```
 npm run test-jasmine
@@ -247,8 +195,7 @@ To run a specific suite, use:
 npm run test-jasmine -- <suite>
 ```
 
-where the `<suite>` corresponds to the suite's file name as found in
-[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/main/test/jasmine/tests).
+where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/main/test/jasmine/tests).
 
 You can also test multiple suites at a time, for example:
 
@@ -256,8 +203,7 @@ You can also test multiple suites at a time, for example:
 npm run test-jasmine -- bar axes scatter
 ```
 
-which will run tests in the `bar_test.js`, `axes_test.js` and `scatter_test.js`
-suites.
+which will run tests in the `bar_test.js`, `axes_test.js` and `scatter_test.js` suites.
 
 To turn off the `autoWatch` / auto-bundle / multiple run mode:
 
@@ -265,46 +211,24 @@ To turn off the `autoWatch` / auto-bundle / multiple run mode:
 npm run test-jasmine -- <suite> --nowatch
 ```
 
-In certain situations, you may find that the default reporting is not verbose
-enough to pin down the source of the failing test. In this situation, you may
-wish to use
-[karma-verbose-reporter](https://www.npmjs.com/package/karma-verbose-reporter):
-
-```
-npm run test-jasmine -- <suite> --verbose
-```
-
-For more info on the karma / jasmine CLI:
-
-```
-npm run test-jasmine -- --help
-npm run test-jasmine -- --info
-```
-
 ### Draft new baselines
 
-#### With Docker:
-```sh
-docker run -it -v "$(pwd)":/plotly.js python:3.12 bash
-# Then inside the container
-cd /plotly.js
-pip install uv
-bash .github/scripts/env_image.sh
-```
+Ensure you have Python 3.12 and [`uv`](https://docs.astral.sh/uv/) installed.
 
-#### Without Docker:
-Ensure you have Python 3.12+ and [`uv`](https://docs.astral.sh/uv/) installed.
-
-To install required fonts and tools, run the [setup script](https://github.com/plotly/plotly.js/blob/main/.github/scripts/env_image.sh):
+To install required fonts and tools, run the [setup script](https://github.com/plotly/plotly.js/blob/main/.github/scripts/env_image.sh). The script uses `apt-get` and `sudo`, so it works only on Debian and Ubuntu.
 ```sh
 bash .github/scripts/env_image.sh
 ```
 
-#### Scripts to generate/update new baselines with/without Docker:
+Kaleido renders the images with Chrome, and the pixels depend on the Chrome version. CI pins the Chrome, Python and `uv` versions in [setup-image-env](.github/actions/setup-image-env/action.yml). To match the CI output, point the `BROWSER_PATH` environment variable at the same Chrome version.
+
+#### Scripts to generate/update new baselines:
 
 ```sh
 python3 test/image/make_baseline.py = mock_1 mock_2
 ```
+
+The `=` argument writes the images to `test/image/baselines/`. Without the `=`, the script writes the images to `build/test_images/` for comparison.
 
 Alternatively, you can use Node:
 
@@ -312,38 +236,23 @@ Alternatively, you can use Node:
 npm run baseline mock_1 mock_2
 ```
 
-Or
+Or use a glob pattern. Quote the pattern, or the shell expands it against the current folder:
 
 ```sh
-npm run baseline mock_*
+npm run baseline -- 'mock_*'
 ```
 
-**IMPORTANT:** the `baseline`, `test-image` and `test-export` scripts do **not** bundle the source files before
-running the image tests. We recommend running `npm start` in
-a separate tab to ensure that the most up-to-date code is used.
-Also if you are adding a new mock, you may need to re-run `npm start`
-to be able to find the new mock in the browser.
-To help ensure valid attributes are used in your new mock(s), please run `npm run test-mock`
-or `npm run test-mock mock_name(s)` after adding new mocks or implementing any new attributes.
+**IMPORTANT:** the `baseline`, `test-image` and `test-export` scripts do **not** bundle the source files before running the image tests. We recommend running `npm start` in a separate tab to ensure that the most up-to-date code is used. Also if you are adding a new mock, you may need to re-run `npm start` to be able to find the new mock in the browser. To help ensure valid attributes are used in your new mock(s), please run `npm run test-mock` or `npm run test-mock mock_name(s)` after adding new mocks or implementing any new attributes.
 
-If you added new mocks to test/image/mocks folder, to generate draft baselines run
-```sh
-python3 test/image/make_baseline.py = mockFilename1 mockFilename2
-```
-
-Then commit the new baselines and push.
-Please note that image pixel comparison tests run on `ubuntu-latest` in GitHub Actions.
-Therefore the final baselines may need updates.
-To use the images generated by the CI job directly, you can download the baseline images from the "Upload image diffs" step of the `test-baselines` job in the failed workflow run.
+If you added new mocks to test/image/mocks folder, generate new baseline images and commit them. Please note that image pixel comparison tests run on `ubuntu-latest` in GitHub Actions. Therefore the final baselines may need updates. To use the images generated by the CI job directly, download the `baselines-default-diff` artifact from the failed workflow run. Its `test_images/` folder holds the images that the `test-baselines` job rendered.
 
 ### Using the developer console in karma to write/debug jasmine tests
 
 - Click on the `DEBUG` button
 - In the `DEBUG RUNNER` window, open the console (e.g. with `<ctrl-shift-j>`)
-- Find test file (e.g. with `<ctrl-o>` + typing the name of the file), look out
-  for "bundled" files with the same name.
+- Find test file (e.g. with `<ctrl-o>` + typing the name of the file), look out for "bundled" files with the same name.
 - Set `debugger` on relevant line(s)
-- Rerun the test suite by refreshing the page (e.g. with `<crtl-r>`)
+- Rerun the test suite by refreshing the page (e.g. with `<ctrl-r>`)
 
 ![Peek 2020-03-11 10-45](https://user-images.githubusercontent.com/6675409/76438118-f2502300-6390-11ea-88d2-17a553c3b4e8.gif)
 
@@ -380,23 +289,9 @@ It is triggered in one of two ways:
 
 If you would like a link to the dev build for your PR but don't have permission to trigger the workflow, tag a maintainer to request a run for your PR.
 
-## Repo organization
-
-- Distributed files are in `dist/`
-- CommonJS require-able modules are in `lib/`
-- Sources files are in `src/`
-- Build and repo management scripts are in `tasks/`
-- All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
-- Tests are in `test/`; they are partitioned into `image` and `jasmine` tests
-- Test dashboard and image viewer code is in `devtools/`
-- Built files are in `build/` (mostly git-ignored, with a few exceptions: see `build/README.md`)  
-
 ### The bundled maplibre-gl worker
 
-`map` traces render through `maplibre-gl`, which parses tiles in a web worker.
-As of v6, the library no longer includes a UMD bundle with this code. As such,
-it's now necessary to extract it and include it as part of the build process.
-See `tasks/util/bundle_maplibre_worker.js` for more information.
+`map` traces render through `maplibre-gl`, which parses tiles in a web worker. As of v6, the library no longer includes a UMD bundle with this code. As such, it's now necessary to extract it and include it as part of the build process. See `tasks/util/bundle_maplibre_worker.js` for more information.
 
 ## Trace module design
 
@@ -404,7 +299,7 @@ The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/t
 are defined as plain objects with functions and constants attached to them in an index file
 (e.g. `src/traces/scatter/index.js`). The trace modules are "registered" under the `Registry` object
 (found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/main/src/registry.js)) using
-`Plotly.register` (as done in the index files in `dist/`).
+`Plotly.register` (as done in the index files in `lib/`).
 
 The trace module methods are meant to be called as part of loops during subplot-specific
 (e.g. in `plots/cartesian/index.js`) and figure-wide (e.g. in `plots/plots.js`) subroutines.
@@ -433,7 +328,7 @@ All traces modules set:
 Other methods used by some trace modules:
 
 - `_module.categories`: list of string identifiers used to group traces by behavior. Traces that
-   have a given category can then be detected using [`Registry.traceIs`](https://github.com/plotly/plotly.js/blob/8f049fddbac0ca0382816984b8526857e9714fe6/src/registry.js#L129-L155)
+  have a given category can then be detected using [`Registry.traceIs`](https://github.com/plotly/plotly.js/blob/main/src/registry.js)
 - `_module.layoutAttributes`: JSON-serializable object of attribute declarations
   coerced in the layout (e.g. `barmode` for `bar` traces)
 - `_module.supplyLayoutDefaults`: Defaults logic for layout attributes.
@@ -453,4 +348,55 @@ Other methods used by some trace modules:
 
 ## Coding style
 
-Check if OK with `npm run lint`
+The project uses [Biome](https://biomejs.dev/) for linting. To find problems, run:
+
+```bash
+npm run lint
+```
+
+To fix the problems that Biome can fix on its own, and to format the image mocks, run:
+
+```bash
+npm run lint-fix
+```
+
+## Contribution flowchart
+
+This flowchart shows the steps in [How do changes get made to Plotly.js?](#how-do-changes-get-made-to-plotlyjs), from a new issue to a merged pull request.
+
+```mermaid
+flowchart TD
+    A([Idea or bug]) --> B{Does an issue exist?}
+    B -- Yes --> C[Comment on the issue]
+    B -- No --> D[Open an issue from a template]
+    D --> E{Used a template?}
+    E -- No --> X1([Issue closed])
+    E -- Yes --> F[Discussion with maintainers]
+    C --> F
+    F --> G{Maintainer decision}
+    G -- Not valid or out of scope --> X2([Issue declined])
+    G -- Valid, not a priority now --> W["Issue stays open without ready-for-pr"]
+    W -. Maintainers revisit later .-> H
+    G -- Valid and ready --> H["Maintainer adds ready-for-pr label"]
+    H --> J{Is the issue assigned?}
+    J -- No --> M["Open a PR with Closes #N"]
+    J -- To you --> M
+    J -- To another user --> K([Pick another issue])
+    Z([PR opened outside this process]) --> N1
+    M --> N1{Links an issue?}
+    N1 -- No --> X3([PR closed])
+    N1 -- Yes --> N2{"Issue has ready-for-pr?"}
+    N2 -- No --> X3
+    N2 -- Yes --> N3{Assigned to another user?}
+    N3 -- Yes --> X3
+    N3 -- No --> O[Maintainer review]
+    O --> P{Maintainer feedback?}
+    P -- No --> R([Merged])
+    P -- Yes --> Q{Author responds?}
+    Q -- Yes --> S[Author updates the PR]
+    S --> O
+    Q -- No --> T["Stale label and warning"]
+    T --> U{Author responds?}
+    U -- Yes --> S
+    U -- No --> X4([PR closed])
+```
