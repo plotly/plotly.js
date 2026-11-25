@@ -89,6 +89,22 @@ function hasTransition(transitionOpts) {
 }
 
 function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) {
+    if (!gd._fullLayout.uniformtext.mode && hasTransition(opts)) {
+        // One start time for everything drawn here: started one by one, bars that
+        // touch (e.g. in a stack) drift apart mid-transition.
+        traceLayer
+            .transition()
+            .duration(opts.duration)
+            .ease(opts.easing)
+            .each(function () {
+                _plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback);
+            });
+    } else {
+        _plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback);
+    }
+}
+
+function _plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;

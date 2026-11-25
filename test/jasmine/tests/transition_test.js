@@ -1182,4 +1182,68 @@ describe('Plotly.react transitions:', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should keep stacked bars together during a transition', function(done) {
+        // the bottom trace shrinks to nothing, moving every other bar
+        function makeData(v) {
+            var data = [];
+            for(var i = 0; i < 20; i++) {
+                var y = [];
+                for(var j = 0; j < 20; j++) y.push(i === 0 ? v : 1);
+                data.push({type: 'bar', y: y});
+            }
+            return data;
+        }
+
+        // bounding boxes of the bars in the first stack, from the bottom up
+        function getBoxes() {
+            var boxes = [];
+            gd.querySelectorAll('.bars').forEach(function(trace) {
+                boxes.push(trace.querySelector('.point path').getBBox());
+            });
+            return boxes;
+        }
+
+        var initialHeight;
+        var sawMidTransition = false;
+        var maxGap = 0;
+
+        function sample() {
+            var boxes = getBoxes();
+            var h = boxes[0].height;
+            if(h > 1 && h < initialHeight - 1) sawMidTransition = true;
+
+            for(var i = 0; i + 1 < boxes.length; i++) {
+                var gap = boxes[i].y - (boxes[i + 1].y + boxes[i + 1].height);
+                maxGap = Math.max(maxGap, Math.abs(gap));
+            }
+        }
+
+        // fixed axis ranges, so that only the traces are transitioned
+        var layout = {
+            barmode: 'stack',
+            xaxis: {range: [-1, 20]},
+            yaxis: {range: [0, 40]},
+            transition: {duration: 300}
+        };
+        var transitionPromise;
+
+        Plotly.newPlot(gd, makeData(20), layout)
+        .then(function() {
+            initialHeight = getBoxes()[0].height;
+            transitionPromise = Plotly.react(gd, makeData(0), layout);
+        })
+        .then(delay(100))
+        .then(sample)
+        .then(delay(50))
+        .then(sample)
+        .then(delay(50))
+        .then(sample)
+        .then(function() {
+            expect(sawMidTransition).toBe(true, 'sampled mid-transition');
+            expect(maxGap).toBeLessThan(0.1, 'largest gap between neighbouring bars');
+            return transitionPromise;
+        })
+        .then(done, done.fail);
+    });
 });
