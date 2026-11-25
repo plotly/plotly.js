@@ -1,7 +1,5 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
-
 var helpers = require('../sunburst/helpers');
 var uniformText = require('../bar/uniform_text');
 var clearMinTextSize = uniformText.clearMinTextSize;
@@ -40,7 +38,7 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
             onComplete = makeOnCompleteCallback();
         }
 
-        var transition = d3.transition()
+        var transition = layer.transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)
             .each('end', function() { onComplete && onComplete(); })

@@ -49,7 +49,7 @@ exports.plot = function (gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
             onComplete = makeOnCompleteCallback();
         }
 
-        var transition = d3
+        var transition = layer
             .transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)
