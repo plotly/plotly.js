@@ -30,6 +30,25 @@ describe('Plots.transition', function() {
         destroyGraphDiv();
     });
 
+    it('resolves a zero-duration axis transition whose first frame runs right away', function(done) {
+        var traces = plotApiHelpers.coerceTraceIndices(gd, null);
+        var resolved = false;
+
+        // the first frame then runs in the same millisecond the transition started
+        spyOn(Date, 'now').and.returnValue(Date.now());
+
+        Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, traces, {redraw: true}, {duration: 0, easing: 'cubic-in-out'})
+            .then(function() { resolved = true; });
+
+        Promise.resolve()
+        .then(delay(100))
+        .then(function() {
+            expect(resolved).toBe(true, 'transition resolved');
+            expect(gd._fullLayout.xaxis.range).toEqual([0.2, 0.3]);
+        })
+        .then(done, done.fail);
+    });
+
     // Run the whole set of tests twice: once with zero duration and once with
     // nonzero duration since the behavior should be identical, but there's a
     // very real possibility of race conditions or other timing issues.

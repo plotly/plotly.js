@@ -181,14 +181,15 @@ module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnComple
     function doFrame() {
         t2 = Date.now();
 
-        var tInterp = Math.min(1, (t2 - t1) / transitionOpts.duration);
+        var duration = transitionOpts.duration;
+        var tInterp = duration > 0 ? Math.min(1, (t2 - t1) / duration) : 1;
         var progress = easeFn(tInterp);
 
         for(var i = 0; i < edits.length; i++) {
             updateSubplot(edits[i], progress);
         }
 
-        if(t2 - t1 > transitionOpts.duration) {
+        if(tInterp >= 1) {
             transitionComplete();
             raf = window.cancelAnimationFrame(doFrame);
         } else {
