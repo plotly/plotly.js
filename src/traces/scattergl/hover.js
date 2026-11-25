@@ -4,6 +4,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
 const Drawing = require('../../components/drawing');
+const TOO_MANY_POINTS = require('./constants').TOO_MANY_POINTS;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -17,27 +18,180 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var ypx = ya.c2p(yval);
     var maxDistance = pointData.distance;
     var ids;
+    let scanTree = false;
+    let minX, maxX, minY, maxY;
 
-    // FIXME: make sure this is a proper way to calc search radius
-    if(stash.tree) {
-        var xl = xa.p2c(xpx - maxDistance);
-        var xr = xa.p2c(xpx + maxDistance);
-        var yl = ya.p2c(ypx - maxDistance);
-        var yr = ya.p2c(ypx + maxDistance);
+    // A range query can return most of a large trace before the hover loop finds one point.
+    // A balanced index lets the search discard whole groups that cannot contain the winner.
+    // Keep bounds in data coordinates so pan and zoom do not require a rebuild.
+    // Periods and range breaks use the existing search because their pixel mapping needs
+    // different bounds than the monotonic axis conversions used by this index.
+    if(x.length >= TOO_MANY_POINTS &&
+        !trace.xperiodalignment && !trace.yperiodalignment &&
+        !xa.rangebreaks && !ya.rangebreaks) {
+        let index = stash._hoverIndex;
+        // The stash owns the index. New coordinate arrays or axis types need a new index.
+        if(!index || index.x !== x || index.y !== y ||
+            index.xType !== xa.type || index.yType !== ya.type) {
+            const count = x.length;
+            // Store point IDs instead of copies of the coordinate arrays.
+            const order = new Uint32Array(count);
+            let valid = 0;
+            for(let j = 0; j < count; j++) {
+                // Log axes cannot map zero or negative values to finite pixels.
+                if(Number.isFinite(x[j]) && Number.isFinite(y[j]) &&
+                    (xa.type !== 'log' || x[j] > 0) && (ya.type !== 'log' || y[j] > 0)) {
+                    order[valid++] = j;
+                }
+            }
 
-        if(hovermode === 'x') {
-            ids = stash.tree.range(
-                Math.min(xl, xr), Math.min(ya._rl[0], ya._rl[1]),
-                Math.max(xl, xr), Math.max(ya._rl[0], ya._rl[1])
-            );
-        } else {
-            ids = stash.tree.range(
-                Math.min(xl, xr), Math.min(yl, yr),
-                Math.max(xl, xr), Math.max(yl, yr)
-            );
+            // Each node owns a contiguous slice of order and bounds every point in that slice.
+            function build(start, end) {
+                if(start === end) return null;
+                let minX = Infinity;
+                let maxX = -Infinity;
+                let minY = Infinity;
+                let maxY = -Infinity;
+                let maxId = 0;
+                for(let j = start; j < end; j++) {
+                    const id = order[j];
+                    minX = Math.min(minX, x[id]);
+                    maxX = Math.max(maxX, x[id]);
+                    minY = Math.min(minY, y[id]);
+                    maxY = Math.max(maxY, y[id]);
+                    maxId = Math.max(maxId, id);
+                }
+                // maxId supports the rule that the last point wins a distance tie.
+                const node = {start, end, minX, maxX, minY, maxY, maxId};
+                // A coincident group can represent any number of points in one leaf.
+                if(end - start <= 32 || (minX === maxX && minY === maxY)) return node;
+
+                // Partition around the median on the widest data axis.
+                // Point IDs break coordinate ties so that the two children stay balanced.
+                const values = maxX - minX >= maxY - minY ? x : y;
+                const middle = (start + end) >>> 1;
+                let left = start;
+                let right = end - 1;
+                while(left < right) {
+                    const pivot = order[(left + right) >>> 1];
+                    const pivotValue = values[pivot];
+                    let lo = left;
+                    let hi = right;
+                    while(lo <= hi) {
+                        while(values[order[lo]] < pivotValue ||
+                            (values[order[lo]] === pivotValue && order[lo] < pivot)) lo++;
+                        while(values[order[hi]] > pivotValue ||
+                            (values[order[hi]] === pivotValue && order[hi] > pivot)) hi--;
+                        if(lo <= hi) {
+                            const tmp = order[lo];
+                            order[lo++] = order[hi];
+                            order[hi--] = tmp;
+                        }
+                    }
+                    if(middle <= hi) right = hi;
+                    else if(middle >= lo) left = lo;
+                    else break;
+                }
+                // The partition moves IDs only. The original trace order stays unchanged.
+                node.left = build(start, middle);
+                node.right = build(middle, end);
+                return node;
+            }
+
+            index = stash._hoverIndex = {
+                x, y, xType: xa.type, yType: ya.type, order, root: build(0, valid)
+            };
         }
-    } else {
-        ids = stash.ids;
+
+        // Tree-backed x hover considers only points in the visible y range.
+        // The existing array path does not apply that restriction.
+        const xMode = hovermode === 'x';
+        const filterY = xMode && !!stash.tree;
+        const minY = filterY ? Math.min(ya._rl[0], ya._rl[1]) : -Infinity;
+        const maxY = filterY ? Math.max(ya._rl[0], ya._rl[1]) : Infinity;
+        // Start at the hover cutoff. Infinity permits an unrestricted nearest-point search.
+        let bestDistance = maxDistance;
+        let bestId;
+        const stack = index.root ? [index.root] : [];
+        while(stack.length) {
+            const node = stack.pop();
+            if(filterY && (node.maxY < minY || node.minY > maxY)) continue;
+            // Convert node bounds to pixels for the current zoom and axis direction.
+            // Without range breaks, the axis mapping is monotonic between these endpoints.
+            const px0 = xa.c2p(node.minX);
+            const px1 = xa.c2p(node.maxX);
+            const py0 = xMode ? 0 : ya.c2p(node.minY);
+            const py1 = xMode ? 0 : ya.c2p(node.maxY);
+            const dx = Math.max(Math.min(px0, px1) - xpx, 0, xpx - Math.max(px0, px1));
+            const dy = xMode ? 0 : Math.max(Math.min(py0, py1) - ypx, 0, ypx - Math.max(py0, py1));
+            // The distance to the bounding box is a lower bound for every point in the node.
+            const lowerBound = Math.sqrt(dx * dx + dy * dy);
+            if(!Number.isFinite(lowerBound)) continue;
+            // A node can be skipped only when it cannot improve distance or the tie.
+            if(lowerBound > bestDistance ||
+                (lowerBound === bestDistance && bestId !== undefined && node.maxId <= bestId)) continue;
+            // Equal coordinates share a distance, so the last point wins without a scan.
+            if(node.minX === node.maxX && (xMode || node.minY === node.maxY) &&
+                (!filterY || (node.minY >= minY && node.maxY <= maxY))) {
+                bestDistance = lowerBound;
+                bestId = node.maxId;
+                continue;
+            }
+            if(node.left) {
+                const left = node.left;
+                const right = node.right;
+                // Visit the nearer center first. An early winner improves later pruning.
+                // The center only affects traversal order, not the distance bound.
+                const leftX = xa.c2p((left.minX + left.maxX) / 2);
+                const rightX = xa.c2p((right.minX + right.maxX) / 2);
+                const leftY = xMode ? ypx : ya.c2p((left.minY + left.maxY) / 2);
+                const rightY = xMode ? ypx : ya.c2p((right.minY + right.maxY) / 2);
+                if((leftX - xpx) ** 2 + (leftY - ypx) ** 2 <
+                    (rightX - xpx) ** 2 + (rightY - ypx) ** 2) {
+                    stack.push(right, left);
+                } else {
+                    stack.push(left, right);
+                }
+            } else {
+                // Small or partially visible leaves need exact point distances.
+                for(let j = node.start; j < node.end; j++) {
+                    const id = index.order[j];
+                    if(filterY && !(y[id] >= minY && y[id] <= maxY)) continue;
+                    const pointDx = xa.c2p(x[id]) - xpx;
+                    const pointDy = xMode ? 0 : ya.c2p(y[id]) - ypx;
+                    const distance = Math.sqrt(pointDx * pointDx + pointDy * pointDy);
+                    if(Number.isFinite(distance) && (distance < bestDistance ||
+                        (distance === bestDistance && (bestId === undefined || id > bestId)))) {
+                        bestDistance = distance;
+                        bestId = id;
+                    }
+                }
+            }
+        }
+        // Reuse the existing hover metadata and spike-distance calculation below.
+        ids = bestId === undefined ? [] : [bestId];
+    }
+
+    if(!ids) {
+        // FIXME: make sure this is a proper way to calc search radius
+        if(stash.tree) {
+            const xl = maxDistance === Infinity ? -Infinity : xa.p2c(xpx - maxDistance);
+            const xr = maxDistance === Infinity ? Infinity : xa.p2c(xpx + maxDistance);
+            const yl = hovermode === 'x' ? ya._rl[0] :
+                maxDistance === Infinity ? -Infinity : ya.p2c(ypx - maxDistance);
+            const yr = hovermode === 'x' ? ya._rl[1] :
+                maxDistance === Infinity ? Infinity : ya.p2c(ypx + maxDistance);
+            minX = Math.min(xl, xr);
+            maxX = Math.max(xl, xr);
+            minY = Math.min(yl, yr);
+            maxY = Math.max(yl, yr);
+            // point-cluster's rectangle parser cannot represent infinite endpoints.
+            // Scan its IDs and apply the same bounds in the existing hover loops.
+            scanTree = !Number.isFinite(maxX - minX) || !Number.isFinite(maxY - minY);
+            ids = scanTree ? stash.tree : stash.tree.range(minX, minY, maxX, maxY);
+        } else {
+            ids = stash.ids;
+        }
     }
 
     // pick the id closest to the point
@@ -51,6 +205,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
         for(i = 0; i < ids.length; i++) {
             k = ids[i];
+            if(scanTree && !(x[k] >= minX && x[k] <= maxX && y[k] >= minY && y[k] <= maxY)) continue;
             ptx = x[k];
 
             dx = Math.abs(xa.c2p(ptx) - xpx);
@@ -65,7 +220,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             }
 
             // Accept a tie so that the point drawn last wins, as in `Fx.getClosest`
-            if(dx <= minDist) {
+            if(Number.isFinite(dx) && dx <= minDist) {
                 minDist = dx;
                 pty = y[k];
                 dy = ya.c2p(pty) - ypx;
@@ -87,6 +242,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     } else {
         for(i = 0; i < ids.length; i++) {
             k = ids[i];
+            if(scanTree && !(x[k] >= minX && x[k] <= maxX && y[k] >= minY && y[k] <= maxY)) continue;
             ptx = x[k];
             pty = y[k];
             dx = xa.c2p(ptx) - xpx;
