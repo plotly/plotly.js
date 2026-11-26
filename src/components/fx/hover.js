@@ -2729,7 +2729,7 @@ function orderRangePoints(hoverData, hovermode) {
 
         if (Registry.traceIs(d.trace, 'bar-like') || Registry.traceIs(d.trace, 'box-violin')) {
             last.push(d);
-        } else if (d.trace[axLetter + 'period']) {
+        } else if (d.trace[axLetter + 'period'] && d[axLetter + 'a'].type === 'date') {
             second.push(d);
         } else {
             first.push(d);

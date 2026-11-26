@@ -53,8 +53,8 @@ function calc(gd, trace) {
         calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     }
 
-    var hasPeriodX = !!trace.xperiodalignment;
-    var hasPeriodY = !!trace.yperiodalignment;
+    const hasPeriodX = !!xObj.ends;
+    const hasPeriodY = !!yObj.ends;
 
     for(i = 0; i < serieslen; i++) {
         var cdi = cd[i] = {};

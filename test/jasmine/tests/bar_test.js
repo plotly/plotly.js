@@ -562,6 +562,35 @@ describe('Bar.calc', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 's', [[2000]]);
     });
+
+    [
+        { axType: 'category', pos: ['2026-01-15', '2026-02-15', '2026-03-15'], period: 'M1', p: [0, 1, 2] },
+        { axType: 'linear', pos: [1, 2, 3], period: 2, p: [1, 2, 3] }
+    ].forEach(({ axType, pos, period, p }) => {
+        it(`should ignore xperiod on a ${axType} x axis`, () => {
+            const gd = mockBarPlot([{ x: pos, y: [4, 1, 3], xperiod: period }], { xaxis: { type: axType } });
+
+            assertPointField(gd.calcdata, 'p', [p]);
+            gd.calcdata[0].forEach((d) => {
+                expect(d.orig_p).toBeUndefined();
+                expect(d.xStart).toBeUndefined();
+                expect(d.xEnd).toBeUndefined();
+            });
+        });
+
+        it(`should ignore yperiod on a ${axType} y axis`, () => {
+            const gd = mockBarPlot([{ orientation: 'h', x: [4, 1, 3], y: pos, yperiod: period }], {
+                yaxis: { type: axType }
+            });
+
+            assertPointField(gd.calcdata, 'p', [p]);
+            gd.calcdata[0].forEach((d) => {
+                expect(d.orig_p).toBeUndefined();
+                expect(d.yStart).toBeUndefined();
+                expect(d.yEnd).toBeUndefined();
+            });
+        });
+    });
 });
 
 describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
