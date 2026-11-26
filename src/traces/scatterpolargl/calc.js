@@ -27,6 +27,9 @@ module.exports = function calc(gd, trace) {
     // only compute 'style' options in calc, as position options
     // depend on the radial range and must be set in plot
     var opts = stash.opts = convert.style(gd, trace);
+    if(opts.marker) {
+    opts.marker.snap = len;
+}
 
     // For graphs with very large number of points and array marker.size,
     // use average marker size instead to speed things up.

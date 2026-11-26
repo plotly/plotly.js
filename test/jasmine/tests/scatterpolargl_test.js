@@ -171,6 +171,26 @@ describe('Test scatterpolargl interactions:', function() {
         });
     }
 
+    it('@gl should set marker.snap to the number of points', function(done) {
+        gd = createGraphDiv();
+
+        Lib.seedPseudoRandom();
+        var N = 12000;
+        var r = [];
+        var theta = [];
+        for(var i = 0; i < N; i++) {
+            r.push(Lib.pseudoRandom());
+            theta.push(Lib.pseudoRandom() * 360);
+        }
+
+        Plotly.newPlot(gd, [{type: 'scatterpolargl', mode: 'markers', r: r, theta: theta}])
+        .then(function() {
+            var scene = gd._fullLayout.polar._subplot._scene;
+            expect(scene.markerOptions[0].snap).toBe(N);
+        })
+        .then(done, done.fail);
+    });
+
     it('@gl should be able to toggle from svg to gl', function(done) {
         gd = createGraphDiv();
 
