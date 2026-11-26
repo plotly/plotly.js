@@ -11,9 +11,9 @@ const { filters, inputDir, layers, resolutions, scopes, unFilename, vectors } = 
 
 // Create output directories
 const outputDirGeojson = path.resolve(config.outputDirGeojson);
-if (!fs.existsSync(outputDirGeojson)) fs.mkdirSync(outputDirGeojson, { recursive: true });
+fs.mkdirSync(outputDirGeojson, { recursive: true });
 const outputDirTopojson = path.resolve(config.outputDirTopojson);
-if (!fs.existsSync(outputDirTopojson)) fs.mkdirSync(outputDirTopojson, { recursive: true });
+fs.mkdirSync(outputDirTopojson, { recursive: true });
 
 async function convertShpToGeo(filename) {
     const inputFilePath = `${inputDir}/${filename}.shp`;
@@ -22,16 +22,16 @@ async function convertShpToGeo(filename) {
     await mapshaper.runCommands(commands);
 }
 
-function getJsonFile(filename) {
+const getJsonFile = (filename) => {
     try {
         return JSON.parse(fs.readFileSync(filename, 'utf8'));
     } catch (err) {
-        console.error(`❌ Failed to load JSON input file '${filename}':`, err.message);
+        console.error(`Failed to load JSON input file '${filename}':`, err.message);
         process.exit(1);
     }
-}
+};
 
-function createCountriesList(geojsonPath, outputPath) {
+const createCountriesList = (geojsonPath, outputPath) => {
     const geojson = getJsonFile(geojsonPath);
     if (!geojson.features) return;
 
@@ -40,10 +40,11 @@ function createCountriesList(geojsonPath, outputPath) {
             const { iso3cd, nam_en } = feature.properties;
             return { iso3cd, name: nam_en };
         })
-        .sort((a, b) => a.name.localeCompare(b.name));
+        // Without an explicit locale, the order depends on the locale of the machine
+        .sort((a, b) => a.name.localeCompare(b.name, 'en'));
 
     fs.writeFileSync(outputPath, JSON.stringify(countryData));
-}
+};
 
 function addCentroidsToGeojson(geojsonPath) {
     const geojson = getJsonFile(geojsonPath);
@@ -59,7 +60,7 @@ function addCentroidsToGeojson(geojsonPath) {
     fs.writeFileSync(geojsonPath, JSON.stringify({ ...geojson, features }));
 }
 
-// Wind the polygon rings in the correct direction to indicate what is solid and what is whole
+// Wind the polygon rings in the correct direction to indicate what is solid and what is a hole
 const rewindGeojson = (geojson, clockwise = true) => rewind(geojson, clockwise);
 
 // Clamp x-coordinates to the antimeridian
@@ -145,30 +146,33 @@ async function createCountriesLayer({ bounds, filter, name, resolution, source }
         inputFilePath,
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         filter ? `-filter '${filter}'` : '',
+        // Make one feature for each country code, because plotly.js only finds the first feature with a given code.
+        // Dissolve after the filter, because the parts of one country can be in different regions.
+        '-dissolve iso3cd',
         `-o ${outputFilePath}`
     ].join(' ');
     await mapshaper.runCommands(commands);
     addCentroidsToGeojson(outputFilePath);
 }
 
-async function createLandLayer({ bounds, name, resolution, source }) {
+const createLandLayer = async ({ bounds, name, resolution }) => {
     const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
     const commands = [
         inputFilePath,
-        '-dissolve2',
+        '-dissolve',
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         `-o ${outputFilePath}`
     ].join(' ');
     await mapshaper.runCommands(commands);
-}
+};
 
 async function createCoastlinesLayer({ bounds, name, resolution, source }) {
     const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
     const commands = [
         inputFilePath,
-        '-dissolve2',
+        '-dissolve',
         '-lines',
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         // Erase world border to avoid unpleasant lines through polygons crossing the border.
@@ -213,9 +217,7 @@ async function createLakesLayer({ name, resolution, source }) {
     await mapshaper.runCommands(commands);
 }
 
-async function createSubunitsLayer({ name, resolution, source }) {
-    // Only include USA for 'usa' scope since the UN and NE borders don't match exactly and slivers of Canada creep in
-    const filter = name === 'usa' ? 'adm0_a3 === "USA"' : config.filters.subunits;
+async function createSubunitsLayer({ filter, name, resolution, source }) {
     const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
     const commands = [
@@ -228,15 +230,15 @@ async function createSubunitsLayer({ name, resolution, source }) {
     addCentroidsToGeojson(outputFilePath);
 }
 
-async function convertLayersToTopojson({ name, resolution }) {
+async function convertLayersToTopojson({ name, resolution, stitch }) {
     const regionDir = path.join(outputDirGeojson, `${name}_${resolution}m`);
     if (!fs.existsSync(regionDir)) return;
 
     const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
     // Scopes with polygons that cross the antimeridian need to be stitched
-    if (['antarctica', 'world'].includes(name)) {
+    if (stitch) {
         const geojsonObjects = {};
-        for (const layer of Object.keys(config.layers)) {
+        for (const layer of Object.keys(layers)) {
             const filePath = path.join(regionDir, `${layer}.geojson`);
             geojsonObjects[layer] = geoStitch(rewindGeojson(getJsonFile(filePath)));
         }
@@ -254,6 +256,115 @@ async function convertLayersToTopojson({ name, resolution }) {
     const prunedTopojson = pruneProperties(topojson);
     fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
 }
+
+// Plate carree centered on the antimeridian. A sphere radius of 180 / pi makes x the degrees east of 180.
+// Polygons that cross the antimeridian stay whole in this projection.
+const antimeridianCrs = '+proj=eqc +lon_0=180 +R=57.29577951308232';
+// A vertex nearer than this to the antimeridian goes onto it or out of the ring.
+// A later snap with a smaller interval then cannot move the cut points of one side only.
+const antimeridianSnapDegrees = 0.0002;
+
+/**
+ * Drop the near-antimeridian vertices where a ring only grazes it, and move the vertices of a crossing onto it.
+ *
+ * @param ring - Closed ring in `antimeridianCrs`
+ * @returns Closed ring with each vertex on the antimeridian or `antimeridianSnapDegrees` or more away from it.
+ * The input ring if fewer than three vertices remain.
+ */
+function settleRingAtAntimeridian(ring) {
+    const points = ring.slice(0, -1);
+    const isNear = ([x]) => Math.abs(x) < antimeridianSnapDegrees;
+    const start = points.findIndex((point) => !isNear(point));
+    if (start === -1) return ring;
+
+    // Rotate the ring so that it starts away from the antimeridian, and every near stretch has a vertex on each side
+    const rotated = [...points.slice(start), ...points.slice(0, start)];
+    const settled = [];
+    for (let i = 0; i < rotated.length; i++) {
+        if (!isNear(rotated[i])) {
+            settled.push(rotated[i]);
+            continue;
+        }
+        let end = i;
+        while (end + 1 < rotated.length && isNear(rotated[end + 1])) end++;
+        const before = rotated[i - 1];
+        const after = rotated[(end + 1) % rotated.length];
+        // A stretch that returns to the same side only grazes the antimeridian, so drop it
+        if (Math.sign(before[0]) !== Math.sign(after[0])) {
+            for (let k = i; k <= end; k++) settled.push([0, rotated[k][1]]);
+        }
+        i = end;
+    }
+    return settled.length >= 3 ? [...settled, settled[0]] : ring;
+}
+
+function mapCoordinates(coordinates, fn) {
+    return typeof coordinates[0] === 'number' ? fn(coordinates) : coordinates.map((c) => mapCoordinates(c, fn));
+}
+
+function polygonsOf(geojson) {
+    return (geojson.features ?? []).flatMap(({ geometry }) => {
+        if (!geometry) return [];
+        return geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+    });
+}
+
+/**
+ * Cut the polygons of a file along the antimeridian, with identical cut points on the two sides.
+ *
+ * The function overwrites the file with one WGS84 feature, which keeps the properties of the first input feature.
+ * It also writes two temporary files next to the input file.
+ *
+ * @param filePath - GeoJSON file in `antimeridianCrs`
+ */
+async function cutAtAntimeridian(filePath) {
+    const geojson = getJsonFile(filePath);
+    for (const { geometry } of geojson.features) {
+        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+        geometry.type = 'MultiPolygon';
+        geometry.coordinates = polygons.map((rings) => rings.map(settleRingAtAntimeridian));
+    }
+    fs.writeFileSync(filePath, JSON.stringify(geojson));
+
+    // Clip the two sides along the same line, so that both sides get the same cut points
+    const westFilePath = filePath.replace('.geojson', '_west.geojson');
+    const eastFilePath = filePath.replace('.geojson', '_east.geojson');
+    await mapshaper.runCommands(`${filePath} -clip bbox=-180,-90,0,90 -o force ${westFilePath}`);
+    await mapshaper.runCommands(`${filePath} -clip bbox=0,-90,180,90 -o force ${eastFilePath}`);
+
+    const west = polygonsOf(getJsonFile(westFilePath)).map((p) => mapCoordinates(p, ([x, y]) => [x + 180, y]));
+    const east = polygonsOf(getJsonFile(eastFilePath)).map((p) => mapCoordinates(p, ([x, y]) => [x - 180, y]));
+    fs.rmSync(westFilePath);
+    fs.rmSync(eastFilePath);
+
+    const feature = {
+        type: 'Feature',
+        properties: geojson.features[0].properties,
+        geometry: { type: 'MultiPolygon', coordinates: [...west, ...east] }
+    };
+    fs.writeFileSync(filePath, JSON.stringify({ type: 'FeatureCollection', features: [feature] }));
+}
+
+const pointsOf = (geometry) => geometry.coordinates.flat(geometry.type === 'Polygon' ? 1 : 2);
+
+/**
+ * Stop the build when the selected UN polygons are not the ones that the antimeridian fix-up expects.
+ *
+ * The fix-up selects polygons by their index in the exploded UN data, and a new UN release can reorder them.
+ *
+ * @param filePath - GeoJSON file of the selected polygons, with the `id` property from `-each 'id = this.id'`
+ * @param ids - Indexes of the polygons that the fix-up expects
+ * @returns The features of the file
+ */
+const getAntimeridianPieces = (filePath, ids) => {
+    const { features } = getJsonFile(filePath);
+    const foundIds = features.map(({ properties }) => properties.id);
+    const touchesAntimeridian = ({ geometry }) => pointsOf(geometry).some(([x]) => Math.abs(x) > 179.999);
+    if (foundIds.join() !== ids.join() || !features.every(touchesAntimeridian)) {
+        throw new Error(`UN polygons ${ids.join(', ')} in '${filePath}' do not all touch the antimeridian`);
+    }
+    return features;
+};
 
 // Get required polygon features from UN GeoJSON
 const inputFilePathUNGeojson = `${inputDir}/${unFilename}.geojson`;
@@ -279,12 +390,23 @@ const commandsAntarctica = [
     // Add rectangle to extend Antarctica to bottom of world
     '-rectangle bbox=-180,-90,180,-89 name=antarctica_rectangle',
     '-merge-layers target=antarctica,antarctica_rectangle force',
-    `-dissolve2 target=antarctica copy-fields=${copyFieldsList}`,
+    `-dissolve target=antarctica copy-fields=${copyFieldsList}`,
     `-o force target=antarctica ${outputFilePathAntarctica50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsAntarctica);
 
 // Fix up Fiji polygons
+// Indexes of the exploded UN polygons at the antimeridian. Piece 43 is the eastern tip of Vanua Levu.
+const fijiAntimeridianIds = [31, 36, 39, 40, 43];
+// The UN data leaves a gap of about 3 km between Vanua Levu (piece 42) and its eastern tip (piece 43).
+// This bridge shares the antimeridian edge of piece 43 and overlaps the end of piece 42.
+const vanuaLevuBridge = [
+    [179.95, -16.1905],
+    [179.95, -16.1955],
+    [180, -16.168199538999943],
+    [180, -16.146331777999933],
+    [179.95, -16.1905]
+];
 await mapshaper.runCommands(
     `${inputFilePathUNGeojson} -filter 'iso3cd === "FJI"' target=1 -o ${outputFilePathFiji50m}`
 );
@@ -292,38 +414,54 @@ const commandsIsolateFijiAntimeridian = [
     outputFilePathFiji50m,
     '-explode',
     `-each 'id = this.id'`,
-    `-filter '[31, 36, 39, 40].includes(id)' target=fiji + name=fiji_antimeridian`,
+    `-filter '${JSON.stringify(fijiAntimeridianIds)}.includes(id)' target=fiji + name=fiji_antimeridian`,
     `-o target=fiji_antimeridian ${outputFilePathFijiAntimeridian50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsIsolateFijiAntimeridian);
 
+const fijiAntimeridianPieces = getAntimeridianPieces(outputFilePathFijiAntimeridian50m, fijiAntimeridianIds);
+// The bridge must share the exact antimeridian edge of piece 43, or the eck4 snap does not join them
+const vanuaLevuTipLatitudes = pointsOf(fijiAntimeridianPieces.find(({ properties }) => properties.id === 43).geometry)
+    .filter(([x]) => Math.abs(Math.abs(x) - 180) < 1e-9)
+    .map(([, y]) => y);
+if (!vanuaLevuBridge.filter(([x]) => x === 180).every(([, y]) => vanuaLevuTipLatitudes.includes(y))) {
+    throw new Error('The antimeridian edge of the eastern tip of Vanua Levu does not match vanuaLevuBridge');
+}
+fijiAntimeridianPieces.push({
+    type: 'Feature',
+    properties: fijiAntimeridianPieces[0].properties,
+    geometry: { type: 'Polygon', coordinates: [vanuaLevuBridge] }
+});
+fs.writeFileSync(
+    outputFilePathFijiAntimeridian50m,
+    JSON.stringify({ type: 'FeatureCollection', features: fijiAntimeridianPieces })
+);
+
 const commandsFixFijiAntimeridian = [
     outputFilePathFijiAntimeridian50m,
     '-proj +proj=eck4 +lon_0=11 +datum=WGS84',
-    `-dissolve2 copy-fields=${copyFieldsList}`,
+    `-dissolve copy-fields=${copyFieldsList}`,
     '-clean snap-interval=951',
-    `-proj +proj=webmerc +datum=WGS84 +lon_0=11`,
-    '-erase bbox=18812993.94,-22000000,20000000,16500000 target=1 + name=east',
-    '-erase bbox=972000,-22000000,18812993.95,16500000 target=1 + name=west',
-    '-merge-layers target=east,west name=complete',
-    `-dissolve2 target=complete copy-fields=${copyFieldsList}`,
-    '-proj wgs84',
-    `-o force target=complete ${outputFilePathFijiAntimeridian50m}`
+    `-proj ${antimeridianCrs}`,
+    `-o force ${outputFilePathFijiAntimeridian50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsFixFijiAntimeridian);
+await cutAtAntimeridian(outputFilePathFijiAntimeridian50m);
 
 const commandsFiji = [
     `-i combine-files ${outputFilePathFiji50m} ${outputFilePathFijiAntimeridian50m}`,
     '-explode target=fiji',
     `-each 'id = this.id' target=fiji`,
-    `-filter '![31, 36, 39, 40].includes(id)' target=fiji`,
+    `-filter '!${JSON.stringify(fijiAntimeridianIds)}.includes(id)' target=fiji`,
     '-merge-layers target=fiji,fiji_antimeridian force name=fiji',
-    `-dissolve2 target=fiji copy-fields=${copyFieldsList}`,
+    `-dissolve target=fiji copy-fields=${copyFieldsList}`,
     `-o force target=fiji ${outputFilePathFiji50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsFiji);
 
 // Fix up Russia polygons
+// Indexes of the exploded UN polygons at the antimeridian. Piece 14 is a thin strip of Wrangel Island next to it.
+const russiaAntimeridianIds = [13, 14, 15];
 await mapshaper.runCommands(
     `${inputFilePathUNGeojson} -filter 'iso3cd === "RUS"' target=1 -o ${outputFilePathRussia50m}`
 );
@@ -331,33 +469,30 @@ const commandsIsolateRussiaAntimeridian = [
     outputFilePathRussia50m,
     '-explode',
     `-each 'id = this.id'`,
-    `-filter '[13, 15].includes(id)' target=russia + name=russia_antimeridian`,
+    `-filter '${JSON.stringify(russiaAntimeridianIds)}.includes(id)' target=russia + name=russia_antimeridian`,
     `-o target=russia_antimeridian ${outputFilePathRussiaAntimeridian50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsIsolateRussiaAntimeridian);
+getAntimeridianPieces(outputFilePathRussiaAntimeridian50m, russiaAntimeridianIds);
 
 const commandsFixRussiaAntimeridian = [
     outputFilePathRussiaAntimeridian50m,
     '-proj +proj=eck4 +lon_0=11 +datum=WGS84',
-    `-dissolve2 copy-fields=${copyFieldsList}`,
+    `-dissolve copy-fields=${copyFieldsList}`,
     '-clean snap-interval=257',
-    `-proj +proj=webmerc +datum=WGS84 +lon_0=11`,
-    '-erase bbox=18812993.94,-22000000,20000000,16500000 target=1 + name=east',
-    '-erase bbox=972000,-22000000,18812993.95,16500000 target=1 + name=west',
-    '-merge-layers target=east,west name=complete',
-    `-dissolve2 target=complete copy-fields=${copyFieldsList}`,
-    '-proj wgs84',
-    `-o force target=complete ${outputFilePathRussiaAntimeridian50m}`
+    `-proj ${antimeridianCrs}`,
+    `-o force ${outputFilePathRussiaAntimeridian50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsFixRussiaAntimeridian);
+await cutAtAntimeridian(outputFilePathRussiaAntimeridian50m);
 
 const commandsRussia = [
     `-i combine-files ${outputFilePathRussia50m} ${outputFilePathRussiaAntimeridian50m}`,
     '-explode target=russia',
     `-each 'id = this.id' target=russia`,
-    `-filter '![13, 15].includes(id)' target=russia`,
+    `-filter '!${JSON.stringify(russiaAntimeridianIds)}.includes(id)' target=russia`,
     '-merge-layers target=russia,russia_antimeridian force name=russia',
-    `-dissolve2 target=russia copy-fields=${copyFieldsList}`,
+    `-dissolve target=russia copy-fields=${copyFieldsList}`,
     `-o force target=russia ${outputFilePathRussia50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsRussia);
@@ -399,7 +534,7 @@ createCountriesList(outputFilePathCountries50m, `${outputDirTopojson}/country_na
 // Get land from all polygon features
 const inputFilePathLand50m = outputFilePathCountries50m;
 const outputFilePathLand50m = `${outputDirGeojson}/${unFilename}_50m/land.geojson`;
-const commandsLand50m = [inputFilePathLand50m, '-dissolve2', `-o ${outputFilePathLand50m}`].join(' ');
+const commandsLand50m = [inputFilePathLand50m, '-dissolve', `-o ${outputFilePathLand50m}`].join(' ');
 await mapshaper.runCommands(commandsLand50m);
 
 // Process 110m UN geodata
@@ -418,7 +553,7 @@ await mapshaper.runCommands(commandsCountries110m);
 // Get land from all polygon features
 const inputFilePathLand110m = outputFilePathCountries110m;
 const outputFilePathLand110m = `${outputDirGeojson}/${unFilename}_110m/land.geojson`;
-const commandsLand110m = [inputFilePathLand110m, '-dissolve2', `-o ${outputFilePathLand110m}`].join(' ');
+const commandsLand110m = [inputFilePathLand110m, '-dissolve', `-o ${outputFilePathLand110m}`].join(' ');
 await mapshaper.runCommands(commandsLand110m);
 
 for (const resolution of resolutions) {
@@ -430,15 +565,15 @@ for (const resolution of resolutions) {
 for (const resolution of resolutions) {
     for (const {
         name,
-        specs: { bounds, filter }
+        specs: { bounds, filter, stitch, subunitsFilter = filters.subunits }
     } of scopes) {
         await createCountriesLayer({ bounds, filter, name, resolution, source: layers.countries });
-        await createLandLayer({ bounds, name, resolution, source: layers.land });
+        await createLandLayer({ bounds, name, resolution });
         await createCoastlinesLayer({ bounds, name, resolution, source: layers.coastlines });
         await createOceanLayer({ bounds, name, resolution, source: layers.ocean });
-        await createRiversLayer({ bounds, name, resolution, source: layers.rivers });
-        await createLakesLayer({ bounds, name, resolution, source: layers.lakes });
-        await createSubunitsLayer({ bounds, name, resolution, source: layers.subunits });
-        await convertLayersToTopojson({ name, resolution });
+        await createRiversLayer({ name, resolution, source: layers.rivers });
+        await createLakesLayer({ name, resolution, source: layers.lakes });
+        await createSubunitsLayer({ filter: subunitsFilter, name, resolution, source: layers.subunits });
+        await convertLayersToTopojson({ name, resolution, stitch });
     }
 }

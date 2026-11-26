@@ -12,7 +12,9 @@ const config = {
             name: 'antarctica',
             specs: {
                 filter: 'georeg === "ANT"',
-                bounds: [-180, -90, 180, -60]
+                bounds: [-180, -90, 180, -60],
+                // Polygons in this scope cross the antimeridian, so they need stitching
+                stitch: true
             }
         },
         {
@@ -40,7 +42,9 @@ const config = {
             name: 'oceania',
             specs: {
                 filter: 'georeg === "OCE"',
-                bounds: [-180, -50, 180, 25]
+                bounds: [-180, -50, 180, 25],
+                // Polygons in this scope cross the antimeridian, so they need stitching
+                stitch: true
             }
         },
         {
@@ -54,14 +58,18 @@ const config = {
             name: 'usa',
             specs: {
                 filter: 'iso3cd === "USA" && ![4, undefined].includes(stscod)',
-                bounds: [-180, 0, -45, 85]
+                bounds: [-180, 0, -45, 85],
+                // The UN and NE borders do not match exactly, so other filters let slivers of Canada into this scope
+                subunitsFilter: 'adm0_a3 === "USA"'
             }
         },
         {
             name: 'world',
             specs: {
                 filter: '!(iso3cd === "USA" && stscod === 4)',
-                bounds: []
+                bounds: [],
+                // Polygons in this scope cross the antimeridian, so they need stitching
+                stitch: true
             }
         }
     ],
