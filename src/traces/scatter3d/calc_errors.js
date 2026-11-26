@@ -24,8 +24,9 @@ function calculateAxisErrors(data, params, scaleFactor, axis) {
             // Keep track of the lower error bound which isn't negative!
             if(min > 0) {
                 var lower = axis.c2l(min);
-                if(!axis._lowerLogErrorBound) axis._lowerLogErrorBound = lower;
-                axis._lowerErrorBound = Math.min(axis._lowerLogErrorBound, lower);
+                if(axis._lowerLogErrorBound === undefined || lower < axis._lowerLogErrorBound) {
+                    axis._lowerLogErrorBound = lower;
+                }
             }
         } else {
             result[i] = [

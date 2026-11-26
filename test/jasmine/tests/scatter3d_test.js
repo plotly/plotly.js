@@ -345,4 +345,73 @@ describe('Test scatter3d interactions:', function() {
         })
         .then(done, done.fail);
     });
+
+    describe('log error bars', function() {
+        var samples = [
+            {z: 1200, err: 300},
+            {z: 410, err: 90},
+            {z: 95, err: 30},
+            {z: 12, err: 8}
+        ];
+
+        function makeTrace(rows) {
+            return {
+                type: 'scatter3d',
+                mode: 'markers',
+                x: rows.map(function(r, i) { return i; }),
+                y: rows.map(function(r, i) { return i % 2; }),
+                z: rows.map(function(r) { return r.z; }),
+                error_z: {array: rows.map(function(r) { return r.err; })}
+            };
+        }
+
+        var layout = {scene: {zaxis: {type: 'log'}}};
+
+        function zRange() {
+            return gd._fullLayout.scene.zaxis.range.slice();
+        }
+
+        it('@gl should start the z range below the lowest error bar whatever the point order', function(done) {
+            var ascending;
+
+            Plotly.newPlot(gd, [makeTrace(samples.slice().reverse())], Lib.extendDeep({}, layout))
+            .then(function() {
+                ascending = zRange();
+                // the lower error bar of the smallest point ends at 12 - 8 = 4
+                expect(ascending[0]).toBeLessThan(Math.log10(4));
+
+                return Plotly.newPlot(gd, [makeTrace(samples)], Lib.extendDeep({}, layout));
+            })
+            .then(function() {
+                expect(zRange()).toBeCloseToArray(ascending, 5);
+            })
+            .then(done, done.fail);
+        });
+
+        it('@gl should recompute the lower error bound on react', function(done) {
+            var wide = samples.map(function(r) { return {z: r.z, err: r.err}; });
+            wide[3].err = 11;
+            var expected;
+
+            Plotly.newPlot(gd, [makeTrace(wide)], Lib.extendDeep({}, layout))
+            .then(function() {
+                expected = zRange();
+
+                return Plotly.newPlot(gd, [makeTrace(samples)], Lib.extendDeep({}, layout));
+            })
+            .then(function() {
+                return Plotly.react(gd, [makeTrace(wide)], Lib.extendDeep({}, layout));
+            })
+            .then(function() {
+                expect(zRange()).toBeCloseToArray(expected, 5);
+
+                return Plotly.react(gd, [makeTrace(samples)], Lib.extendDeep({}, layout));
+            })
+            .then(function() {
+                // 12 - 8 = 4 is above 12 - 11 = 1, so the range must start higher again
+                expect(zRange()[0]).toBeGreaterThan(expected[0]);
+            })
+            .then(done, done.fail);
+        });
+    });
 });

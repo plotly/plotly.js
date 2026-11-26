@@ -619,6 +619,12 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // after computeTraceBounds where ax._categories are filled in
     scene.convertAnnotations(this);
 
+    // The traces recompute the lower log error bounds during their update,
+    // so drop the values from the previous plot first
+    for(j = 0; j < 3; ++j) {
+        delete fullSceneLayout[axisProperties[j]]._lowerLogErrorBound;
+    }
+
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
