@@ -820,4 +820,59 @@ describe('Plotly.validate', function () {
         ]);
         expect(out).toBeUndefined();
     });
+
+    it('should accept zmin and zmax with as many elements as the image colormodel', function () {
+        var tests = [
+            ['rgb', [10, 10, 10], [100, 100, 100]],
+            ['hsl', [0, 0, 0], [360, 100, 100]],
+            ['rgba', [0, 0, 0, 0], [255, 255, 255, 1]],
+            ['rgba256', [0, 0, 0, 0], [255, 255, 255, 255]],
+            ['hsla', [0, 0, 0, 0], [360, 100, 100, 1]]
+        ];
+
+        tests.forEach(function (test) {
+            var out = Plotly.validate([
+                {
+                    type: 'image',
+                    z: [[[1, 1, 1, 1]]],
+                    colormodel: test[0],
+                    zmin: test[1],
+                    zmax: test[2]
+                }
+            ]);
+            expect(out).toBeUndefined('colormodel ' + test[0]);
+        });
+    });
+
+    it('should reject invalid image zmin and zmax', function () {
+        var out = Plotly.validate([
+            {
+                type: 'image',
+                z: [[[1, 1, 1]]],
+                colormodel: 'rgb',
+                zmin: [10, 'a', 10],
+                zmax: [100, 100, 100, 1, 1]
+            }
+        ]);
+
+        expect(out.length).toBe(2);
+        assertErrorContent(
+            out[0],
+            'value',
+            'data',
+            0,
+            ['zmin', 1],
+            'zmin[1]',
+            'In data trace 0, key zmin[1] is set to an invalid value (a)'
+        );
+        assertErrorContent(
+            out[1],
+            'unused',
+            'data',
+            0,
+            ['zmax', 4],
+            'zmax[4]',
+            'In data trace 0, key zmax[4] did not get coerced'
+        );
+    });
 });

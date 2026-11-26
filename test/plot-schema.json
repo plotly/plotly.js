@@ -41854,6 +41854,7 @@
         "zmax": {
           "description": "Array defining the higher bound for each color component. Note that the default value will depend on the colormodel. For the `rgb` colormodel, it is [255, 255, 255]. For the `rgba` colormodel, it is [255, 255, 255, 1]. For the `rgba256` colormodel, it is [255, 255, 255, 255]. For the `hsl` colormodel, it is [360, 100, 100]. For the `hsla` colormodel, it is [360, 100, 100, 1].",
           "editType": "calc",
+          "freeLength": true,
           "items": [
             {
               "editType": "calc",
@@ -41877,6 +41878,7 @@
         "zmin": {
           "description": "Array defining the lower bound for each color component. Note that the default value will depend on the colormodel. For the `rgb` colormodel, it is [0, 0, 0]. For the `rgba` colormodel, it is [0, 0, 0, 0]. For the `rgba256` colormodel, it is [0, 0, 0, 0]. For the `hsl` colormodel, it is [0, 0, 0]. For the `hsla` colormodel, it is [0, 0, 0, 0].",
           "editType": "calc",
+          "freeLength": true,
           "items": [
             {
               "editType": "calc",

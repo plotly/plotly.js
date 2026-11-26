@@ -1,0 +1,1 @@
+ - Fix `zmin` and `zmax` of `image` traces so that `Plotly.validate` accepts 3-element arrays for the `rgb` and `hsl` colormodels [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
