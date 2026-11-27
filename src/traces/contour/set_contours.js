@@ -12,10 +12,14 @@ module.exports = function setContours(trace, vals) {
         // these values here are meant to remain "per-trace" for now
         var zmin = trace.zmin;
         var zmax = trace.zmax;
-        if(trace.zauto || zmin === undefined) {
+        // `zauto` is only coerced when the trace has a colorscale (i.e. not for
+        // `contours.coloring: 'none'`). Treat an undefined `zauto` as auto, like
+        // Colorscale.calc does, so that we never reuse the zmin/zmax relinked
+        // from a previous full trace after `Plotly.react` (see #8117).
+        if(trace.zauto !== false || zmin === undefined) {
             zmin = Lib.aggNums(Math.min, null, vals);
         }
-        if(trace.zauto || zmax === undefined) {
+        if(trace.zauto !== false || zmax === undefined) {
             zmax = Lib.aggNums(Math.max, null, vals);
         }
 
