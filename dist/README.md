@@ -43,12 +43,12 @@ The main plotly.js bundles weight in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 10.2 MB | 4.84 MB | 1.49 MB | 10.5 MB |
+| 10 MB | 4.82 MB | 1.49 MB | 10.4 MB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-4.3.0.js
+> https://cdn.plot.ly/plotly-4.3.1.js
 
-> https://cdn.plot.ly/plotly-4.3.0.min.js
+> https://cdn.plot.ly/plotly-4.3.1.min.js
 
 
 #### npm packages
@@ -91,12 +91,12 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.97 MB | 1.2 MB | 403 kB |
+| 2.96 MB | 1.19 MB | 403 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-basic-4.3.0.js
+> https://cdn.plot.ly/plotly-basic-4.3.1.js
 
-> https://cdn.plot.ly/plotly-basic-4.3.0.min.js
+> https://cdn.plot.ly/plotly-basic-4.3.1.min.js
 
 
 #### npm packages
@@ -114,12 +114,12 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.74 MB | 1.52 MB | 507 kB |
+| 3.46 MB | 1.39 MB | 470 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-cartesian-4.3.0.js
+> https://cdn.plot.ly/plotly-cartesian-4.3.1.js
 
-> https://cdn.plot.ly/plotly-cartesian-4.3.0.min.js
+> https://cdn.plot.ly/plotly-cartesian-4.3.1.min.js
 
 
 #### npm packages
@@ -137,12 +137,12 @@ The `geo` partial bundle contains trace modules `choropleth`, `scatter` and `sca
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.42 MB | 1.41 MB | 472 kB |
+| 3.41 MB | 1.4 MB | 472 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-geo-4.3.0.js
+> https://cdn.plot.ly/plotly-geo-4.3.1.js
 
-> https://cdn.plot.ly/plotly-geo-4.3.0.min.js
+> https://cdn.plot.ly/plotly-geo-4.3.1.min.js
 
 
 #### npm packages
@@ -160,12 +160,12 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.47 MB | 1.76 MB | 566 kB |
+| 4.46 MB | 1.75 MB | 566 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl3d-4.3.0.js
+> https://cdn.plot.ly/plotly-gl3d-4.3.1.js
 
-> https://cdn.plot.ly/plotly-gl3d-4.3.0.min.js
+> https://cdn.plot.ly/plotly-gl3d-4.3.1.min.js
 
 
 #### npm packages
@@ -183,12 +183,12 @@ The `gl2d` partial bundle contains trace modules `parcoords`, `scatter`, `scatte
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.71 MB | 1.5 MB | 504 kB |
+| 3.71 MB | 1.49 MB | 504 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl2d-4.3.0.js
+> https://cdn.plot.ly/plotly-gl2d-4.3.1.js
 
-> https://cdn.plot.ly/plotly-gl2d-4.3.0.min.js
+> https://cdn.plot.ly/plotly-gl2d-4.3.1.min.js
 
 
 #### npm packages
@@ -206,12 +206,12 @@ The `map` partial bundle contains trace modules `choroplethmap`, `densitymap`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 5.43 MB | 2.98 MB | 894 kB |
+| 5.54 MB | 3.08 MB | 933 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-map-4.3.0.js
+> https://cdn.plot.ly/plotly-map-4.3.1.js
 
-> https://cdn.plot.ly/plotly-map-4.3.0.min.js
+> https://cdn.plot.ly/plotly-map-4.3.1.min.js
 
 
 #### npm packages
@@ -229,12 +229,12 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.22 MB | 1.31 MB | 438 kB |
+| 3.21 MB | 1.3 MB | 438 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-finance-4.3.0.js
+> https://cdn.plot.ly/plotly-finance-4.3.1.js
 
-> https://cdn.plot.ly/plotly-finance-4.3.0.min.js
+> https://cdn.plot.ly/plotly-finance-4.3.1.min.js
 
 
 #### npm packages
@@ -252,12 +252,12 @@ The `strict` partial bundle contains trace modules `bar`, `barpolar`, `box`, `ca
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 11 MB | 5.19 MB | 1.59 MB |
+| 10.8 MB | 5.16 MB | 1.59 MB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-strict-4.3.0.js
+> https://cdn.plot.ly/plotly-strict-4.3.1.js
 
-> https://cdn.plot.ly/plotly-strict-4.3.0.min.js
+> https://cdn.plot.ly/plotly-strict-4.3.1.min.js
 
 
 #### npm packages

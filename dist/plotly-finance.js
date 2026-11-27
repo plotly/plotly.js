@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v4.3.0
+* plotly.js (finance) v4.3.1
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -24,7 +24,7 @@ var Plotly = (() => {
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
   var __spreadValues = (a, b) => {
     for (var prop in b || (b = {}))
       if (__hasOwnProp.call(b, prop))
@@ -87,16 +87,16 @@ var Plotly = (() => {
   var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
   var __async = (__this, __arguments, generator) => {
     return new Promise((resolve, reject) => {
-      var fulfilled = (value) => {
+      var fulfilled = (value2) => {
         try {
-          step(generator.next(value));
+          step(generator.next(value2));
         } catch (e) {
           reject(e);
         }
       };
-      var rejected = (value) => {
+      var rejected = (value2) => {
         try {
-          step(generator.throw(value));
+          step(generator.throw(value2));
         } catch (e) {
           reject(e);
         }
@@ -110,7 +110,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "4.3.0";
+      exports.version = "4.3.1";
     }
   });
 
@@ -437,9 +437,9 @@ var Plotly = (() => {
             d3_array(d3_document.documentElement.childNodes)[0].nodeType;
           } catch (e) {
             d3_array = function(list) {
-              var i = list.length, array = new Array(i);
-              while (i--) array[i] = list[i];
-              return array;
+              var i = list.length, array2 = new Array(i);
+              while (i--) array2[i] = list[i];
+              return array2;
             };
           }
         }
@@ -451,14 +451,14 @@ var Plotly = (() => {
             d3_document.createElement("DIV").style.setProperty("opacity", 0, "");
           } catch (error) {
             var d3_element_prototype = this.Element.prototype, d3_element_setAttribute = d3_element_prototype.setAttribute, d3_element_setAttributeNS = d3_element_prototype.setAttributeNS, d3_style_prototype = this.CSSStyleDeclaration.prototype, d3_style_setProperty = d3_style_prototype.setProperty;
-            d3_element_prototype.setAttribute = function(name4, value) {
-              d3_element_setAttribute.call(this, name4, value + "");
+            d3_element_prototype.setAttribute = function(name4, value2) {
+              d3_element_setAttribute.call(this, name4, value2 + "");
             };
-            d3_element_prototype.setAttributeNS = function(space, local, value) {
-              d3_element_setAttributeNS.call(this, space, local, value + "");
+            d3_element_prototype.setAttributeNS = function(space, local, value2) {
+              d3_element_setAttributeNS.call(this, space, local, value2 + "");
             };
-            d3_style_prototype.setProperty = function(name4, value, priority) {
-              d3_style_setProperty.call(this, name4, value + "", priority);
+            d3_style_prototype.setProperty = function(name4, value2, priority) {
+              d3_style_setProperty.call(this, name4, value2 + "", priority);
             };
           }
         }
@@ -469,57 +469,57 @@ var Plotly = (() => {
         d3.descending = function(a, b) {
           return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
         };
-        d3.min = function(array, f) {
-          var i = -1, n = array.length, a, b;
+        d3.min = function(array2, f) {
+          var i = -1, n = array2.length, a, b;
           if (arguments.length === 1) {
-            while (++i < n) if ((b = array[i]) != null && b >= b) {
+            while (++i < n) if ((b = array2[i]) != null && b >= b) {
               a = b;
               break;
             }
-            while (++i < n) if ((b = array[i]) != null && a > b) a = b;
+            while (++i < n) if ((b = array2[i]) != null && a > b) a = b;
           } else {
-            while (++i < n) if ((b = f.call(array, array[i], i)) != null && b >= b) {
+            while (++i < n) if ((b = f.call(array2, array2[i], i)) != null && b >= b) {
               a = b;
               break;
             }
-            while (++i < n) if ((b = f.call(array, array[i], i)) != null && a > b) a = b;
+            while (++i < n) if ((b = f.call(array2, array2[i], i)) != null && a > b) a = b;
           }
           return a;
         };
-        d3.max = function(array, f) {
-          var i = -1, n = array.length, a, b;
+        d3.max = function(array2, f) {
+          var i = -1, n = array2.length, a, b;
           if (arguments.length === 1) {
-            while (++i < n) if ((b = array[i]) != null && b >= b) {
+            while (++i < n) if ((b = array2[i]) != null && b >= b) {
               a = b;
               break;
             }
-            while (++i < n) if ((b = array[i]) != null && b > a) a = b;
+            while (++i < n) if ((b = array2[i]) != null && b > a) a = b;
           } else {
-            while (++i < n) if ((b = f.call(array, array[i], i)) != null && b >= b) {
+            while (++i < n) if ((b = f.call(array2, array2[i], i)) != null && b >= b) {
               a = b;
               break;
             }
-            while (++i < n) if ((b = f.call(array, array[i], i)) != null && b > a) a = b;
+            while (++i < n) if ((b = f.call(array2, array2[i], i)) != null && b > a) a = b;
           }
           return a;
         };
-        d3.extent = function(array, f) {
-          var i = -1, n = array.length, a, b, c;
+        d3.extent = function(array2, f) {
+          var i = -1, n = array2.length, a, b, c;
           if (arguments.length === 1) {
-            while (++i < n) if ((b = array[i]) != null && b >= b) {
+            while (++i < n) if ((b = array2[i]) != null && b >= b) {
               a = c = b;
               break;
             }
-            while (++i < n) if ((b = array[i]) != null) {
+            while (++i < n) if ((b = array2[i]) != null) {
               if (a > b) a = b;
               if (c < b) c = b;
             }
           } else {
-            while (++i < n) if ((b = f.call(array, array[i], i)) != null && b >= b) {
+            while (++i < n) if ((b = f.call(array2, array2[i], i)) != null && b >= b) {
               a = c = b;
               break;
             }
-            while (++i < n) if ((b = f.call(array, array[i], i)) != null) {
+            while (++i < n) if ((b = f.call(array2, array2[i], i)) != null) {
               if (a > b) a = b;
               if (c < b) c = b;
             }
@@ -532,22 +532,22 @@ var Plotly = (() => {
         function d3_numeric(x) {
           return !isNaN(x);
         }
-        d3.sum = function(array, f) {
-          var s = 0, n = array.length, a, i = -1;
+        d3.sum = function(array2, f) {
+          var s = 0, n = array2.length, a, i = -1;
           if (arguments.length === 1) {
-            while (++i < n) if (d3_numeric(a = +array[i])) s += a;
+            while (++i < n) if (d3_numeric(a = +array2[i])) s += a;
           } else {
-            while (++i < n) if (d3_numeric(a = +f.call(array, array[i], i))) s += a;
+            while (++i < n) if (d3_numeric(a = +f.call(array2, array2[i], i))) s += a;
           }
           return s;
         };
-        d3.mean = function(array, f) {
-          var s = 0, n = array.length, a, i = -1, j = n;
+        d3.mean = function(array2, f) {
+          var s = 0, n = array2.length, a, i = -1, j = n;
           if (arguments.length === 1) {
-            while (++i < n) if (d3_numeric(a = d3_number(array[i]))) s += a;
+            while (++i < n) if (d3_numeric(a = d3_number(array2[i]))) s += a;
             else --j;
           } else {
-            while (++i < n) if (d3_numeric(a = d3_number(f.call(array, array[i], i)))) s += a;
+            while (++i < n) if (d3_numeric(a = d3_number(f.call(array2, array2[i], i)))) s += a;
             else --j;
           }
           if (j) return s / j;
@@ -556,20 +556,20 @@ var Plotly = (() => {
           var H = (values.length - 1) * p + 1, h = Math.floor(H), v = +values[h - 1], e = H - h;
           return e ? v + e * (values[h] - v) : v;
         };
-        d3.median = function(array, f) {
-          var numbers = [], n = array.length, a, i = -1;
+        d3.median = function(array2, f) {
+          var numbers = [], n = array2.length, a, i = -1;
           if (arguments.length === 1) {
-            while (++i < n) if (d3_numeric(a = d3_number(array[i]))) numbers.push(a);
+            while (++i < n) if (d3_numeric(a = d3_number(array2[i]))) numbers.push(a);
           } else {
-            while (++i < n) if (d3_numeric(a = d3_number(f.call(array, array[i], i)))) numbers.push(a);
+            while (++i < n) if (d3_numeric(a = d3_number(f.call(array2, array2[i], i)))) numbers.push(a);
           }
           if (numbers.length) return d3.quantile(numbers.sort(d3_ascending), 0.5);
         };
-        d3.variance = function(array, f) {
-          var n = array.length, m = 0, a, d, s = 0, i = -1, j = 0;
+        d3.variance = function(array2, f) {
+          var n = array2.length, m = 0, a, d, s = 0, i = -1, j = 0;
           if (arguments.length === 1) {
             while (++i < n) {
-              if (d3_numeric(a = d3_number(array[i]))) {
+              if (d3_numeric(a = d3_number(array2[i]))) {
                 d = a - m;
                 m += d / ++j;
                 s += d * (a - m);
@@ -577,7 +577,7 @@ var Plotly = (() => {
             }
           } else {
             while (++i < n) {
-              if (d3_numeric(a = d3_number(f.call(array, array[i], i)))) {
+              if (d3_numeric(a = d3_number(f.call(array2, array2[i], i)))) {
                 d = a - m;
                 m += d / ++j;
                 s += d * (a - m);
@@ -622,26 +622,26 @@ var Plotly = (() => {
             return d3_ascending(f(d), x);
           } : f);
         };
-        d3.shuffle = function(array, i0, i1) {
+        d3.shuffle = function(array2, i0, i1) {
           if ((m = arguments.length) < 3) {
-            i1 = array.length;
+            i1 = array2.length;
             if (m < 2) i0 = 0;
           }
           var m = i1 - i0, t, i;
           while (m) {
             i = Math.random() * m-- | 0;
-            t = array[m + i0], array[m + i0] = array[i + i0], array[i + i0] = t;
+            t = array2[m + i0], array2[m + i0] = array2[i + i0], array2[i + i0] = t;
           }
-          return array;
+          return array2;
         };
-        d3.permute = function(array, indexes) {
+        d3.permute = function(array2, indexes) {
           var i = indexes.length, permutes = new Array(i);
-          while (i--) permutes[i] = array[indexes[i]];
+          while (i--) permutes[i] = array2[indexes[i]];
           return permutes;
         };
-        d3.pairs = function(array) {
-          var i = 0, n = array.length - 1, p0, p1 = array[0], pairs = new Array(n < 0 ? 0 : n);
-          while (i < n) pairs[i] = [p0 = p1, p1 = array[++i]];
+        d3.pairs = function(array2) {
+          var i = 0, n = array2.length - 1, p0, p1 = array2[0], pairs = new Array(n < 0 ? 0 : n);
+          while (i < n) pairs[i] = [p0 = p1, p1 = array2[++i]];
           return pairs;
         };
         d3.transpose = function(matrix) {
@@ -678,14 +678,14 @@ var Plotly = (() => {
           return entries;
         };
         d3.merge = function(arrays) {
-          var n = arrays.length, m, i = -1, j = 0, merged, array;
+          var n = arrays.length, m, i = -1, j = 0, merged, array2;
           while (++i < n) j += arrays[i].length;
           merged = new Array(j);
           while (--n >= 0) {
-            array = arrays[n];
-            m = array.length;
+            array2 = arrays[n];
+            m = array2.length;
             while (--m >= 0) {
-              merged[--j] = array[m];
+              merged[--j] = array2[m];
             }
           }
           return merged;
@@ -719,18 +719,18 @@ var Plotly = (() => {
             });
           }
         }
-        d3.map = function(object, f) {
+        d3.map = function(object2, f) {
           var map = new d3_Map();
-          if (object instanceof d3_Map) {
-            object.forEach(function(key2, value) {
-              map.set(key2, value);
+          if (object2 instanceof d3_Map) {
+            object2.forEach(function(key2, value2) {
+              map.set(key2, value2);
             });
-          } else if (Array.isArray(object)) {
-            var i = -1, n = object.length, o;
-            if (arguments.length === 1) while (++i < n) map.set(i, object[i]);
-            else while (++i < n) map.set(f.call(object, o = object[i], i), o);
+          } else if (Array.isArray(object2)) {
+            var i = -1, n = object2.length, o;
+            if (arguments.length === 1) while (++i < n) map.set(i, object2[i]);
+            else while (++i < n) map.set(f.call(object2, o = object2[i], i), o);
           } else {
-            for (var key in object) map.set(key, object[key]);
+            for (var key in object2) map.set(key, object2[key]);
           }
           return map;
         };
@@ -743,8 +743,8 @@ var Plotly = (() => {
           get: function(key) {
             return this._[d3_map_escape(key)];
           },
-          set: function(key, value) {
-            return this._[d3_map_escape(key)] = value;
+          set: function(key, value2) {
+            return this._[d3_map_escape(key)] = value2;
           },
           remove: d3_map_remove,
           keys: d3_map_keys,
@@ -795,48 +795,48 @@ var Plotly = (() => {
         }
         d3.nest = function() {
           var nest = {}, keys = [], sortKeys = [], sortValues, rollup;
-          function map(mapType, array, depth) {
-            if (depth >= keys.length) return rollup ? rollup.call(nest, array) : sortValues ? array.sort(sortValues) : array;
-            var i = -1, n = array.length, key = keys[depth++], keyValue, object, setter, valuesByKey = new d3_Map(), values;
+          function map(mapType, array2, depth) {
+            if (depth >= keys.length) return rollup ? rollup.call(nest, array2) : sortValues ? array2.sort(sortValues) : array2;
+            var i = -1, n = array2.length, key = keys[depth++], keyValue, object2, setter, valuesByKey = new d3_Map(), values;
             while (++i < n) {
-              if (values = valuesByKey.get(keyValue = key(object = array[i]))) {
-                values.push(object);
+              if (values = valuesByKey.get(keyValue = key(object2 = array2[i]))) {
+                values.push(object2);
               } else {
-                valuesByKey.set(keyValue, [object]);
+                valuesByKey.set(keyValue, [object2]);
               }
             }
             if (mapType) {
-              object = mapType();
+              object2 = mapType();
               setter = function(keyValue2, values2) {
-                object.set(keyValue2, map(mapType, values2, depth));
+                object2.set(keyValue2, map(mapType, values2, depth));
               };
             } else {
-              object = {};
+              object2 = {};
               setter = function(keyValue2, values2) {
-                object[keyValue2] = map(mapType, values2, depth);
+                object2[keyValue2] = map(mapType, values2, depth);
               };
             }
             valuesByKey.forEach(setter);
-            return object;
+            return object2;
           }
           function entries(map2, depth) {
             if (depth >= keys.length) return map2;
-            var array = [], sortKey = sortKeys[depth++];
+            var array2 = [], sortKey = sortKeys[depth++];
             map2.forEach(function(key, keyMap) {
-              array.push({
+              array2.push({
                 key,
                 values: entries(keyMap, depth)
               });
             });
-            return sortKey ? array.sort(function(a, b) {
+            return sortKey ? array2.sort(function(a, b) {
               return sortKey(a.key, b.key);
-            }) : array;
+            }) : array2;
           }
-          nest.map = function(array, mapType) {
-            return map(mapType, array, 0);
+          nest.map = function(array2, mapType) {
+            return map(mapType, array2, 0);
           };
-          nest.entries = function(array) {
-            return entries(map(d3.map, array, 0), 0);
+          nest.entries = function(array2) {
+            return entries(map(d3.map, array2, 0), 0);
           };
           nest.key = function(d) {
             keys.push(d);
@@ -856,9 +856,9 @@ var Plotly = (() => {
           };
           return nest;
         };
-        d3.set = function(array) {
+        d3.set = function(array2) {
           var set = new d3_Set();
-          if (array) for (var i = 0, n = array.length; i < n; ++i) set.add(array[i]);
+          if (array2) for (var i = 0, n = array2.length; i < n; ++i) set.add(array2[i]);
           return set;
         };
         function d3_Set() {
@@ -889,16 +889,16 @@ var Plotly = (() => {
         };
         function d3_rebind(target, source, method) {
           return function() {
-            var value = method.apply(source, arguments);
-            return value === source ? target : value;
+            var value2 = method.apply(source, arguments);
+            return value2 === source ? target : value2;
           };
         }
-        function d3_vendorSymbol(object, name4) {
-          if (name4 in object) return name4;
+        function d3_vendorSymbol(object2, name4) {
+          if (name4 in object2) return name4;
           name4 = name4.charAt(0).toUpperCase() + name4.slice(1);
           for (var i = 0, n = d3_vendorPrefixes.length; i < n; ++i) {
             var prefixName = d3_vendorPrefixes[i] + name4;
-            if (prefixName in object) return prefixName;
+            if (prefixName in object2) return prefixName;
           }
         }
         var d3_vendorPrefixes = ["webkit", "ms", "moz", "Moz", "o", "O"];
@@ -977,10 +977,10 @@ var Plotly = (() => {
           return s.replace(d3_requote_re, "\\$&");
         };
         var d3_requote_re = /[\\\^\$\*\+\?\|\[\]\(\)\.\{\}]/g;
-        var d3_subclass = {}.__proto__ ? function(object, prototype) {
-          object.__proto__ = prototype;
-        } : function(object, prototype) {
-          for (var property in prototype) object[property] = prototype[property];
+        var d3_subclass = {}.__proto__ ? function(object2, prototype) {
+          object2.__proto__ = prototype;
+        } : function(object2, prototype) {
+          for (var property in prototype) object2[property] = prototype[property];
         };
         function d3_selection(groups) {
           d3_subclass(groups, d3_selectionPrototype);
@@ -1067,19 +1067,19 @@ var Plotly = (() => {
             } : name4;
           }
         };
-        d3_selectionPrototype.attr = function(name4, value) {
+        d3_selectionPrototype.attr = function(name4, value2) {
           if (arguments.length < 2) {
             if (typeof name4 === "string") {
               var node = this.node();
               name4 = d3.ns.qualify(name4);
               return name4.local ? node.getAttributeNS(name4.space, name4.local) : node.getAttribute(name4);
             }
-            for (value in name4) this.each(d3_selection_attr(value, name4[value]));
+            for (value2 in name4) this.each(d3_selection_attr(value2, name4[value2]));
             return this;
           }
-          return this.each(d3_selection_attr(name4, value));
+          return this.each(d3_selection_attr(name4, value2));
         };
-        function d3_selection_attr(name4, value) {
+        function d3_selection_attr(name4, value2) {
           name4 = d3.ns.qualify(name4);
           function attrNull() {
             this.removeAttribute(name4);
@@ -1088,42 +1088,42 @@ var Plotly = (() => {
             this.removeAttributeNS(name4.space, name4.local);
           }
           function attrConstant() {
-            this.setAttribute(name4, value);
+            this.setAttribute(name4, value2);
           }
           function attrConstantNS() {
-            this.setAttributeNS(name4.space, name4.local, value);
+            this.setAttributeNS(name4.space, name4.local, value2);
           }
           function attrFunction() {
-            var x = value.apply(this, arguments);
+            var x = value2.apply(this, arguments);
             if (x == null) this.removeAttribute(name4);
             else this.setAttribute(name4, x);
           }
           function attrFunctionNS() {
-            var x = value.apply(this, arguments);
+            var x = value2.apply(this, arguments);
             if (x == null) this.removeAttributeNS(name4.space, name4.local);
             else this.setAttributeNS(name4.space, name4.local, x);
           }
-          return value == null ? name4.local ? attrNullNS : attrNull : typeof value === "function" ? name4.local ? attrFunctionNS : attrFunction : name4.local ? attrConstantNS : attrConstant;
+          return value2 == null ? name4.local ? attrNullNS : attrNull : typeof value2 === "function" ? name4.local ? attrFunctionNS : attrFunction : name4.local ? attrConstantNS : attrConstant;
         }
         function d3_collapse(s) {
           return s.trim().replace(/\s+/g, " ");
         }
-        d3_selectionPrototype.classed = function(name4, value) {
+        d3_selectionPrototype.classed = function(name4, value2) {
           if (arguments.length < 2) {
             if (typeof name4 === "string") {
               var node = this.node(), n = (name4 = d3_selection_classes(name4)).length, i = -1;
-              if (value = node.classList) {
-                while (++i < n) if (!value.contains(name4[i])) return false;
+              if (value2 = node.classList) {
+                while (++i < n) if (!value2.contains(name4[i])) return false;
               } else {
-                value = node.getAttribute("class");
-                while (++i < n) if (!d3_selection_classedRe(name4[i]).test(value)) return false;
+                value2 = node.getAttribute("class");
+                while (++i < n) if (!d3_selection_classedRe(name4[i]).test(value2)) return false;
               }
               return true;
             }
-            for (value in name4) this.each(d3_selection_classed(value, name4[value]));
+            for (value2 in name4) this.each(d3_selection_classed(value2, name4[value2]));
             return this;
           }
-          return this.each(d3_selection_classed(name4, value));
+          return this.each(d3_selection_classed(name4, value2));
         };
         function d3_selection_classedRe(name4) {
           return new RegExp("(?:^|\\s+)" + d3.requote(name4) + "(?:\\s+|$)", "g");
@@ -1131,25 +1131,25 @@ var Plotly = (() => {
         function d3_selection_classes(name4) {
           return (name4 + "").trim().split(/^|\s+/);
         }
-        function d3_selection_classed(name4, value) {
+        function d3_selection_classed(name4, value2) {
           name4 = d3_selection_classes(name4).map(d3_selection_classedName);
           var n = name4.length;
           function classedConstant() {
             var i = -1;
-            while (++i < n) name4[i](this, value);
+            while (++i < n) name4[i](this, value2);
           }
           function classedFunction() {
-            var i = -1, x = value.apply(this, arguments);
+            var i = -1, x = value2.apply(this, arguments);
             while (++i < n) name4[i](this, x);
           }
-          return typeof value === "function" ? classedFunction : classedConstant;
+          return typeof value2 === "function" ? classedFunction : classedConstant;
         }
         function d3_selection_classedName(name4) {
           var re = d3_selection_classedRe(name4);
-          return function(node, value) {
-            if (c = node.classList) return value ? c.add(name4) : c.remove(name4);
+          return function(node, value2) {
+            if (c = node.classList) return value2 ? c.add(name4) : c.remove(name4);
             var c = node.getAttribute("class") || "";
-            if (value) {
+            if (value2) {
               re.lastIndex = 0;
               if (!re.test(c)) node.setAttribute("class", d3_collapse(c + " " + name4));
             } else {
@@ -1157,12 +1157,12 @@ var Plotly = (() => {
             }
           };
         }
-        d3_selectionPrototype.style = function(name4, value, priority) {
+        d3_selectionPrototype.style = function(name4, value2, priority) {
           var n = arguments.length;
           if (n < 3) {
             if (typeof name4 !== "string") {
-              if (n < 2) value = "";
-              for (priority in name4) this.each(d3_selection_style(priority, name4[priority], value));
+              if (n < 2) value2 = "";
+              for (priority in name4) this.each(d3_selection_style(priority, name4[priority], value2));
               return this;
             }
             if (n < 2) {
@@ -1171,62 +1171,62 @@ var Plotly = (() => {
             }
             priority = "";
           }
-          return this.each(d3_selection_style(name4, value, priority));
+          return this.each(d3_selection_style(name4, value2, priority));
         };
-        function d3_selection_style(name4, value, priority) {
+        function d3_selection_style(name4, value2, priority) {
           function styleNull() {
             this.style.removeProperty(name4);
           }
           function styleConstant() {
-            this.style.setProperty(name4, value, priority);
+            this.style.setProperty(name4, value2, priority);
           }
           function styleFunction() {
-            var x = value.apply(this, arguments);
+            var x = value2.apply(this, arguments);
             if (x == null) this.style.removeProperty(name4);
             else this.style.setProperty(name4, x, priority);
           }
-          return value == null ? styleNull : typeof value === "function" ? styleFunction : styleConstant;
+          return value2 == null ? styleNull : typeof value2 === "function" ? styleFunction : styleConstant;
         }
-        d3_selectionPrototype.property = function(name4, value) {
+        d3_selectionPrototype.property = function(name4, value2) {
           if (arguments.length < 2) {
             if (typeof name4 === "string") return this.node()[name4];
-            for (value in name4) this.each(d3_selection_property(value, name4[value]));
+            for (value2 in name4) this.each(d3_selection_property(value2, name4[value2]));
             return this;
           }
-          return this.each(d3_selection_property(name4, value));
+          return this.each(d3_selection_property(name4, value2));
         };
-        function d3_selection_property(name4, value) {
+        function d3_selection_property(name4, value2) {
           function propertyNull() {
             delete this[name4];
           }
           function propertyConstant() {
-            this[name4] = value;
+            this[name4] = value2;
           }
           function propertyFunction() {
-            var x = value.apply(this, arguments);
+            var x = value2.apply(this, arguments);
             if (x == null) delete this[name4];
             else this[name4] = x;
           }
-          return value == null ? propertyNull : typeof value === "function" ? propertyFunction : propertyConstant;
+          return value2 == null ? propertyNull : typeof value2 === "function" ? propertyFunction : propertyConstant;
         }
-        d3_selectionPrototype.text = function(value) {
-          return arguments.length ? this.each(typeof value === "function" ? function() {
-            var v = value.apply(this, arguments);
+        d3_selectionPrototype.text = function(value2) {
+          return arguments.length ? this.each(typeof value2 === "function" ? function() {
+            var v = value2.apply(this, arguments);
             this.textContent = v == null ? "" : v;
-          } : value == null ? function() {
+          } : value2 == null ? function() {
             this.textContent = "";
           } : function() {
-            this.textContent = value;
+            this.textContent = value2;
           }) : this.node().textContent;
         };
-        d3_selectionPrototype.html = function(value) {
-          return arguments.length ? this.each(typeof value === "function" ? function() {
-            var v = value.apply(this, arguments);
+        d3_selectionPrototype.html = function(value2) {
+          return arguments.length ? this.each(typeof value2 === "function" ? function() {
+            var v = value2.apply(this, arguments);
             this.innerHTML = v == null ? "" : v;
-          } : value == null ? function() {
+          } : value2 == null ? function() {
             this.innerHTML = "";
           } : function() {
-            this.innerHTML = value;
+            this.innerHTML = value2;
           }) : this.node().innerHTML;
         };
         d3_selectionPrototype.append = function(name4) {
@@ -1259,16 +1259,16 @@ var Plotly = (() => {
           var parent = this.parentNode;
           if (parent) parent.removeChild(this);
         }
-        d3_selectionPrototype.data = function(value, key) {
+        d3_selectionPrototype.data = function(value2, key) {
           var i = -1, n = this.length, group, node;
           if (!arguments.length) {
-            value = new Array(n = (group = this[0]).length);
+            value2 = new Array(n = (group = this[0]).length);
             while (++i < n) {
               if (node = group[i]) {
-                value[i] = node.__data__;
+                value2[i] = node.__data__;
               }
             }
-            return value;
+            return value2;
           }
           function bind(group2, groupData) {
             var i2, n2 = group2.length, m = groupData.length, n0 = Math.min(n2, m), updateNodes = new Array(m), enterNodes = new Array(m), exitNodes = new Array(n2), node2, nodeData;
@@ -1323,13 +1323,13 @@ var Plotly = (() => {
             exit.push(exitNodes);
           }
           var enter = d3_selection_enter([]), update = d3_selection([]), exit = d3_selection([]);
-          if (typeof value === "function") {
+          if (typeof value2 === "function") {
             while (++i < n) {
-              bind(group = this[i], value.call(group, group.parentNode.__data__, i));
+              bind(group = this[i], value2.call(group, group.parentNode.__data__, i));
             }
           } else {
             while (++i < n) {
-              bind(group = this[i], value);
+              bind(group = this[i], value2);
             }
           }
           update.enter = function() {
@@ -1345,8 +1345,8 @@ var Plotly = (() => {
             __data__: data
           };
         }
-        d3_selectionPrototype.datum = function(value) {
-          return arguments.length ? this.property("__data__", value) : this.property("__data__");
+        d3_selectionPrototype.datum = function(value2) {
+          return arguments.length ? this.property("__data__", value2) : this.property("__data__");
         };
         d3_selectionPrototype.filter = function(filter) {
           var subgroups = [], subgroup, group, node;
@@ -1739,7 +1739,7 @@ var Plotly = (() => {
             x: 0,
             y: 0,
             k: 1
-          }, translate0, center0, center, size = [960, 500], scaleExtent = d3_behavior_zoomInfinity, duration = 250, zooming = 0, mousedown = "mousedown.zoom", mousemove = "mousemove.zoom", mouseup = "mouseup.zoom", mousewheelTimer, touchstart = "touchstart.zoom", touchtime, event = d3_eventDispatch(zoom, "zoomstart", "zoom", "zoomend"), x0, x1, y0, y1;
+          }, translate0, center0, center, size = [960, 500], scaleExtent = d3_behavior_zoomInfinity, duration = 250, zooming = 0, mousedown = "mousedown.zoom", mousemove = "mousemove.zoom", mouseup = "mouseup.zoom", mousewheelTimer, touchstart = "touchstart.zoom", touchtime, event = d3_eventDispatch(zoom2, "zoomstart", "zoom", "zoomend"), x0, x1, y0, y1;
           if (!d3_behavior_zoomWheel) {
             d3_behavior_zoomWheel = "onwheel" in d3_document ? (d3_behavior_zoomDelta = function() {
               return -d3.event.deltaY * (d3.event.deltaMode ? 120 : 1);
@@ -1749,10 +1749,10 @@ var Plotly = (() => {
               return -d3.event.detail;
             }, "MozMousePixelScroll");
           }
-          function zoom(g) {
+          function zoom2(g) {
             g.on(mousedown, mousedowned).on(d3_behavior_zoomWheel + ".zoom", mousewheeled).on("dblclick.zoom", dblclicked).on(touchstart, touchstarted);
           }
-          zoom.event = function(g) {
+          zoom2.event = function(g) {
             g.each(function() {
               var dispatch = event.of(this, arguments), view1 = view;
               if (d3_transitionInheritId) {
@@ -1787,7 +1787,7 @@ var Plotly = (() => {
               }
             });
           };
-          zoom.translate = function(_) {
+          zoom2.translate = function(_) {
             if (!arguments.length) return [view.x, view.y];
             view = {
               x: +_[0],
@@ -1795,9 +1795,9 @@ var Plotly = (() => {
               k: view.k
             };
             rescale();
-            return zoom;
+            return zoom2;
           };
-          zoom.scale = function(_) {
+          zoom2.scale = function(_) {
             if (!arguments.length) return view.k;
             view = {
               x: view.x,
@@ -1806,29 +1806,29 @@ var Plotly = (() => {
             };
             scaleTo(+_);
             rescale();
-            return zoom;
+            return zoom2;
           };
-          zoom.scaleExtent = function(_) {
+          zoom2.scaleExtent = function(_) {
             if (!arguments.length) return scaleExtent;
             scaleExtent = _ == null ? d3_behavior_zoomInfinity : [+_[0], +_[1]];
-            return zoom;
+            return zoom2;
           };
-          zoom.center = function(_) {
+          zoom2.center = function(_) {
             if (!arguments.length) return center;
             center = _ && [+_[0], +_[1]];
-            return zoom;
+            return zoom2;
           };
-          zoom.size = function(_) {
+          zoom2.size = function(_) {
             if (!arguments.length) return size;
             size = _ && [+_[0], +_[1]];
-            return zoom;
+            return zoom2;
           };
-          zoom.duration = function(_) {
+          zoom2.duration = function(_) {
             if (!arguments.length) return duration;
             duration = +_;
-            return zoom;
+            return zoom2;
           };
-          zoom.x = function(z) {
+          zoom2.x = function(z) {
             if (!arguments.length) return x1;
             x1 = z;
             x0 = z.copy();
@@ -1837,9 +1837,9 @@ var Plotly = (() => {
               y: 0,
               k: 1
             };
-            return zoom;
+            return zoom2;
           };
-          zoom.y = function(z) {
+          zoom2.y = function(z) {
             if (!arguments.length) return y1;
             y1 = z;
             y0 = z.copy();
@@ -1848,7 +1848,7 @@ var Plotly = (() => {
               y: 0,
               k: 1
             };
-            return zoom;
+            return zoom2;
           };
           function location(p) {
             return [(p[0] - view.x) / view.k, (p[1] - view.y) / view.k];
@@ -1874,7 +1874,7 @@ var Plotly = (() => {
             translateTo(center0 = p, l);
             that = d3.select(that);
             if (duration > 0) that = that.transition().duration(duration);
-            that.call(zoom.event);
+            that.call(zoom2.event);
           }
           function rescale() {
             if (x1) x1.domain(x0.range().map(function(x) {
@@ -2004,7 +2004,7 @@ var Plotly = (() => {
             var p = d3.mouse(this), k = Math.log(view.k) / Math.LN2;
             zoomTo(this, p, location(p), d3.event.shiftKey ? Math.ceil(k) - 1 : Math.floor(k) + 1);
           }
-          return d3.rebind(zoom, event, "on");
+          return d3.rebind(zoom2, event, "on");
         };
         var d3_behavior_zoomInfinity = [0, Infinity], d3_behavior_zoomDelta, d3_behavior_zoomWheel;
         d3.color = d3_color;
@@ -2107,11 +2107,11 @@ var Plotly = (() => {
         function d3_rgb(r, g, b) {
           return this instanceof d3_rgb ? void (this.r = ~~r, this.g = ~~g, this.b = ~~b) : arguments.length < 2 ? r instanceof d3_rgb ? new d3_rgb(r.r, r.g, r.b) : d3_rgb_parse("" + r, d3_rgb, d3_hsl_rgb) : new d3_rgb(r, g, b);
         }
-        function d3_rgbNumber(value) {
-          return new d3_rgb(value >> 16, value >> 8 & 255, value & 255);
+        function d3_rgbNumber(value2) {
+          return new d3_rgb(value2 >> 16, value2 >> 8 & 255, value2 & 255);
         }
-        function d3_rgbString(value) {
-          return d3_rgbNumber(value) + "";
+        function d3_rgbString(value2) {
+          return d3_rgbNumber(value2) + "";
         }
         var d3_rgbPrototype = d3_rgb.prototype = new d3_color();
         d3_rgbPrototype.brighter = function(k) {
@@ -2136,7 +2136,7 @@ var Plotly = (() => {
         function d3_rgb_hex(v) {
           return v < 16 ? "0" + Math.max(0, v).toString(16) : Math.min(255, v).toString(16);
         }
-        function d3_rgb_parse(format, rgb2, hsl3) {
+        function d3_rgb_parse(format, rgb3, hsl3) {
           var r = 0, g = 0, b = 0, m1, m2, color2;
           m1 = /([a-z]+)\((.*)\)/.exec(format = format.toLowerCase());
           if (m1) {
@@ -2146,12 +2146,12 @@ var Plotly = (() => {
                 return hsl3(parseFloat(m2[0]), parseFloat(m2[1]) / 100, parseFloat(m2[2]) / 100);
               }
               case "rgb": {
-                return rgb2(d3_rgb_parseNumber(m2[0]), d3_rgb_parseNumber(m2[1]), d3_rgb_parseNumber(m2[2]));
+                return rgb3(d3_rgb_parseNumber(m2[0]), d3_rgb_parseNumber(m2[1]), d3_rgb_parseNumber(m2[2]));
               }
             }
           }
           if (color2 = d3_rgb_names.get(format)) {
-            return rgb2(color2.r, color2.g, color2.b);
+            return rgb3(color2.r, color2.g, color2.b);
           }
           if (format != null && format.charAt(0) === "#" && !isNaN(color2 = parseInt(format.slice(1), 16))) {
             if (format.length === 4) {
@@ -2167,7 +2167,7 @@ var Plotly = (() => {
               b = color2 & 255;
             }
           }
-          return rgb2(r, g, b);
+          return rgb3(r, g, b);
         }
         function d3_rgb_hsl(r, g, b) {
           var min = Math.min(r /= 255, g /= 255, b /= 255), max = Math.max(r, g, b), d = max - min, h, s, l = (max + min) / 2;
@@ -2347,8 +2347,8 @@ var Plotly = (() => {
           yellow: 16776960,
           yellowgreen: 10145074
         });
-        d3_rgb_names.forEach(function(key, value) {
-          d3_rgb_names.set(key, d3_rgbNumber(value));
+        d3_rgb_names.forEach(function(key, value2) {
+          d3_rgb_names.set(key, d3_rgbNumber(value2));
         });
         function d3_functor(v) {
           return typeof v === "function" ? v : function() {
@@ -2392,25 +2392,25 @@ var Plotly = (() => {
               d3.event = o;
             }
           };
-          xhr.header = function(name4, value) {
+          xhr.header = function(name4, value2) {
             name4 = (name4 + "").toLowerCase();
             if (arguments.length < 2) return headers[name4];
-            if (value == null) delete headers[name4];
-            else headers[name4] = value + "";
+            if (value2 == null) delete headers[name4];
+            else headers[name4] = value2 + "";
             return xhr;
           };
-          xhr.mimeType = function(value) {
+          xhr.mimeType = function(value2) {
             if (!arguments.length) return mimeType;
-            mimeType = value == null ? null : value + "";
+            mimeType = value2 == null ? null : value2 + "";
             return xhr;
           };
-          xhr.responseType = function(value) {
+          xhr.responseType = function(value2) {
             if (!arguments.length) return responseType;
-            responseType = value;
+            responseType = value2;
             return xhr;
           };
-          xhr.response = function(value) {
-            response = value;
+          xhr.response = function(value2) {
+            response = value2;
             return xhr;
           };
           ["get", "post"].forEach(function(method) {
@@ -3850,15 +3850,15 @@ var Plotly = (() => {
             return Math.round(a + b * t);
           };
         }
-        d3.transform = function(string) {
+        d3.transform = function(string2) {
           var g = d3_document.createElementNS(d3.ns.prefix.svg, "g");
-          return (d3.transform = function(string2) {
-            if (string2 != null) {
-              g.setAttribute("transform", string2);
+          return (d3.transform = function(string3) {
+            if (string3 != null) {
+              g.setAttribute("transform", string3);
               var t = g.transform.baseVal.consolidate();
             }
             return new d3_transform(t ? t.matrix : d3_transformIdentity);
-          })(string);
+          })(string2);
         };
         function d3_transform(m) {
           var r0 = [m.a, m.b], r1 = [m.c, m.d], kx = d3_transformNormalize(r0), kz = d3_transformDot(r0, r1), ky = d3_transformNormalize(d3_transformCombine(r1, r0, -kz)) || 0;
@@ -4397,7 +4397,7 @@ var Plotly = (() => {
         }
         var d3_layout_forceLinkDistance = 20, d3_layout_forceLinkStrength = 1, d3_layout_forceChargeDistance2 = Infinity;
         d3.layout.hierarchy = function() {
-          var sort = d3_layout_hierarchySort, children = d3_layout_hierarchyChildren, value = d3_layout_hierarchyValue;
+          var sort = d3_layout_hierarchySort, children = d3_layout_hierarchyChildren, value2 = d3_layout_hierarchyValue;
           function hierarchy(root) {
             var stack = [root], nodes = [], node;
             root.depth = 0;
@@ -4410,17 +4410,17 @@ var Plotly = (() => {
                   child.parent = node;
                   child.depth = node.depth + 1;
                 }
-                if (value) node.value = 0;
+                if (value2) node.value = 0;
                 node.children = childs;
               } else {
-                if (value) node.value = +value.call(hierarchy, node, node.depth) || 0;
+                if (value2) node.value = +value2.call(hierarchy, node, node.depth) || 0;
                 delete node.children;
               }
             }
             d3_layout_hierarchyVisitAfter(root, function(node2) {
               var childs2, parent;
               if (sort && (childs2 = node2.children)) childs2.sort(sort);
-              if (value && (parent = node2.parent)) parent.value += node2.value;
+              if (value2 && (parent = node2.parent)) parent.value += node2.value;
             });
             return nodes;
           }
@@ -4435,18 +4435,18 @@ var Plotly = (() => {
             return hierarchy;
           };
           hierarchy.value = function(x) {
-            if (!arguments.length) return value;
-            value = x;
+            if (!arguments.length) return value2;
+            value2 = x;
             return hierarchy;
           };
           hierarchy.revalue = function(root) {
-            if (value) {
+            if (value2) {
               d3_layout_hierarchyVisitBefore(root, function(node) {
                 if (node.children) node.value = 0;
               });
               d3_layout_hierarchyVisitAfter(root, function(node) {
                 var parent;
-                if (!node.children) node.value = +value.call(hierarchy, node, node.depth) || 0;
+                if (!node.children) node.value = +value2.call(hierarchy, node, node.depth) || 0;
                 if (parent = node.parent) parent.value += node.value;
               });
             }
@@ -4454,11 +4454,11 @@ var Plotly = (() => {
           };
           return hierarchy;
         };
-        function d3_layout_hierarchyRebind(object, hierarchy) {
-          d3.rebind(object, hierarchy, "sort", "children", "value");
-          object.nodes = object;
-          object.links = d3_layout_hierarchyLinks;
-          return object;
+        function d3_layout_hierarchyRebind(object2, hierarchy) {
+          d3.rebind(object2, hierarchy, "sort", "children", "value");
+          object2.nodes = object2;
+          object2.links = d3_layout_hierarchyLinks;
+          return object2;
         }
         function d3_layout_hierarchyVisitBefore(node, callback) {
           var nodes = [node];
@@ -4540,10 +4540,10 @@ var Plotly = (() => {
           return d3_layout_hierarchyRebind(partition, hierarchy);
         };
         d3.layout.pie = function() {
-          var value = Number, sort = d3_layout_pieSortByValue, startAngle = 0, endAngle = \u03C4, padAngle = 0;
+          var value2 = Number, sort = d3_layout_pieSortByValue, startAngle = 0, endAngle = \u03C4, padAngle = 0;
           function pie(data) {
             var n = data.length, values = data.map(function(d, i) {
-              return +value.call(pie, d, i);
+              return +value2.call(pie, d, i);
             }), a = +(typeof startAngle === "function" ? startAngle.apply(this, arguments) : startAngle), da = (typeof endAngle === "function" ? endAngle.apply(this, arguments) : endAngle) - a, p = Math.min(Math.abs(da) / n, +(typeof padAngle === "function" ? padAngle.apply(this, arguments) : padAngle)), pa = p * (da < 0 ? -1 : 1), sum = d3.sum(values), k = sum ? (da - n * pa) / sum : 0, index = d3.range(n), arcs = [], v;
             if (sort != null) index.sort(sort === d3_layout_pieSortByValue ? function(i, j) {
               return values[j] - values[i];
@@ -4562,8 +4562,8 @@ var Plotly = (() => {
             return arcs;
           }
           pie.value = function(_) {
-            if (!arguments.length) return value;
-            value = _;
+            if (!arguments.length) return value2;
+            value2 = _;
             return pie;
           };
           pie.sort = function(_) {
@@ -4728,10 +4728,10 @@ var Plotly = (() => {
           while (++j < m) y0[j] = 0;
           return y0;
         }
-        function d3_layout_stackMaxIndex(array) {
-          var i = 1, j = 0, v = array[0][1], k, n = array.length;
+        function d3_layout_stackMaxIndex(array2) {
+          var i = 1, j = 0, v = array2[0][1], k, n = array2.length;
           for (; i < n; ++i) {
-            if ((k = array[i][1]) > v) {
+            if ((k = array2[i][1]) > v) {
               j = i;
               v = k;
             }
@@ -5165,7 +5165,7 @@ var Plotly = (() => {
           return children && (n = children.length) ? d3_layout_clusterRight(children[n - 1]) : node;
         }
         d3.layout.treemap = function() {
-          var hierarchy = d3.layout.hierarchy(), round = Math.round, size = [1, 1], padding = null, pad = d3_layout_treemapPadNull, sticky = false, stickies, mode = "squarify", ratio = 0.5 * (1 + Math.sqrt(5));
+          var hierarchy = d3.layout.hierarchy(), round2 = Math.round, size = [1, 1], padding = null, pad = d3_layout_treemapPadNull, sticky = false, stickies, mode = "squarify", ratio = 0.5 * (1 + Math.sqrt(5));
           function scale(children, k) {
             var i = -1, n = children.length, child, area;
             while (++i < n) {
@@ -5229,7 +5229,7 @@ var Plotly = (() => {
             return s ? Math.max(u * rmax * ratio / s, s / (u * rmin * ratio)) : Infinity;
           }
           function position(row, u, rect, flush) {
-            var i = -1, n = row.length, x = rect.x, y = rect.y, v = u ? round(row.area / u) : 0, o;
+            var i = -1, n = row.length, x = rect.x, y = rect.y, v = u ? round2(row.area / u) : 0, o;
             if (u == rect.dx) {
               if (flush || v > rect.dy) v = rect.dy;
               while (++i < n) {
@@ -5237,7 +5237,7 @@ var Plotly = (() => {
                 o.x = x;
                 o.y = y;
                 o.dy = v;
-                x += o.dx = Math.min(rect.x + rect.dx - x, v ? round(o.area / v) : 0);
+                x += o.dx = Math.min(rect.x + rect.dx - x, v ? round2(o.area / v) : 0);
               }
               o.z = true;
               o.dx += rect.x + rect.dx - x;
@@ -5250,7 +5250,7 @@ var Plotly = (() => {
                 o.x = x;
                 o.y = y;
                 o.dx = v;
-                y += o.dy = Math.min(rect.y + rect.dy - y, v ? round(o.area / v) : 0);
+                y += o.dy = Math.min(rect.y + rect.dy - y, v ? round2(o.area / v) : 0);
               }
               o.z = false;
               o.dy += rect.y + rect.dy - y;
@@ -5288,8 +5288,8 @@ var Plotly = (() => {
             return treemap;
           };
           treemap.round = function(x) {
-            if (!arguments.length) return round != Number;
-            round = x ? Math.round : Number;
+            if (!arguments.length) return round2 != Number;
+            round2 = x ? Math.round : Number;
             return treemap;
           };
           treemap.sticky = function(x) {
@@ -5506,8 +5506,8 @@ var Plotly = (() => {
           r: 1,
           e: 1
         };
-        function d3_scale_linearPrecision(value) {
-          return -Math.floor(Math.log(value) / Math.LN10 + 0.01);
+        function d3_scale_linearPrecision(value2) {
+          return -Math.floor(Math.log(value2) / Math.LN10 + 0.01);
         }
         function d3_scale_linearFormatPrecision(type, range) {
           var p = d3_scale_linearPrecision(range[2]);
@@ -6071,9 +6071,9 @@ var Plotly = (() => {
           "cardinal-closed": d3_svg_lineCardinalClosed,
           monotone: d3_svg_lineMonotone
         });
-        d3_svg_lineInterpolators.forEach(function(key, value) {
-          value.key = key;
-          value.closed = /-closed$/.test(key);
+        d3_svg_lineInterpolators.forEach(function(key, value2) {
+          value2.key = key;
+          value2.closed = /-closed$/.test(key);
         });
         function d3_svg_lineLinear(points) {
           return points.length > 1 ? points.join("L") : points + "Z";
@@ -6626,17 +6626,17 @@ var Plotly = (() => {
             node[ns][id].tween.set(name4, tween);
           });
         };
-        function d3_transition_tween(groups, name4, value, tween) {
+        function d3_transition_tween(groups, name4, value2, tween) {
           var id = groups.id, ns = groups.namespace;
-          return d3_selection_each(groups, typeof value === "function" ? function(node, i, j) {
-            node[ns][id].tween.set(name4, tween(value.call(node, node.__data__, i, j)));
-          } : (value = tween(value), function(node) {
-            node[ns][id].tween.set(name4, value);
+          return d3_selection_each(groups, typeof value2 === "function" ? function(node, i, j) {
+            node[ns][id].tween.set(name4, tween(value2.call(node, node.__data__, i, j)));
+          } : (value2 = tween(value2), function(node) {
+            node[ns][id].tween.set(name4, value2);
           }));
         }
-        d3_transitionPrototype.attr = function(nameNS, value) {
+        d3_transitionPrototype.attr = function(nameNS, value2) {
           if (arguments.length < 2) {
-            for (value in nameNS) this.attr(value, nameNS[value]);
+            for (value2 in nameNS) this.attr(value2, nameNS[value2]);
             return this;
           }
           var interpolate = nameNS == "transform" ? d3_interpolateTransform : d3_interpolate, name4 = d3.ns.qualify(nameNS);
@@ -6662,7 +6662,7 @@ var Plotly = (() => {
               });
             });
           }
-          return d3_transition_tween(this, "attr." + nameNS, value, name4.local ? attrTweenNS : attrTween);
+          return d3_transition_tween(this, "attr." + nameNS, value2, name4.local ? attrTweenNS : attrTween);
         };
         d3_transitionPrototype.attrTween = function(nameNS, tween) {
           var name4 = d3.ns.qualify(nameNS);
@@ -6680,12 +6680,12 @@ var Plotly = (() => {
           }
           return this.tween("attr." + nameNS, name4.local ? attrTweenNS : attrTween);
         };
-        d3_transitionPrototype.style = function(name4, value, priority) {
+        d3_transitionPrototype.style = function(name4, value2, priority) {
           var n = arguments.length;
           if (n < 3) {
             if (typeof name4 !== "string") {
-              if (n < 2) value = "";
-              for (priority in name4) this.style(priority, name4[priority], value);
+              if (n < 2) value2 = "";
+              for (priority in name4) this.style(priority, name4[priority], value2);
               return this;
             }
             priority = "";
@@ -6701,7 +6701,7 @@ var Plotly = (() => {
               });
             });
           }
-          return d3_transition_tween(this, "style." + name4, value, styleString);
+          return d3_transition_tween(this, "style." + name4, value2, styleString);
         };
         d3_transitionPrototype.styleTween = function(name4, tween, priority) {
           if (arguments.length < 3) priority = "";
@@ -6713,8 +6713,8 @@ var Plotly = (() => {
           }
           return this.tween("style." + name4, styleTween);
         };
-        d3_transitionPrototype.text = function(value) {
-          return d3_transition_tween(this, "text", value, d3_transition_text);
+        d3_transitionPrototype.text = function(value2) {
+          return d3_transition_tween(this, "text", value2, d3_transition_text);
         };
         function d3_transition_text(b) {
           if (b == null) b = "";
@@ -6729,30 +6729,30 @@ var Plotly = (() => {
             if (this[ns].count < 2 && (p = this.parentNode)) p.removeChild(this);
           });
         };
-        d3_transitionPrototype.ease = function(value) {
+        d3_transitionPrototype.ease = function(value2) {
           var id = this.id, ns = this.namespace;
           if (arguments.length < 1) return this.node()[ns][id].ease;
-          if (typeof value !== "function") value = d3.ease.apply(d3, arguments);
+          if (typeof value2 !== "function") value2 = d3.ease.apply(d3, arguments);
           return d3_selection_each(this, function(node) {
-            node[ns][id].ease = value;
+            node[ns][id].ease = value2;
           });
         };
-        d3_transitionPrototype.delay = function(value) {
+        d3_transitionPrototype.delay = function(value2) {
           var id = this.id, ns = this.namespace;
           if (arguments.length < 1) return this.node()[ns][id].delay;
-          return d3_selection_each(this, typeof value === "function" ? function(node, i, j) {
-            node[ns][id].delay = +value.call(node, node.__data__, i, j);
-          } : (value = +value, function(node) {
-            node[ns][id].delay = value;
+          return d3_selection_each(this, typeof value2 === "function" ? function(node, i, j) {
+            node[ns][id].delay = +value2.call(node, node.__data__, i, j);
+          } : (value2 = +value2, function(node) {
+            node[ns][id].delay = value2;
           }));
         };
-        d3_transitionPrototype.duration = function(value) {
+        d3_transitionPrototype.duration = function(value2) {
           var id = this.id, ns = this.namespace;
           if (arguments.length < 1) return this.node()[ns][id].duration;
-          return d3_selection_each(this, typeof value === "function" ? function(node, i, j) {
-            node[ns][id].duration = Math.max(1, value.call(node, node.__data__, i, j));
-          } : (value = Math.max(1, value), function(node) {
-            node[ns][id].duration = value;
+          return d3_selection_each(this, typeof value2 === "function" ? function(node, i, j) {
+            node[ns][id].duration = Math.max(1, value2.call(node, node.__data__, i, j));
+          } : (value2 = Math.max(1, value2), function(node) {
+            node[ns][id].duration = value2;
           }));
         };
         d3_transitionPrototype.each = function(type, listener) {
@@ -6839,9 +6839,9 @@ var Plotly = (() => {
             lock.active = id;
             transition.event && transition.event.start.call(node, node.__data__, i);
             tweens = [];
-            transition.tween.forEach(function(key, value) {
-              if (value = value.call(node, node.__data__, i)) {
-                tweens.push(value);
+            transition.tween.forEach(function(key, value2) {
+              if (value2 = value2.call(node, node.__data__, i)) {
+                tweens.push(value2);
               }
             });
             ease = transition.ease;
@@ -7312,21 +7312,21 @@ var Plotly = (() => {
         "use strict";
         var t02 = /* @__PURE__ */ new Date(), t12 = /* @__PURE__ */ new Date();
         function newInterval(floori, offseti, count, field) {
-          function interval(date) {
-            return floori(date = arguments.length === 0 ? /* @__PURE__ */ new Date() : /* @__PURE__ */ new Date(+date)), date;
+          function interval(date2) {
+            return floori(date2 = arguments.length === 0 ? /* @__PURE__ */ new Date() : /* @__PURE__ */ new Date(+date2)), date2;
           }
-          interval.floor = function(date) {
-            return floori(date = /* @__PURE__ */ new Date(+date)), date;
+          interval.floor = function(date2) {
+            return floori(date2 = /* @__PURE__ */ new Date(+date2)), date2;
           };
-          interval.ceil = function(date) {
-            return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
+          interval.ceil = function(date2) {
+            return floori(date2 = new Date(date2 - 1)), offseti(date2, 1), floori(date2), date2;
           };
-          interval.round = function(date) {
-            var d0 = interval(date), d1 = interval.ceil(date);
-            return date - d0 < d1 - date ? d0 : d1;
+          interval.round = function(date2) {
+            var d0 = interval(date2), d1 = interval.ceil(date2);
+            return date2 - d0 < d1 - date2 ? d0 : d1;
           };
-          interval.offset = function(date, step) {
-            return offseti(date = /* @__PURE__ */ new Date(+date), step == null ? 1 : Math.floor(step)), date;
+          interval.offset = function(date2, step) {
+            return offseti(date2 = /* @__PURE__ */ new Date(+date2), step == null ? 1 : Math.floor(step)), date2;
           };
           interval.range = function(start, stop, step) {
             var range = [], previous;
@@ -7339,16 +7339,16 @@ var Plotly = (() => {
             return range;
           };
           interval.filter = function(test) {
-            return newInterval(function(date) {
-              if (date >= date) while (floori(date), !test(date)) date.setTime(date - 1);
-            }, function(date, step) {
-              if (date >= date) {
+            return newInterval(function(date2) {
+              if (date2 >= date2) while (floori(date2), !test(date2)) date2.setTime(date2 - 1);
+            }, function(date2, step) {
+              if (date2 >= date2) {
                 if (step < 0) while (++step <= 0) {
-                  while (offseti(date, -1), !test(date)) {
+                  while (offseti(date2, -1), !test(date2)) {
                   }
                 }
                 else while (--step >= 0) {
-                  while (offseti(date, 1), !test(date)) {
+                  while (offseti(date2, 1), !test(date2)) {
                   }
                 }
               }
@@ -7372,8 +7372,8 @@ var Plotly = (() => {
           return interval;
         }
         var millisecond = newInterval(function() {
-        }, function(date, step) {
-          date.setTime(+date + step);
+        }, function(date2, step) {
+          date2.setTime(+date2 + step);
         }, function(start, end) {
           return end - start;
         });
@@ -7381,10 +7381,10 @@ var Plotly = (() => {
           k = Math.floor(k);
           if (!isFinite(k) || !(k > 0)) return null;
           if (!(k > 1)) return millisecond;
-          return newInterval(function(date) {
-            date.setTime(Math.floor(date / k) * k);
-          }, function(date, step) {
-            date.setTime(+date + step * k);
+          return newInterval(function(date2) {
+            date2.setTime(Math.floor(date2 / k) * k);
+          }, function(date2, step) {
+            date2.setTime(+date2 + step * k);
           }, function(start, end) {
             return (end - start) / k;
           });
@@ -7395,52 +7395,52 @@ var Plotly = (() => {
         var durationHour = 36e5;
         var durationDay = 864e5;
         var durationWeek = 6048e5;
-        var second = newInterval(function(date) {
-          date.setTime(date - date.getMilliseconds());
-        }, function(date, step) {
-          date.setTime(+date + step * durationSecond);
+        var second = newInterval(function(date2) {
+          date2.setTime(date2 - date2.getMilliseconds());
+        }, function(date2, step) {
+          date2.setTime(+date2 + step * durationSecond);
         }, function(start, end) {
           return (end - start) / durationSecond;
-        }, function(date) {
-          return date.getUTCSeconds();
+        }, function(date2) {
+          return date2.getUTCSeconds();
         });
         var seconds = second.range;
-        var minute = newInterval(function(date) {
-          date.setTime(date - date.getMilliseconds() - date.getSeconds() * durationSecond);
-        }, function(date, step) {
-          date.setTime(+date + step * durationMinute);
+        var minute = newInterval(function(date2) {
+          date2.setTime(date2 - date2.getMilliseconds() - date2.getSeconds() * durationSecond);
+        }, function(date2, step) {
+          date2.setTime(+date2 + step * durationMinute);
         }, function(start, end) {
           return (end - start) / durationMinute;
-        }, function(date) {
-          return date.getMinutes();
+        }, function(date2) {
+          return date2.getMinutes();
         });
         var minutes = minute.range;
-        var hour = newInterval(function(date) {
-          date.setTime(date - date.getMilliseconds() - date.getSeconds() * durationSecond - date.getMinutes() * durationMinute);
-        }, function(date, step) {
-          date.setTime(+date + step * durationHour);
+        var hour = newInterval(function(date2) {
+          date2.setTime(date2 - date2.getMilliseconds() - date2.getSeconds() * durationSecond - date2.getMinutes() * durationMinute);
+        }, function(date2, step) {
+          date2.setTime(+date2 + step * durationHour);
         }, function(start, end) {
           return (end - start) / durationHour;
-        }, function(date) {
-          return date.getHours();
+        }, function(date2) {
+          return date2.getHours();
         });
         var hours = hour.range;
-        var day = newInterval(function(date) {
-          date.setHours(0, 0, 0, 0);
-        }, function(date, step) {
-          date.setDate(date.getDate() + step);
+        var day = newInterval(function(date2) {
+          date2.setHours(0, 0, 0, 0);
+        }, function(date2, step) {
+          date2.setDate(date2.getDate() + step);
         }, function(start, end) {
           return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
-        }, function(date) {
-          return date.getDate() - 1;
+        }, function(date2) {
+          return date2.getDate() - 1;
         });
         var days = day.range;
         function weekday(i) {
-          return newInterval(function(date) {
-            date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
-            date.setHours(0, 0, 0, 0);
-          }, function(date, step) {
-            date.setDate(date.getDate() + step * 7);
+          return newInterval(function(date2) {
+            date2.setDate(date2.getDate() - (date2.getDay() + 7 - i) % 7);
+            date2.setHours(0, 0, 0, 0);
+          }, function(date2, step) {
+            date2.setDate(date2.getDate() + step * 7);
           }, function(start, end) {
             return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
           });
@@ -7459,73 +7459,73 @@ var Plotly = (() => {
         var thursdays = thursday.range;
         var fridays = friday.range;
         var saturdays = saturday.range;
-        var month = newInterval(function(date) {
-          date.setDate(1);
-          date.setHours(0, 0, 0, 0);
-        }, function(date, step) {
-          date.setMonth(date.getMonth() + step);
+        var month = newInterval(function(date2) {
+          date2.setDate(1);
+          date2.setHours(0, 0, 0, 0);
+        }, function(date2, step) {
+          date2.setMonth(date2.getMonth() + step);
         }, function(start, end) {
           return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
-        }, function(date) {
-          return date.getMonth();
+        }, function(date2) {
+          return date2.getMonth();
         });
         var months = month.range;
-        var year = newInterval(function(date) {
-          date.setMonth(0, 1);
-          date.setHours(0, 0, 0, 0);
-        }, function(date, step) {
-          date.setFullYear(date.getFullYear() + step);
+        var year = newInterval(function(date2) {
+          date2.setMonth(0, 1);
+          date2.setHours(0, 0, 0, 0);
+        }, function(date2, step) {
+          date2.setFullYear(date2.getFullYear() + step);
         }, function(start, end) {
           return end.getFullYear() - start.getFullYear();
-        }, function(date) {
-          return date.getFullYear();
+        }, function(date2) {
+          return date2.getFullYear();
         });
         year.every = function(k) {
-          return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-            date.setFullYear(Math.floor(date.getFullYear() / k) * k);
-            date.setMonth(0, 1);
-            date.setHours(0, 0, 0, 0);
-          }, function(date, step) {
-            date.setFullYear(date.getFullYear() + step * k);
+          return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date2) {
+            date2.setFullYear(Math.floor(date2.getFullYear() / k) * k);
+            date2.setMonth(0, 1);
+            date2.setHours(0, 0, 0, 0);
+          }, function(date2, step) {
+            date2.setFullYear(date2.getFullYear() + step * k);
           });
         };
         var years = year.range;
-        var utcMinute = newInterval(function(date) {
-          date.setUTCSeconds(0, 0);
-        }, function(date, step) {
-          date.setTime(+date + step * durationMinute);
+        var utcMinute = newInterval(function(date2) {
+          date2.setUTCSeconds(0, 0);
+        }, function(date2, step) {
+          date2.setTime(+date2 + step * durationMinute);
         }, function(start, end) {
           return (end - start) / durationMinute;
-        }, function(date) {
-          return date.getUTCMinutes();
+        }, function(date2) {
+          return date2.getUTCMinutes();
         });
         var utcMinutes = utcMinute.range;
-        var utcHour = newInterval(function(date) {
-          date.setUTCMinutes(0, 0, 0);
-        }, function(date, step) {
-          date.setTime(+date + step * durationHour);
+        var utcHour = newInterval(function(date2) {
+          date2.setUTCMinutes(0, 0, 0);
+        }, function(date2, step) {
+          date2.setTime(+date2 + step * durationHour);
         }, function(start, end) {
           return (end - start) / durationHour;
-        }, function(date) {
-          return date.getUTCHours();
+        }, function(date2) {
+          return date2.getUTCHours();
         });
         var utcHours = utcHour.range;
-        var utcDay = newInterval(function(date) {
-          date.setUTCHours(0, 0, 0, 0);
-        }, function(date, step) {
-          date.setUTCDate(date.getUTCDate() + step);
+        var utcDay = newInterval(function(date2) {
+          date2.setUTCHours(0, 0, 0, 0);
+        }, function(date2, step) {
+          date2.setUTCDate(date2.getUTCDate() + step);
         }, function(start, end) {
           return (end - start) / durationDay;
-        }, function(date) {
-          return date.getUTCDate() - 1;
+        }, function(date2) {
+          return date2.getUTCDate() - 1;
         });
         var utcDays = utcDay.range;
         function utcWeekday(i) {
-          return newInterval(function(date) {
-            date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
-            date.setUTCHours(0, 0, 0, 0);
-          }, function(date, step) {
-            date.setUTCDate(date.getUTCDate() + step * 7);
+          return newInterval(function(date2) {
+            date2.setUTCDate(date2.getUTCDate() - (date2.getUTCDay() + 7 - i) % 7);
+            date2.setUTCHours(0, 0, 0, 0);
+          }, function(date2, step) {
+            date2.setUTCDate(date2.getUTCDate() + step * 7);
           }, function(start, end) {
             return (end - start) / durationWeek;
           });
@@ -7544,34 +7544,34 @@ var Plotly = (() => {
         var utcThursdays = utcThursday.range;
         var utcFridays = utcFriday.range;
         var utcSaturdays = utcSaturday.range;
-        var utcMonth = newInterval(function(date) {
-          date.setUTCDate(1);
-          date.setUTCHours(0, 0, 0, 0);
-        }, function(date, step) {
-          date.setUTCMonth(date.getUTCMonth() + step);
+        var utcMonth = newInterval(function(date2) {
+          date2.setUTCDate(1);
+          date2.setUTCHours(0, 0, 0, 0);
+        }, function(date2, step) {
+          date2.setUTCMonth(date2.getUTCMonth() + step);
         }, function(start, end) {
           return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
-        }, function(date) {
-          return date.getUTCMonth();
+        }, function(date2) {
+          return date2.getUTCMonth();
         });
         var utcMonths = utcMonth.range;
-        var utcYear = newInterval(function(date) {
-          date.setUTCMonth(0, 1);
-          date.setUTCHours(0, 0, 0, 0);
-        }, function(date, step) {
-          date.setUTCFullYear(date.getUTCFullYear() + step);
+        var utcYear = newInterval(function(date2) {
+          date2.setUTCMonth(0, 1);
+          date2.setUTCHours(0, 0, 0, 0);
+        }, function(date2, step) {
+          date2.setUTCFullYear(date2.getUTCFullYear() + step);
         }, function(start, end) {
           return end.getUTCFullYear() - start.getUTCFullYear();
-        }, function(date) {
-          return date.getUTCFullYear();
+        }, function(date2) {
+          return date2.getUTCFullYear();
         });
         utcYear.every = function(k) {
-          return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-            date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
-            date.setUTCMonth(0, 1);
-            date.setUTCHours(0, 0, 0, 0);
-          }, function(date, step) {
-            date.setUTCFullYear(date.getUTCFullYear() + step * k);
+          return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date2) {
+            date2.setUTCFullYear(Math.floor(date2.getUTCFullYear() / k) * k);
+            date2.setUTCMonth(0, 1);
+            date2.setUTCHours(0, 0, 0, 0);
+          }, function(date2, step) {
+            date2.setUTCFullYear(date2.getUTCFullYear() + step * k);
           });
         };
         var utcYears = utcYear.range;
@@ -7650,17 +7650,17 @@ var Plotly = (() => {
         "use strict";
         function localDate(d) {
           if (0 <= d.y && d.y < 100) {
-            var date = new Date(-1, d.m, d.d, d.H, d.M, d.S, d.L);
-            date.setFullYear(d.y);
-            return date;
+            var date2 = new Date(-1, d.m, d.d, d.H, d.M, d.S, d.L);
+            date2.setFullYear(d.y);
+            return date2;
           }
           return new Date(d.y, d.m, d.d, d.H, d.M, d.S, d.L);
         }
         function utcDate(d) {
           if (0 <= d.y && d.y < 100) {
-            var date = new Date(Date.UTC(-1, d.m, d.d, d.H, d.M, d.S, d.L));
-            date.setUTCFullYear(d.y);
-            return date;
+            var date2 = new Date(Date.UTC(-1, d.m, d.d, d.H, d.M, d.S, d.L));
+            date2.setUTCFullYear(d.y);
+            return date2;
           }
           return new Date(Date.UTC(d.y, d.m, d.d, d.H, d.M, d.S, d.L));
         }
@@ -7779,27 +7779,27 @@ var Plotly = (() => {
           utcFormats.X = newFormat(locale_time, utcFormats);
           utcFormats.c = newFormat(locale_dateTime, utcFormats);
           function newFormat(specifier, formats2) {
-            return function(date) {
-              var string = [], i = -1, j = 0, n = specifier.length, c, pad2, format;
-              if (!(date instanceof Date)) date = /* @__PURE__ */ new Date(+date);
+            return function(date2) {
+              var string2 = [], i = -1, j = 0, n = specifier.length, c, pad2, format;
+              if (!(date2 instanceof Date)) date2 = /* @__PURE__ */ new Date(+date2);
               while (++i < n) {
                 if (specifier.charCodeAt(i) === 37) {
-                  string.push(specifier.slice(j, i));
+                  string2.push(specifier.slice(j, i));
                   if ((pad2 = pads[c = specifier.charAt(++i)]) != null) c = specifier.charAt(++i);
                   else pad2 = c === "e" ? " " : "0";
-                  if (format = formats2[c]) c = format(date, pad2);
-                  string.push(c);
+                  if (format = formats2[c]) c = format(date2, pad2);
+                  string2.push(c);
                   j = i + 1;
                 }
               }
-              string.push(specifier.slice(j, i));
-              return string.join("");
+              string2.push(specifier.slice(j, i));
+              return string2.join("");
             };
           }
           function newParse(specifier, Z) {
-            return function(string) {
-              var d = newDate(1900, void 0, 1), i = parseSpecifier(d, specifier, string += "", 0), week, day;
-              if (i != string.length) return null;
+            return function(string2) {
+              var d = newDate(1900, void 0, 1), i = parseSpecifier(d, specifier, string2 += "", 0), week, day;
+              if (i != string2.length) return null;
               if ("Q" in d) return new Date(d.Q);
               if ("s" in d) return new Date(d.s * 1e3 + ("L" in d ? d.L : 0));
               if (Z && !("Z" in d)) d.Z = 0;
@@ -7837,49 +7837,49 @@ var Plotly = (() => {
               return localDate(d);
             };
           }
-          function parseSpecifier(d, specifier, string, j) {
-            var i = 0, n = specifier.length, m = string.length, c, parse;
+          function parseSpecifier(d, specifier, string2, j) {
+            var i = 0, n = specifier.length, m = string2.length, c, parse;
             while (i < n) {
               if (j >= m) return -1;
               c = specifier.charCodeAt(i++);
               if (c === 37) {
                 c = specifier.charAt(i++);
                 parse = parses[c in pads ? specifier.charAt(i++) : c];
-                if (!parse || (j = parse(d, string, j)) < 0) return -1;
-              } else if (c != string.charCodeAt(j++)) {
+                if (!parse || (j = parse(d, string2, j)) < 0) return -1;
+              } else if (c != string2.charCodeAt(j++)) {
                 return -1;
               }
             }
             return j;
           }
-          function parsePeriod(d, string, i) {
-            var n = periodRe.exec(string.slice(i));
+          function parsePeriod(d, string2, i) {
+            var n = periodRe.exec(string2.slice(i));
             return n ? (d.p = periodLookup[n[0].toLowerCase()], i + n[0].length) : -1;
           }
-          function parseShortWeekday(d, string, i) {
-            var n = shortWeekdayRe.exec(string.slice(i));
+          function parseShortWeekday(d, string2, i) {
+            var n = shortWeekdayRe.exec(string2.slice(i));
             return n ? (d.w = shortWeekdayLookup[n[0].toLowerCase()], i + n[0].length) : -1;
           }
-          function parseWeekday(d, string, i) {
-            var n = weekdayRe.exec(string.slice(i));
+          function parseWeekday(d, string2, i) {
+            var n = weekdayRe.exec(string2.slice(i));
             return n ? (d.w = weekdayLookup[n[0].toLowerCase()], i + n[0].length) : -1;
           }
-          function parseShortMonth(d, string, i) {
-            var n = shortMonthRe.exec(string.slice(i));
+          function parseShortMonth(d, string2, i) {
+            var n = shortMonthRe.exec(string2.slice(i));
             return n ? (d.m = shortMonthLookup[n[0].toLowerCase()], i + n[0].length) : -1;
           }
-          function parseMonth(d, string, i) {
-            var n = monthRe.exec(string.slice(i));
+          function parseMonth(d, string2, i) {
+            var n = monthRe.exec(string2.slice(i));
             return n ? (d.m = monthLookup[n[0].toLowerCase()], i + n[0].length) : -1;
           }
-          function parseLocaleDateTime(d, string, i) {
-            return parseSpecifier(d, locale_dateTime, string, i);
+          function parseLocaleDateTime(d, string2, i) {
+            return parseSpecifier(d, locale_dateTime, string2, i);
           }
-          function parseLocaleDate(d, string, i) {
-            return parseSpecifier(d, locale_date, string, i);
+          function parseLocaleDate(d, string2, i) {
+            return parseSpecifier(d, locale_date, string2, i);
           }
-          function parseLocaleTime(d, string, i) {
-            return parseSpecifier(d, locale_time, string, i);
+          function parseLocaleTime(d, string2, i) {
+            return parseSpecifier(d, locale_time, string2, i);
           }
           function formatShortWeekday(d) {
             return locale_shortWeekdays[d.getDay()];
@@ -7949,9 +7949,9 @@ var Plotly = (() => {
           };
         }
         var pads = { "-": "", "_": " ", "0": "0" }, numberRe = /^\s*\d+/, percentRe = /^%/, requoteRe = /[\\^$*+?|[\]().{}]/g;
-        function pad(value, fill, width) {
-          var sign = value < 0 ? "-" : "", string = (sign ? -value : value) + "", length = string.length;
-          return sign + (length < width ? new Array(width - length + 1).join(fill) + string : string);
+        function pad(value2, fill, width) {
+          var sign = value2 < 0 ? "-" : "", string2 = (sign ? -value2 : value2) + "", length = string2.length;
+          return sign + (length < width ? new Array(width - length + 1).join(fill) + string2 : string2);
         }
         function requote(s) {
           return s.replace(requoteRe, "\\$&");
@@ -7964,84 +7964,84 @@ var Plotly = (() => {
           while (++i < n) map[names[i].toLowerCase()] = i;
           return map;
         }
-        function parseWeekdayNumberSunday(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 1));
+        function parseWeekdayNumberSunday(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 1));
           return n ? (d.w = +n[0], i + n[0].length) : -1;
         }
-        function parseWeekdayNumberMonday(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 1));
+        function parseWeekdayNumberMonday(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 1));
           return n ? (d.u = +n[0], i + n[0].length) : -1;
         }
-        function parseWeekNumberSunday(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseWeekNumberSunday(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.U = +n[0], i + n[0].length) : -1;
         }
-        function parseWeekNumberISO(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseWeekNumberISO(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.V = +n[0], i + n[0].length) : -1;
         }
-        function parseWeekNumberMonday(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseWeekNumberMonday(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.W = +n[0], i + n[0].length) : -1;
         }
-        function parseFullYear(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 4));
+        function parseFullYear(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 4));
           return n ? (d.y = +n[0], i + n[0].length) : -1;
         }
-        function parseYear(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseYear(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.y = +n[0] + (+n[0] > 68 ? 1900 : 2e3), i + n[0].length) : -1;
         }
-        function parseZone(d, string, i) {
-          var n = /^(Z)|([+-]\d\d)(?::?(\d\d))?/.exec(string.slice(i, i + 6));
+        function parseZone(d, string2, i) {
+          var n = /^(Z)|([+-]\d\d)(?::?(\d\d))?/.exec(string2.slice(i, i + 6));
           return n ? (d.Z = n[1] ? 0 : -(n[2] + (n[3] || "00")), i + n[0].length) : -1;
         }
-        function parseQuarter(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 1));
+        function parseQuarter(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 1));
           return n ? (d.q = n[0] * 3 - 3, i + n[0].length) : -1;
         }
-        function parseMonthNumber(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseMonthNumber(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.m = n[0] - 1, i + n[0].length) : -1;
         }
-        function parseDayOfMonth(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseDayOfMonth(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.d = +n[0], i + n[0].length) : -1;
         }
-        function parseDayOfYear(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 3));
+        function parseDayOfYear(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 3));
           return n ? (d.m = 0, d.d = +n[0], i + n[0].length) : -1;
         }
-        function parseHour24(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseHour24(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.H = +n[0], i + n[0].length) : -1;
         }
-        function parseMinutes(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseMinutes(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.M = +n[0], i + n[0].length) : -1;
         }
-        function parseSeconds(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 2));
+        function parseSeconds(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 2));
           return n ? (d.S = +n[0], i + n[0].length) : -1;
         }
-        function parseMilliseconds(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 3));
+        function parseMilliseconds(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 3));
           return n ? (d.L = +n[0], i + n[0].length) : -1;
         }
-        function parseMicroseconds(d, string, i) {
-          var n = numberRe.exec(string.slice(i, i + 6));
+        function parseMicroseconds(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i, i + 6));
           return n ? (d.L = Math.floor(n[0] / 1e3), i + n[0].length) : -1;
         }
-        function parseLiteralPercent(d, string, i) {
-          var n = percentRe.exec(string.slice(i, i + 1));
+        function parseLiteralPercent(d, string2, i) {
+          var n = percentRe.exec(string2.slice(i, i + 1));
           return n ? i + n[0].length : -1;
         }
-        function parseUnixTimestamp(d, string, i) {
-          var n = numberRe.exec(string.slice(i));
+        function parseUnixTimestamp(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i));
           return n ? (d.Q = +n[0], i + n[0].length) : -1;
         }
-        function parseUnixTimestampSeconds(d, string, i) {
-          var n = numberRe.exec(string.slice(i));
+        function parseUnixTimestampSeconds(d, string2, i) {
+          var n = numberRe.exec(string2.slice(i));
           return n ? (d.s = +n[0], i + n[0].length) : -1;
         }
         function formatDayOfMonth(d, p) {
@@ -8206,13 +8206,13 @@ var Plotly = (() => {
           return locale;
         }
         var isoSpecifier = "%Y-%m-%dT%H:%M:%S.%LZ";
-        function formatIsoNative(date) {
-          return date.toISOString();
+        function formatIsoNative(date2) {
+          return date2.toISOString();
         }
         var formatIso = Date.prototype.toISOString ? formatIsoNative : exports2.utcFormat(isoSpecifier);
-        function parseIsoNative(string) {
-          var date = new Date(string);
-          return isNaN(date) ? null : date;
+        function parseIsoNative(string2) {
+          var date2 = new Date(string2);
+          return isNaN(date2) ? null : date2;
         }
         var parseIso = +/* @__PURE__ */ new Date("2000-01-01T00:00:00.000Z") ? parseIsoNative : exports2.utcParse(isoSpecifier);
         exports2.isoFormat = formatIso;
@@ -8246,11 +8246,11 @@ var Plotly = (() => {
           return x = formatDecimalParts(Math.abs(x)), x ? x[1] : NaN;
         }
         function formatGroup(grouping, thousands) {
-          return function(value, width) {
-            var i = value.length, t = [], j = 0, g = grouping[0], length = 0;
+          return function(value2, width) {
+            var i = value2.length, t = [], j = 0, g = grouping[0], length = 0;
             while (i > 0 && g > 0) {
               if (length + g + 1 > width) g = Math.max(1, width - length);
-              t.push(value.substring(i -= g, i + g));
+              t.push(value2.substring(i -= g, i + g));
               if ((length += g + 1) > width) break;
               g = grouping[j = (j + 1) % grouping.length];
             }
@@ -8258,8 +8258,8 @@ var Plotly = (() => {
           };
         }
         function formatNumerals(numerals) {
-          return function(value) {
-            return value.replace(/[0-9]/g, function(i) {
+          return function(value2) {
+            return value2.replace(/[0-9]/g, function(i) {
               return numerals[+i];
             });
           };
@@ -8378,58 +8378,58 @@ var Plotly = (() => {
             var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "", suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
             var formatType = formatTypes[type], maybeSuffix = /[defgprs%]/.test(type);
             precision = precision === void 0 ? 6 : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision)) : Math.max(0, Math.min(20, precision));
-            function format(value) {
+            function format(value2) {
               var valuePrefix = prefix, valueSuffix = suffix, i, n, c;
               if (type === "c") {
-                valueSuffix = formatType(value) + valueSuffix;
-                value = "";
+                valueSuffix = formatType(value2) + valueSuffix;
+                value2 = "";
               } else {
-                value = +value;
-                var valueNegative = value < 0 || 1 / value < 0;
-                value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
-                if (trim) value = formatTrim(value);
-                if (valueNegative && +value === 0 && sign !== "+") valueNegative = false;
+                value2 = +value2;
+                var valueNegative = value2 < 0 || 1 / value2 < 0;
+                value2 = isNaN(value2) ? nan : formatType(Math.abs(value2), precision);
+                if (trim) value2 = formatTrim(value2);
+                if (valueNegative && +value2 === 0 && sign !== "+") valueNegative = false;
                 valuePrefix = (valueNegative ? sign === "(" ? sign : minus : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
                 valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
                 if (maybeSuffix) {
-                  i = -1, n = value.length;
+                  i = -1, n = value2.length;
                   while (++i < n) {
-                    if (c = value.charCodeAt(i), 48 > c || c > 57) {
-                      valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
-                      value = value.slice(0, i);
+                    if (c = value2.charCodeAt(i), 48 > c || c > 57) {
+                      valueSuffix = (c === 46 ? decimal + value2.slice(i + 1) : value2.slice(i)) + valueSuffix;
+                      value2 = value2.slice(0, i);
                       break;
                     }
                   }
                 }
               }
-              if (comma && !zero2) value = group(value, Infinity);
-              var length = valuePrefix.length + value.length + valueSuffix.length, padding = length < width ? new Array(width - length + 1).join(fill) : "";
-              if (comma && zero2) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
+              if (comma && !zero2) value2 = group(value2, Infinity);
+              var length = valuePrefix.length + value2.length + valueSuffix.length, padding = length < width ? new Array(width - length + 1).join(fill) : "";
+              if (comma && zero2) value2 = group(padding + value2, padding.length ? width - valueSuffix.length : Infinity), padding = "";
               switch (align) {
                 case "<":
-                  value = valuePrefix + value + valueSuffix + padding;
+                  value2 = valuePrefix + value2 + valueSuffix + padding;
                   break;
                 case "=":
-                  value = valuePrefix + padding + value + valueSuffix;
+                  value2 = valuePrefix + padding + value2 + valueSuffix;
                   break;
                 case "^":
-                  value = padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length);
+                  value2 = padding.slice(0, length = padding.length >> 1) + valuePrefix + value2 + valueSuffix + padding.slice(length);
                   break;
                 default:
-                  value = padding + valuePrefix + value + valueSuffix;
+                  value2 = padding + valuePrefix + value2 + valueSuffix;
                   break;
               }
-              return numerals(value);
+              return numerals(value2);
             }
             format.toString = function() {
               return specifier + "";
             };
             return format;
           }
-          function formatPrefix(specifier, value) {
-            var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)), e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3, k = Math.pow(10, -e), prefix = prefixes[8 + e / 3];
-            return function(value2) {
-              return f(k * value2) + prefix;
+          function formatPrefix(specifier, value2) {
+            var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)), e = Math.max(-8, Math.min(8, Math.floor(exponent(value2) / 3))) * 3, k = Math.pow(10, -e), prefix = prefixes[8 + e / 3];
+            return function(value3) {
+              return f(k * value3) + prefix;
             };
           }
           return {
@@ -8454,8 +8454,8 @@ var Plotly = (() => {
         function precisionFixed(step) {
           return Math.max(0, -exponent(Math.abs(step)));
         }
-        function precisionPrefix(step, value) {
-          return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3 - exponent(Math.abs(step)));
+        function precisionPrefix(step, value2) {
+          return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value2) / 3))) * 3 - exponent(Math.abs(step)));
         }
         function precisionRound(step, max) {
           step = Math.abs(step), max = Math.abs(max) - step;
@@ -9026,8 +9026,8 @@ var Plotly = (() => {
         }
         var isSimpleValueProp = SIMPLE_PROPERTY_REGEX.test(valueName);
         var obj = {
-          set: function(name4, value) {
-            var changeType = value === null ? UNSET : NONE;
+          set: function(name4, value2) {
+            var changeType = value2 === null ? UNSET : NONE;
             if (!arr) {
               if (!baseProp || changeType === UNSET) return;
               arr = [];
@@ -9039,17 +9039,17 @@ var Plotly = (() => {
               changeType = changeType | BOTH;
               idx = arr.length;
               indexLookup[name4] = idx;
-            } else if (value !== (isSimpleValueProp ? arr[idx][valueName] : nestedProperty(arr[idx], valueName).get())) {
+            } else if (value2 !== (isSimpleValueProp ? arr[idx][valueName] : nestedProperty(arr[idx], valueName).get())) {
               changeType = changeType | VALUE;
             }
             var newValue = arr[idx] = arr[idx] || {};
             newValue[keyName] = name4;
             if (isSimpleValueProp) {
-              newValue[valueName] = value;
+              newValue[valueName] = value2;
             } else {
-              nestedProperty(newValue, valueName).set(value);
+              nestedProperty(newValue, valueName).set(value2);
             }
-            if (value !== null) {
+            if (value2 !== null) {
               changeType = changeType & ~UNSET;
             }
             changeTypes[idx] = changeTypes[idx] | changeType;
@@ -9078,8 +9078,8 @@ var Plotly = (() => {
           remove: function(name4) {
             var idx = indexLookup[name4];
             if (idx === void 0) return obj;
-            var object = arr[idx];
-            if (Object.keys(object).length > 2) {
+            var object2 = arr[idx];
+            if (Object.keys(object2).length > 2) {
               changeTypes[idx] = changeTypes[idx] | VALUE;
               return obj.set(name4, null);
             }
@@ -9093,7 +9093,7 @@ var Plotly = (() => {
               arr.splice(idx, 1);
               delete indexLookup[name4];
             } else {
-              nestedProperty(object, valueName).set(null);
+              nestedProperty(object2, valueName).set(null);
               changeTypes[idx] = changeTypes[idx] | VALUE | UNSET;
             }
             return obj;
@@ -9222,14 +9222,14 @@ var Plotly = (() => {
       var isPlainObject = require_is_plain_object();
       var isArray = Array.isArray;
       function primitivesLoopSplice(source, target) {
-        var i, value;
+        var i, value2;
         for (i = 0; i < source.length; i++) {
-          value = source[i];
-          if (value !== null && typeof value === "object") {
+          value2 = source[i];
+          if (value2 !== null && typeof value2 === "object") {
             return false;
           }
-          if (value !== void 0) {
-            target[i] = value;
+          if (value2 !== void 0) {
+            target[i] = value2;
           }
         }
         return true;
@@ -9698,8 +9698,8 @@ var Plotly = (() => {
         return to;
       };
       var __toCommonJS2 = (mod22) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod22);
-      var src_exports2 = {};
-      __export2(src_exports2, {
+      var src_exports = {};
+      __export2(src_exports, {
         a98: () => a98,
         average: () => average,
         averageAngle: () => averageAngle,
@@ -9902,7 +9902,7 @@ var Plotly = (() => {
         rec2020: () => rec2020,
         removeParser: () => removeParser,
         rgb: () => rgb4,
-        round: () => round_default2,
+        round: () => round_default,
         samples: () => samples_default,
         serializeHex: () => serializeHex,
         serializeHex8: () => serializeHex8,
@@ -9920,7 +9920,7 @@ var Plotly = (() => {
         xyz65: () => xyz65,
         yiq: () => yiq
       });
-      module.exports = __toCommonJS2(src_exports2);
+      module.exports = __toCommonJS2(src_exports);
       var parseNumber = (color2, len) => {
         if (typeof color2 !== "number") return;
         if (len === 3) {
@@ -10314,33 +10314,33 @@ var Plotly = (() => {
         turn: 360
       };
       function num2(chars) {
-        let value = "";
+        let value2 = "";
         if (chars[_i] === "-" || chars[_i] === "+") {
-          value += chars[_i++];
+          value2 += chars[_i++];
         }
-        value += digits(chars);
+        value2 += digits(chars);
         if (chars[_i] === "." && /\d/.test(chars[_i + 1])) {
-          value += chars[_i++] + digits(chars);
+          value2 += chars[_i++] + digits(chars);
         }
         if (chars[_i] === "e" || chars[_i] === "E") {
           if ((chars[_i + 1] === "-" || chars[_i + 1] === "+") && /\d/.test(chars[_i + 2])) {
-            value += chars[_i++] + chars[_i++] + digits(chars);
+            value2 += chars[_i++] + chars[_i++] + digits(chars);
           } else if (/\d/.test(chars[_i + 1])) {
-            value += chars[_i++] + digits(chars);
+            value2 += chars[_i++] + digits(chars);
           }
         }
         if (is_ident(chars)) {
           let id = ident(chars);
           if (id === "deg" || id === "rad" || id === "turn" || id === "grad") {
-            return { type: Tok.Hue, value: value * huenits[id] };
+            return { type: Tok.Hue, value: value2 * huenits[id] };
           }
           return void 0;
         }
         if (chars[_i] === "%") {
           _i++;
-          return { type: Tok.Percentage, value: +value };
+          return { type: Tok.Percentage, value: +value2 };
         }
-        return { type: Tok.Number, value: +value };
+        return { type: Tok.Number, value: +value2 };
       }
       function digits(chars) {
         let v = "";
@@ -11129,7 +11129,7 @@ var Plotly = (() => {
       var convertLab65ToXyz65_default = convertLab65ToXyz65;
       var convertLab65ToRgb = (lab22) => convertXyz65ToRgb_default(convertLab65ToXyz65_default(lab22));
       var convertLab65ToRgb_default = convertLab65ToRgb;
-      var f = (value) => value > e ? Math.cbrt(value) : (k * value + 16) / 116;
+      var f = (value2) => value2 > e ? Math.cbrt(value2) : (k * value2 + 16) / 116;
       var convertXyz65ToLab65 = ({ x, y, z, alpha }) => {
         if (x === void 0) x = 0;
         if (y === void 0) y = 0;
@@ -11430,7 +11430,7 @@ var Plotly = (() => {
             return val * 360;
         }
       };
-      var hue_default2 = hueToDeg;
+      var hue_default = hueToDeg;
       var hsl_old = new RegExp(
         `^hsla?\\(\\s*${hue2}${c}${per}${c}${per}\\s*(?:,\\s*${num_per}\\s*)?\\)$`
       );
@@ -11441,7 +11441,7 @@ var Plotly = (() => {
         if (match[3] !== void 0) {
           res.h = +match[3];
         } else if (match[1] !== void 0 && match[2] !== void 0) {
-          res.h = hue_default2(match[1], match[2]);
+          res.h = hue_default(match[1], match[2]);
         }
         if (match[4] !== void 0) {
           res.s = Math.min(Math.max(0, match[4] / 100), 1);
@@ -12003,7 +12003,7 @@ var Plotly = (() => {
         return res;
       };
       var convertRgbToXyz50_default = convertRgbToXyz50;
-      var f2 = (value) => value > e3 ? Math.cbrt(value) : (k3 * value + 16) / 116;
+      var f2 = (value2) => value2 > e3 ? Math.cbrt(value2) : (k3 * value2 + 16) / 116;
       var convertXyz50ToLab = ({ x, y, z, alpha }) => {
         if (x === void 0) x = 0;
         if (y === void 0) y = 0;
@@ -12229,7 +12229,7 @@ var Plotly = (() => {
       var v_fn = (x, y, z) => 9 * y / (x + 15 * y + 3 * z);
       var un = u_fn(D50.X, D50.Y, D50.Z);
       var vn = v_fn(D50.X, D50.Y, D50.Z);
-      var l_fn = (value) => value <= e3 ? k3 * value : 116 * Math.cbrt(value) - 16;
+      var l_fn = (value2) => value2 <= e3 ? k3 * value2 : 116 * Math.cbrt(value2) - 16;
       var convertXyz50ToLuv = ({ x, y, z, alpha }) => {
         if (x === void 0) x = 0;
         if (y === void 0) y = 0;
@@ -13213,13 +13213,13 @@ var Plotly = (() => {
         }
       };
       var definition_default28 = definition28;
-      var r = (value, precision) => Math.round(value * (precision = Math.pow(10, precision))) / precision;
-      var round = (precision = 4) => (value) => typeof value === "number" ? r(value, precision) : value;
-      var round_default2 = round;
-      var twoDecimals = round_default2(2);
-      var clamp = (value) => Math.max(0, Math.min(1, value || 0));
-      var fixup = (value) => Math.round(clamp(value) * 255);
-      var rgb2 = converter_default("rgb");
+      var r = (value2, precision) => Math.round(value2 * (precision = Math.pow(10, precision))) / precision;
+      var round2 = (precision = 4) => (value2) => typeof value2 === "number" ? r(value2, precision) : value2;
+      var round_default = round2;
+      var twoDecimals = round_default(2);
+      var clamp = (value2) => Math.max(0, Math.min(1, value2 || 0));
+      var fixup = (value2) => Math.round(clamp(value2) * 255);
+      var rgb3 = converter_default("rgb");
       var hsl3 = converter_default("hsl");
       var serializeHex = (color2) => {
         if (color2 === void 0) {
@@ -13286,9 +13286,9 @@ var Plotly = (() => {
         }
         return void 0;
       };
-      var formatHex = (c2) => serializeHex(rgb2(c2));
-      var formatHex8 = (c2) => serializeHex8(rgb2(c2));
-      var formatRgb = (c2) => serializeRgb(rgb2(c2));
+      var formatHex = (c2) => serializeHex(rgb3(c2));
+      var formatHex8 = (c2) => serializeHex8(rgb3(c2));
+      var formatRgb = (c2) => serializeRgb(rgb3(c2));
       var formatHsl = (c2) => serializeHsl(hsl3(c2));
       var BLENDS = {
         normal: (b, s) => s,
@@ -13971,7 +13971,7 @@ var Plotly = (() => {
         );
       };
       var filterHueRotate = (deg = 0, mode = "rgb") => matrix(matrixHueRotate(deg), mode, true);
-      var rgb3 = converter_default("rgb");
+      var rgb32 = converter_default("rgb");
       var PROT = [
         [1, 0, -0, 0, 1, 0, -0, -0, 1],
         [
@@ -14325,7 +14325,7 @@ var Plotly = (() => {
           if (c2 === void 0) {
             return void 0;
           }
-          let { r: r2, g, b } = rgb3(c2);
+          let { r: r2, g, b } = rgb32(c2);
           let ret = {
             mode: "rgb",
             r: arr[0] * r2 + arr[1] * g + arr[2] * b,
@@ -14870,7 +14870,7 @@ var Plotly = (() => {
         (_a = c.alpha) != null ? _a : c.alpha = 1;
         return c;
       };
-      var rgb2 = (cstr) => formatRgb(__spreadProps(__spreadValues({}, parse(cstr)), { alpha: 1 }));
+      var rgb3 = (cstr) => formatRgb(__spreadProps(__spreadValues({}, parse(cstr)), { alpha: 1 }));
       var opacity = (cstr) => cstr ? parse(cstr).alpha : 0;
       var isChannelArray = (v) => {
         return isArrayOrTypedArray(v) && v.length > 2 && Number.isFinite(v[0]) && Number.isFinite(v[1]) && Number.isFinite(v[2]);
@@ -14923,12 +14923,12 @@ var Plotly = (() => {
         }
       };
       var stroke = (s, cstr) => {
-        s.style({ stroke: rgb2(cstr), "stroke-opacity": parse(cstr).alpha });
+        s.style({ stroke: rgb3(cstr), "stroke-opacity": parse(cstr).alpha });
       };
       var fill = (s, cstr) => {
-        s.style({ fill: rgb2(cstr), "fill-opacity": parse(cstr).alpha });
+        s.style({ fill: rgb3(cstr), "fill-opacity": parse(cstr).alpha });
       };
-      var equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && rgb2(cstr1) === rgb2(cstr2));
+      var equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && rgb3(cstr1) === rgb3(cstr2));
       var isValid = (cstr) => toColor(cstr) !== void 0;
       var brighten = (cstr, amount) => {
         amount = amount === 0 ? 0 : amount || 10;
@@ -15003,7 +15003,7 @@ var Plotly = (() => {
         normalize,
         opacity,
         parse,
-        rgb: rgb2,
+        rgb: rgb3,
         rgbaArray,
         rgbaArrayToString,
         rgbaString,
@@ -15318,7 +15318,7 @@ var Plotly = (() => {
         },
         boolean: {
           coerceFunction: function(v, propOut, dflt, opts) {
-            const isBoolean = (value) => value === true || value === false;
+            const isBoolean = (value2) => value2 === true || value2 === false;
             if (isBoolean(v) || opts.arrayOk && Array.isArray(v) && v.length > 0 && v.every(isBoolean)) {
               propOut.set(v);
             } else {
@@ -15387,7 +15387,7 @@ var Plotly = (() => {
         subplotid: {
           coerceFunction: function(v, propOut, dflt, opts) {
             var regex = opts.regex || counterRegex(dflt);
-            const isSubplotId = (value) => typeof value === "string" && regex.test(value);
+            const isSubplotId = (value2) => typeof value2 === "string" && regex.test(value2);
             if (isSubplotId(v) || opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isSubplotId)) {
               propOut.set(v);
             } else {
@@ -15617,11 +15617,11 @@ var Plotly = (() => {
         coerce("selected.marker.opacity", smoDflt);
         coerce("unselected.marker.opacity", usmoDflt);
       };
-      function validate(value, opts) {
+      function validate(value2, opts) {
         var valObjectDef = exports.valObjectMeta[opts.valType];
-        if (opts.arrayOk && isArrayOrTypedArray(value)) return true;
+        if (opts.arrayOk && isArrayOrTypedArray(value2)) return true;
         if (valObjectDef.validateFunction) {
-          return valObjectDef.validateFunction(value, opts);
+          return valObjectDef.validateFunction(value2, opts);
         }
         var failed = {};
         var out = failed;
@@ -15630,7 +15630,7 @@ var Plotly = (() => {
             out = v;
           }
         };
-        valObjectDef.coerceFunction(value, propMock, failed, opts);
+        valObjectDef.coerceFunction(value2, propMock, failed, opts);
         return out !== failed;
       }
       exports.validate = validate;
@@ -15650,17 +15650,17 @@ var Plotly = (() => {
   var require_push_unique = __commonJS({
     "src/lib/push_unique.js"(exports, module) {
       "use strict";
-      module.exports = function pushUnique(array, item) {
+      module.exports = function pushUnique(array2, item) {
         if (item instanceof RegExp) {
           var itemStr = item.toString();
-          for (var i = 0; i < array.length; i++) {
-            if (array[i] instanceof RegExp && array[i].toString() === itemStr) {
-              return array;
+          for (var i = 0; i < array2.length; i++) {
+            if (array2[i] instanceof RegExp && array2[i].toString() === itemStr) {
+              return array2;
             }
           }
-          array.push(item);
-        } else if ((item || item === 0) && array.indexOf(item) === -1) array.push(item);
-        return array;
+          array2.push(item);
+        } else if ((item || item === 0) && array2.indexOf(item) === -1) array2.push(item);
+        return array2;
       };
     }
   });
@@ -16597,9 +16597,9 @@ var Plotly = (() => {
       "use strict";
       var mat4X4 = require_gl_mat4();
       exports.init2dArray = function(rowLength, colLength) {
-        var array = new Array(rowLength);
-        for (var i = 0; i < rowLength; i++) array[i] = new Array(colLength);
-        return array;
+        var array2 = new Array(rowLength);
+        for (var i = 0; i < rowLength; i++) array2[i] = new Array(colLength);
+        return array2;
       };
       exports.transposeRagged = function(z) {
         var maxlen = 0;
@@ -17760,10 +17760,10 @@ var Plotly = (() => {
   var require_maplibre_gl = __commonJS({
     "node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       (function() {
-        if (!document.getElementById("9f215cf04c5486422605d13261cb87401f4e7763b6296af81e98efbc0130da53")) {
+        if (!document.getElementById("17ae9e42e4fa3e7c06fe95ec91b1119e5a4c05dc79afabe050bbaba88da47580")) {
           var e = document.createElement("style");
-          e.id = "9f215cf04c5486422605d13261cb87401f4e7763b6296af81e98efbc0130da53";
-          e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0);-webkit-touch-callout:none}.maplibregl-canvas{position:absolute;left:0;top:0}.maplibregl-map:fullscreen{width:100%;height:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{position:absolute;pointer-events:none;z-index:2}.maplibregl-ctrl-top-left{top:0;left:0}.maplibregl-ctrl-top-right{top:0;right:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{right:0;bottom:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{margin:10px 0 0 10px;float:left}.maplibregl-ctrl-top-right .maplibregl-ctrl{margin:10px 10px 0 0;float:right}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{margin:0 0 10px 10px;float:left}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{margin:0 10px 10px 0;float:right}.maplibregl-ctrl-group{border-radius:4px;background:#fff}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{width:29px;height:29px;display:block;padding:0;outline:none;border:0;box-sizing:border-box;background-color:transparent;cursor:pointer}.maplibregl-ctrl button{-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{display:block;width:100%;height:100%;background-repeat:no-repeat;background-position:50%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}@media (hover:hover){.maplibregl-ctrl button:not(:disabled):hover{background-color:rgba(0,0,0,.05)}}.maplibregl-ctrl button:not(:disabled):active{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-globe .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%23333%22%20viewBox%3D%220%200%2022%2022%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%228.5%22%2F%3E%3Cpath%20d%3D%22M17.5%2011c0%204.819-3.02%208.5-6.5%208.5S4.5%2015.819%204.5%2011%207.52%202.5%2011%202.5s6.5%203.681%206.5%208.5Z%22%2F%3E%3Cpath%20d%3D%22M13.5%2011c0%202.447-.331%204.64-.853%206.206-.262.785-.562%201.384-.872%201.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831%2015.64%208.5%2013.446%208.5%2011s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872%201.777.522%201.565.853%203.76.853%206.206Z%22%2F%3E%3Cpath%20d%3D%22M11%207.5c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138q.07-.058.224-.138c.299-.151.763-.302%201.379-.434C7.378%205.666%209.091%205.5%2011%205.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0%209c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138%201.3%201.3%200%200%201%20.224-.138c.299-.151.763-.302%201.379-.434C7.378%2014.666%209.091%2014.5%2011%2014.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138a1.3%201.3%200%200%201-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0-4c-2.46%200-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5%201.5%200%200%201-.39-.272.3.3%200%200%201-.047-.064.3.3%200%200%201%20.048-.064c.066-.073.189-.167.389-.272.399-.21%201.009-.413%201.805-.59C6.328%209.722%208.54%209.5%2011%209.5s4.672.222%206.256.574c.795.177%201.405.38%201.804.59.2.105.323.2.39.272a.3.3%200%200%201%20.047.064.3.3%200%200%201-.048.064%201.4%201.4%200%200%201-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0%20.018v.002zm17.002.002v-.002zm0-.018v-.002z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-globe-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%2333b5e5%22%20viewBox%3D%220%200%2022%2022%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%228.5%22%2F%3E%3Cpath%20d%3D%22M17.5%2011c0%204.819-3.02%208.5-6.5%208.5S4.5%2015.819%204.5%2011%207.52%202.5%2011%202.5s6.5%203.681%206.5%208.5Z%22%2F%3E%3Cpath%20d%3D%22M13.5%2011c0%202.447-.331%204.64-.853%206.206-.262.785-.562%201.384-.872%201.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831%2015.64%208.5%2013.446%208.5%2011s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872%201.777.522%201.565.853%203.76.853%206.206Z%22%2F%3E%3Cpath%20d%3D%22M11%207.5c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138q.07-.058.224-.138c.299-.151.763-.302%201.379-.434C7.378%205.666%209.091%205.5%2011%205.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0%209c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138%201.3%201.3%200%200%201%20.224-.138c.299-.151.763-.302%201.379-.434C7.378%2014.666%209.091%2014.5%2011%2014.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138a1.3%201.3%200%200%201-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0-4c-2.46%200-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5%201.5%200%200%201-.39-.272.3.3%200%200%201-.047-.064.3.3%200%200%201%20.048-.064c.066-.073.189-.167.389-.272.399-.21%201.009-.413%201.805-.59C6.328%209.722%208.54%209.5%2011%209.5s4.672.222%206.256.574c.795.177%201.405.38%201.804.59.2.105.323.2.39.272a.3.3%200%200%201%20.047.064.3.3%200%200%201-.048.064%201.4%201.4%200%200%201-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0%20.018v.002zm17.002.002v-.002zm0-.018v-.002z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2022%2022%22%3E%3Cpath%20d%3D%22m1.754%2013.406%204.453-4.851%203.09%203.09%203.281%203.277.969-.969-3.309-3.312%203.844-4.121%206.148%206.886h1.082v-.855l-7.207-8.07-4.84%205.187L6.169%206.57l-5.48%205.965v.871ZM.688%2016.844h20.625v1.375H.688Zm0%200%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2022%2022%22%3E%3Cpath%20d%3D%22m1.754%2013.406%204.453-4.851%203.09%203.09%203.281%203.277.969-.969-3.309-3.312%203.844-4.121%206.148%206.886h1.082v-.855l-7.207-8.07-4.84%205.187L6.169%206.57l-5.48%205.965v.871ZM.688%2016.844h20.625v1.375H.688Zm0%200%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23aaa%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e58978%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e54e33%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23999%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e58978%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e54e33%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23666%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{width:88px;height:23px;margin:0 0 -4px -4px;display:block;background-repeat:no-repeat;cursor:pointer;overflow:hidden;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{padding:0 5px;background-color:hsla(0,0%,100%,.5);margin:0}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{min-height:20px;padding:2px 24px 2px 0;margin:10px;position:relative;background-color:#fff;color:#000;border-radius:12px;box-sizing:content-box}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 8px 2px 28px;border-radius:12px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{display:none;cursor:pointer;position:absolute;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E");background-color:hsla(0,0%,100%,.5);width:24px;height:24px;box-sizing:border-box;border-radius:12px;outline:none;top:0;right:0;border:0}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;right:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;left:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);font-size:10px;white-space:nowrap;border-color:#333;border-style:none solid solid;border-width:medium 2px 2px;padding:0 5px;color:#333;box-sizing:border-box}.maplibregl-popup{position:absolute;top:0;left:0;display:flex;will-change:transform;pointer-events:none}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{width:0;height:0;border:10px solid transparent;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-top:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-top:none;border-left:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-top:none;border-right:none;border-bottom-color:#fff}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-right:none;border-left-color:#fff}[dir=rtl] .maplibregl-popup-anchor-left{flex-direction:row-reverse}[dir=rtl] .maplibregl-popup-anchor-right{flex-direction:row}[dir=rtl] .maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-start}[dir=rtl] .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-start}.maplibregl-popup-close-button{position:absolute;right:0;top:0;border:0;border-radius:0 3px 0 0;cursor:pointer;background-color:transparent}.maplibregl-popup-close-button:hover{background-color:rgba(0,0,0,.05)}.maplibregl-popup-content{position:relative;background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{position:absolute;top:0;left:0;will-change:transform;transition:opacity .2s}.maplibregl-marker-draggable{cursor:grab}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;width:15px;height:15px;border-radius:50%}.maplibregl-user-location-dot:before{content:"";position:absolute;animation:maplibregl-user-location-dot-pulse 2s infinite}.maplibregl-user-location-dot:after{border-radius:50%;border:2px solid #fff;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px;box-sizing:border-box;box-shadow:0 0 3px rgba(0,0,0,.35)}@media (prefers-reduced-motion:reduce){.maplibregl-user-location-dot:before{animation:none}}@keyframes maplibregl-user-location-dot-pulse{0%{transform:scale(1);opacity:1}70%{transform:scale(3);opacity:0}to{transform:scale(1);opacity:0}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;width:1px;height:1px;border-radius:100%}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{position:absolute;top:0;left:0;width:0;height:0;background:#fff;border:2px dotted #202020;opacity:.5}.maplibregl-cooperative-gesture-screen{background:rgba(0,0,0,.4);position:absolute;inset:0;display:flex;justify-content:center;align-items:center;color:#fff;padding:1rem;font-size:1.4em;line-height:1.2;opacity:0;pointer-events:none;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(pointer:coarse){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{position:fixed!important;width:100%!important;height:100%!important;top:0!important;left:0!important;z-index:99999}`;
+          e.id = "17ae9e42e4fa3e7c06fe95ec91b1119e5a4c05dc79afabe050bbaba88da47580";
+          e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0);-webkit-touch-callout:none}.maplibregl-canvas{position:absolute;left:0;top:0}.maplibregl-map:fullscreen{width:100%;height:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{position:absolute;pointer-events:none;z-index:2}.maplibregl-ctrl-top-left{top:0;left:0}.maplibregl-ctrl-top-right{top:0;right:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{right:0;bottom:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{margin:10px 0 0 10px;float:left}.maplibregl-ctrl-top-right .maplibregl-ctrl{margin:10px 10px 0 0;float:right}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{margin:0 0 10px 10px;float:left}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{margin:0 10px 10px 0;float:right}.maplibregl-ctrl-group{border-radius:4px;background:#fff}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}.maplibregl-ctrl-group button{width:29px;height:29px;display:block;padding:0;outline:none;border:0;box-sizing:border-box;background-color:transparent;cursor:pointer}.maplibregl-ctrl button{-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{display:block;width:100%;height:100%;background-repeat:no-repeat;background-position:50%}@media(forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid buttontext}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}@media(hover:hover){.maplibregl-ctrl button:not(:disabled):hover{background-color:rgba(0,0,0,.05)}}.maplibregl-ctrl button:not(:disabled):active{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23333'%3E %3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23333'%3E %3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E %3C/svg%3E")}@media(forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23fff'%3E %3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23fff'%3E %3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E %3C/svg%3E")}}@media(forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23000'%3E %3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23000'%3E %3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E %3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23333'%3E %3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E %3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E %3C/svg%3E")}@media(forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23fff'%3E %3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23fff'%3E %3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E %3C/svg%3E")}}@media(forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23000'%3E %3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23000'%3E %3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E %3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23333'%3E %3Cpath d='m10.5 14 4-8 4 8z'/%3E %3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E %3C/svg%3E")}@media(forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23fff'%3E %3Cpath d='m10.5 14 4-8 4 8z'/%3E %3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E %3C/svg%3E")}}@media(forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29' fill='%23000'%3E %3Cpath d='m10.5 14 4-8 4 8z'/%3E %3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E %3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-globe .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' viewBox='0 0 22 22' stroke='%23333'%3E %3Ccircle cx='11' cy='11' r='8.5'/%3E %3Cpath d='M17.5 11c0 4.819-3.02 8.5-6.5 8.5S4.5 15.819 4.5 11 7.52 2.5 11 2.5s6.5 3.681 6.5 8.5Z'/%3E %3Cpath d='M13.5 11c0 2.447-.331 4.64-.853 6.206-.262.785-.562 1.384-.872 1.777-.314.399-.58.517-.775.517-.195 0-.461-.118-.775-.517-.31-.393-.61-.992-.872-1.777C8.831 15.64 8.5 13.446 8.5 11c0-2.447.331-4.64.853-6.206.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517.195 0 .461.118.775.517.31.393.61.992.872 1.777.522 1.565.853 3.76.853 6.206Z'/%3E %3Cpath d='M11 7.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.333 1.333 0 0 1-.224-.138c.047-.038.12-.085.224-.138.299-.151.763-.302 1.379-.434C7.378 5.666 9.091 5.5 11 5.5c1.909 0 3.622.166 4.845.428.616.132 1.08.283 1.379.434.105.053.177.1.224.138-.047.038-.12.085-.224.138-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428ZM4.486 6.436ZM11 16.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.33 1.33 0 0 1-.224-.138 1.33 1.33 0 0 1 .224-.138c.299-.151.763-.302 1.379-.434C7.378 14.666 9.091 14.5 11 14.5c1.909 0 3.622.166 4.845.428.616.132 1.08.283 1.379.434.105.053.177.1.224.138a1.33 1.33 0 0 1-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm-6.514-1.064ZM11 12.5c-2.46 0-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.465 1.465 0 0 1-.39-.272.293.293 0 0 1-.047-.064.293.293 0 0 1 .048-.064c.066-.073.189-.167.389-.272.399-.21 1.009-.413 1.805-.59C6.328 9.722 8.54 9.5 11 9.5s4.672.222 6.256.574c.795.177 1.405.38 1.804.59.2.105.323.2.39.272a.33.33 0 0 1 .047.064.293.293 0 0 1-.048.064 1.435 1.435 0 0 1-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002-.002Zm0 .018v.002-.002Zm17.002.002v-.002.002Zm0-.018v-.002.002Z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-globe-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' viewBox='0 0 22 22' stroke='%2333b5e5'%3E %3Ccircle cx='11' cy='11' r='8.5'/%3E %3Cpath d='M17.5 11c0 4.819-3.02 8.5-6.5 8.5S4.5 15.819 4.5 11 7.52 2.5 11 2.5s6.5 3.681 6.5 8.5Z'/%3E %3Cpath d='M13.5 11c0 2.447-.331 4.64-.853 6.206-.262.785-.562 1.384-.872 1.777-.314.399-.58.517-.775.517-.195 0-.461-.118-.775-.517-.31-.393-.61-.992-.872-1.777C8.831 15.64 8.5 13.446 8.5 11c0-2.447.331-4.64.853-6.206.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517.195 0 .461.118.775.517.31.393.61.992.872 1.777.522 1.565.853 3.76.853 6.206Z'/%3E %3Cpath d='M11 7.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.333 1.333 0 0 1-.224-.138c.047-.038.12-.085.224-.138.299-.151.763-.302 1.379-.434C7.378 5.666 9.091 5.5 11 5.5c1.909 0 3.622.166 4.845.428.616.132 1.08.283 1.379.434.105.053.177.1.224.138-.047.038-.12.085-.224.138-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428ZM4.486 6.436ZM11 16.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.33 1.33 0 0 1-.224-.138 1.33 1.33 0 0 1 .224-.138c.299-.151.763-.302 1.379-.434C7.378 14.666 9.091 14.5 11 14.5c1.909 0 3.622.166 4.845.428.616.132 1.08.283 1.379.434.105.053.177.1.224.138a1.33 1.33 0 0 1-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm-6.514-1.064ZM11 12.5c-2.46 0-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.465 1.465 0 0 1-.39-.272.293.293 0 0 1-.047-.064.293.293 0 0 1 .048-.064c.066-.073.189-.167.389-.272.399-.21 1.009-.413 1.805-.59C6.328 9.722 8.54 9.5 11 9.5s4.672.222 6.256.574c.795.177 1.405.38 1.804.59.2.105.323.2.39.272a.33.33 0 0 1 .047.064.293.293 0 0 1-.048.064 1.435 1.435 0 0 1-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002-.002Zm0 .018v.002-.002Zm17.002.002v-.002.002Zm0-.018v-.002.002Z'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22' fill='%23333'%3E %3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22' fill='%2333b5e5'%3E %3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23333'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23aaa'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' fill='%23f00'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%2333b5e5'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23e58978'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%2333b5e5'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2' display='none'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23e54e33'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2' display='none'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media(forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23fff'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23999'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' fill='%23f00'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%2333b5e5'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23e58978'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%2333b5e5'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2' display='none'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23e54e33'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2' display='none'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}}@media(forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23000'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' display='none'/%3E %3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20' fill='%23666'%3E %3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E %3Ccircle id='dot' cx='10' cy='10' r='2'/%3E %3Cpath id='stroke' d='m14 5 1 1-9 9-1-1z' fill='%23f00'/%3E %3C/svg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{width:88px;height:23px;margin:0 0 -4px -4px;display:block;background-repeat:no-repeat;cursor:pointer;overflow:hidden;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E %3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E %3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E %3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E %3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E %3Cg style='stroke-width:1.12603545'%3E %3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E %3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E %3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E %3C/g%3E %3C/svg%3E")}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media(forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E %3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E %3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E %3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E %3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E %3Cg style='stroke-width:1.12603545'%3E %3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E %3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E %3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E %3C/g%3E %3C/svg%3E")}}@media(forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E %3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E %3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E %3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E %3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E %3Cg style='stroke-width:1.12603545'%3E %3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E %3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E %3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E %3C/g%3E %3C/svg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{padding:0 5px;background-color:hsla(0,0%,100%,.5);margin:0}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{min-height:20px;padding:2px 24px 2px 0;margin:10px;position:relative;background-color:#fff;color:#000;border-radius:12px;box-sizing:content-box}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 8px 2px 28px;border-radius:12px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{display:none;cursor:pointer;position:absolute;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E %3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E %3C/svg%3E");background-color:hsla(0,0%,100%,.5);width:24px;height:24px;box-sizing:border-box;border-radius:12px;outline:none;top:0;right:0;border:0}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;right:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;left:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20' fill='%23fff'%3E %3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E %3C/svg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E %3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E %3C/svg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);font-size:10px;white-space:nowrap;border-color:#333;border-style:none solid solid;border-width:medium 2px 2px;padding:0 5px;color:#333;box-sizing:border-box}.maplibregl-popup{position:absolute;top:0;left:0;display:flex;will-change:transform;pointer-events:none}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right,[dir=rtl] .maplibregl-popup-anchor-left{flex-direction:row-reverse}.maplibregl-popup-tip{width:0;height:0;border:10px solid transparent;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-top:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-top:none;border-left:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-top:none;border-right:none;border-bottom-color:#fff}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-right:none;border-left-color:#fff}[dir=rtl] .maplibregl-popup-anchor-right{flex-direction:row}[dir=rtl] .maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-start}[dir=rtl] .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-start}.maplibregl-popup-close-button{position:absolute;right:0;top:0;border:0;border-radius:0 3px 0 0;cursor:pointer;background-color:transparent}.maplibregl-popup-close-button:hover{background-color:rgba(0,0,0,.05)}.maplibregl-popup-content{position:relative;background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{position:absolute;top:0;left:0;will-change:transform;transition:opacity .2s}.maplibregl-marker-draggable{cursor:grab}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;width:15px;height:15px;border-radius:50%}.maplibregl-user-location-dot:before{content:"";position:absolute;animation:maplibregl-user-location-dot-pulse 2s infinite}.maplibregl-user-location-dot:after{border-radius:50%;border:2px solid #fff;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px;box-sizing:border-box;box-shadow:0 0 3px rgba(0,0,0,.35)}@media(prefers-reduced-motion:reduce){.maplibregl-user-location-dot:before{animation:none}}@keyframes maplibregl-user-location-dot-pulse{0%{transform:scale(1);opacity:1}70%{transform:scale(3);opacity:0}to{transform:scale(1);opacity:0}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;width:1px;height:1px;border-radius:100%}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{position:absolute;top:0;left:0;width:0;height:0;background:#fff;border:2px dotted #202020;opacity:.5}.maplibregl-cooperative-gesture-screen{background:rgba(0,0,0,.4);position:absolute;inset:0;display:flex;justify-content:center;align-items:center;color:#fff;padding:1rem;font-size:1.4em;line-height:1.2;opacity:0;pointer-events:none;transition:opacity 1s 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media(hover:none),(pointer:coarse){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{position:fixed!important;width:100%!important;height:100%!important;top:0!important;left:0!important;z-index:99999}`;
           document.head.appendChild(e);
         }
       })();
@@ -18086,11 +18086,11 @@ var Plotly = (() => {
           y = (Number(y) + 2e3 - YFIRST) % 100 + YFIRST;
         } else y = Number(y);
         m -= 1;
-        var date = new Date(Date.UTC(2e3, m, d, H, M));
-        date.setUTCFullYear(y);
-        if (date.getUTCMonth() !== m) return BADNUM2;
-        if (date.getUTCDate() !== d) return BADNUM2;
-        return date.getTime() + S * ONESEC2;
+        var date2 = new Date(Date.UTC(2e3, m, d, H, M));
+        date2.setUTCFullYear(y);
+        if (date2.getUTCMonth() !== m) return BADNUM2;
+        if (date2.getUTCDate() !== d) return BADNUM2;
+        return date2.getTime() + S * ONESEC2;
       };
       MIN_MS = exports.MIN_MS = exports.dateTime2ms("-9999");
       MAX_MS = exports.MAX_MS = exports.dateTime2ms("9999-12-31 23:59:59.9999");
@@ -18399,16 +18399,16 @@ var Plotly = (() => {
         }
         return arrayIn[low];
       };
-      exports.sort = function(array, sortFn) {
+      exports.sort = function(array2, sortFn) {
         var notOrdered = 0;
         var notReversed = 0;
-        for (var i = 1; i < array.length; i++) {
-          var pairOrder = sortFn(array[i], array[i - 1]);
+        for (var i = 1; i < array2.length; i++) {
+          var pairOrder = sortFn(array2[i], array2[i - 1]);
           if (pairOrder < 0) notOrdered = 1;
           else if (pairOrder > 0) notReversed = 1;
-          if (notOrdered && notReversed) return array.sort(sortFn);
+          if (notOrdered && notReversed) return array2.sort(sortFn);
         }
-        return notReversed ? array : array.reverse();
+        return notReversed ? array2 : array2.reverse();
       };
       exports.findIndexOfMin = function(arr, fn) {
         fn = fn || identity2;
@@ -19008,12 +19008,12 @@ var Plotly = (() => {
   var require_filter_unique = __commonJS({
     "src/lib/filter_unique.js"(exports, module) {
       "use strict";
-      module.exports = function filterUnique(array) {
+      module.exports = function filterUnique(array2) {
         var seen = {};
         var out = [];
         var j = 0;
-        for (var i = 0; i < array.length; i++) {
-          var item = array[i];
+        for (var i = 0; i < array2.length; i++) {
+          var item = array2[i];
           if (seen[item] !== 1) {
             seen[item] = 1;
             out[j++] = item;
@@ -19153,8 +19153,8 @@ var Plotly = (() => {
           lib.warn('encountered bad format: "' + key + '"');
         }
       };
-      lib.noFormat = function(value) {
-        return String(value);
+      lib.noFormat = function(value2) {
+        return String(value2);
       };
       lib.numberFormat = function(formatStr) {
         var fn;
@@ -19345,10 +19345,10 @@ var Plotly = (() => {
         pad = pad || 0;
         return a.left <= b.right + pad && b.left <= a.right + pad && a.top <= b.bottom + pad && b.top <= a.bottom + pad;
       };
-      lib.simpleMap = function(array, func, x1, x2, opts) {
-        var len = array.length;
+      lib.simpleMap = function(array2, func, x1, x2, opts) {
+        var len = array2.length;
         var out = new Array(len);
-        for (var i = 0; i < len; i++) out[i] = func(array[i], x1, x2, opts);
+        for (var i = 0; i < len; i++) out[i] = func(array2[i], x1, x2, opts);
         return out;
       };
       lib.randstr = function randstr(existing, bits, base, _recursion) {
@@ -19518,8 +19518,8 @@ var Plotly = (() => {
       lib.getTargetArray = function(trace, transformOpts) {
         var target = transformOpts.target;
         if (typeof target === "string" && target) {
-          var array = lib.nestedProperty(trace, target).get();
-          return lib.isArrayOrTypedArray(array) ? array : false;
+          var array2 = lib.nestedProperty(trace, target).get();
+          return lib.isArrayOrTypedArray(array2) ? array2 : false;
         } else if (lib.isArrayOrTypedArray(target)) {
           return target;
         }
@@ -19610,7 +19610,7 @@ var Plotly = (() => {
         if (enterFn) layer.call(enterFn);
         return layer;
       };
-      lib.objectFromPath = function(path, value) {
+      lib.objectFromPath = function(path, value2) {
         var keys = path.split(".");
         var tmpObj;
         var obj = tmpObj = {};
@@ -19623,14 +19623,14 @@ var Plotly = (() => {
             el = parts[2];
             tmpObj = tmpObj[key] = [];
             if (i === keys.length - 1) {
-              tmpObj[el] = value;
+              tmpObj[el] = value2;
             } else {
               tmpObj[el] = {};
             }
             tmpObj = tmpObj[el];
           } else {
             if (i === keys.length - 1) {
-              tmpObj[key] = value;
+              tmpObj[key] = value2;
             } else {
               tmpObj[key] = {};
             }
@@ -19682,18 +19682,18 @@ var Plotly = (() => {
         }
         return data;
       };
-      lib.numSeparate = function(value, separators, separatethousands) {
+      lib.numSeparate = function(value2, separators, separatethousands) {
         if (!separatethousands) separatethousands = false;
         if (typeof separators !== "string" || separators.length === 0) {
           throw new Error("Separator string required for formatting!");
         }
-        if (typeof value === "number") {
-          value = String(value);
+        if (typeof value2 === "number") {
+          value2 = String(value2);
         }
         var thousandsRe = /(\d+)(\d{3})/;
         var decimalSep = separators.charAt(0);
         var thouSep = separators.charAt(1);
-        var x = value.split(".");
+        var x = value2.split(".");
         var x1 = x[0];
         var x2 = x.length > 1 ? decimalSep + x[1] : "";
         if (thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
@@ -19705,9 +19705,9 @@ var Plotly = (() => {
       };
       lib.TEMPLATE_STRING_REGEX = /%{([^\s%{}:]*)([:|\|][^}]*)?}/g;
       var SIMPLE_PROPERTY_REGEX = /^\w*$/;
-      lib.templateString = function(string, obj) {
+      lib.templateString = function(string2, obj) {
         var getterCache = {};
-        return string.replace(lib.TEMPLATE_STRING_REGEX, function(dummy, key) {
+        return string2.replace(lib.TEMPLATE_STRING_REGEX, function(dummy, key) {
           var v;
           if (SIMPLE_PROPERTY_REGEX.test(key)) {
             v = obj[key];
@@ -19761,24 +19761,24 @@ var Plotly = (() => {
             parsedOp = _match.op;
             parsedNumber = _match.number;
           }
-          let value = void 0;
+          let value2 = void 0;
           if (hasOther) {
             if (labels[key] === void 0) return "";
-            value = labels[key];
+            value2 = labels[key];
           } else {
             for (const obj of data) {
               if (!obj) continue;
               if (obj.hasOwnProperty(key)) {
-                value = obj[key];
+                value2 = obj[key];
                 break;
               }
               if (!SIMPLE_PROPERTY_REGEX.test(key)) {
-                value = lib.nestedProperty(obj, key).get(true);
+                value2 = lib.nestedProperty(obj, key).get(true);
               }
-              if (value !== void 0) break;
+              if (value2 !== void 0) break;
             }
           }
-          if (value === void 0) {
+          if (value2 === void 0) {
             const { count, max, name: name4 } = opts;
             const fallbackValue = fallback === false ? match : fallback;
             if (count < max) {
@@ -19794,31 +19794,31 @@ var Plotly = (() => {
             opts.count++;
             return fallbackValue;
           }
-          if (parsedOp === "*") value *= parsedNumber;
-          if (parsedOp === "/") value /= parsedNumber;
+          if (parsedOp === "*") value2 *= parsedNumber;
+          if (parsedOp === "/") value2 /= parsedNumber;
           if (format) {
             var fmt;
             if (format[0] === ":") {
               fmt = locale ? locale.numberFormat : lib.numberFormat;
-              if (value !== "") {
-                value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ""))(value);
+              if (value2 !== "") {
+                value2 = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ""))(value2);
               }
             }
             if (format[0] === "|") {
               fmt = locale ? locale.timeFormat : utcFormat;
-              var ms = lib.dateTime2ms(value);
-              value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ""), false, fmt);
+              var ms = lib.dateTime2ms(value2);
+              value2 = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ""), false, fmt);
             }
           } else {
             var keyLabel = key + "Label";
-            if (labels.hasOwnProperty(keyLabel)) value = labels[keyLabel];
+            if (labels.hasOwnProperty(keyLabel)) value2 = labels[keyLabel];
           }
           if (hasOther) {
-            value = "(" + value + ")";
-            if (isSpaceOther || isSpaceOtherSpace) value = " " + value;
-            if (isOtherSpace || isSpaceOtherSpace) value = value + " ";
+            value2 = "(" + value2 + ")";
+            if (isSpaceOther || isSpaceOtherSpace) value2 = " " + value2;
+            if (isOtherSpace || isSpaceOtherSpace) value2 = value2 + " ";
           }
-          return value;
+          return value2;
         });
       }
       var char0 = 48;
@@ -20061,8 +20061,8 @@ var Plotly = (() => {
       function ProcessEmitWarning(warning) {
         if (console && console.warn) console.warn(warning);
       }
-      var NumberIsNaN = Number.isNaN || function NumberIsNaN2(value) {
-        return value !== value;
+      var NumberIsNaN = Number.isNaN || function NumberIsNaN2(value2) {
+        return value2 !== value2;
       };
       function EventEmitter() {
         EventEmitter.init.call(this);
@@ -21096,14 +21096,14 @@ var Plotly = (() => {
           }
         }
         resetUpdate();
-        function modifyBase(attr, value) {
-          update[attr] = value;
+        function modifyBase(attr, value2) {
+          update[attr] = value2;
         }
-        function modifyItem(attr, value) {
+        function modifyItem(attr, value2) {
           if (templateItemName) {
-            Lib.nestedProperty(update[itemStr], attr).set(value);
+            Lib.nestedProperty(update[itemStr], attr).set(value2);
           } else {
-            update[itemStr + "." + attr] = value;
+            update[itemStr + "." + attr] = value2;
           }
         }
         function getUpdateObj() {
@@ -21111,8 +21111,8 @@ var Plotly = (() => {
           resetUpdate();
           return updateOut;
         }
-        function applyUpdate(attr, value) {
-          if (attr) modifyItem(attr, value);
+        function applyUpdate(attr, value2) {
+          if (attr) modifyItem(attr, value2);
           var updateToApply = getUpdateObj();
           for (var key in updateToApply) {
             Lib.nestedProperty(parentIn, key).set(updateToApply[key]);
@@ -21533,22 +21533,22 @@ var Plotly = (() => {
             }
           }
           binding = bindings[0];
-          var value = binding.value;
-          if (Array.isArray(value)) {
-            if (value.length === 1) {
-              value = value[0];
+          var value2 = binding.value;
+          if (Array.isArray(value2)) {
+            if (value2.length === 1) {
+              value2 = value2[0];
             } else {
               return false;
             }
           }
           if (bindingsByValue) {
-            bindingsByValue[value] = i;
+            bindingsByValue[value2] = i;
           }
         }
         return refBinding;
       };
       function bindingValueHasChanged(gd, binding, cache) {
-        var container, value, obj;
+        var container, value2, obj;
         var changed = false;
         if (binding.type === "data") {
           container = gd._fullData[binding.traces !== null ? binding.traces[0] : 0];
@@ -21557,17 +21557,17 @@ var Plotly = (() => {
         } else {
           return false;
         }
-        value = Lib.nestedProperty(container, binding.prop).get();
+        value2 = Lib.nestedProperty(container, binding.prop).get();
         obj = cache[binding.type] = cache[binding.type] || {};
         if (obj.hasOwnProperty(binding.prop)) {
-          if (obj[binding.prop] !== value) {
+          if (obj[binding.prop] !== value2) {
             changed = true;
           }
         }
-        obj[binding.prop] = value;
+        obj[binding.prop] = value2;
         return {
           changed,
-          value
+          value: value2
         };
       }
       exports.executeAPICommand = function(gd, method, args) {
@@ -23546,7 +23546,7 @@ var Plotly = (() => {
       function sortAxisCategoriesByValue(axList, gd) {
         var affectedTraces = [];
         var i, j, k, l, o;
-        function zMapCategory(type2, ax2, value2) {
+        function zMapCategory(type2, ax2, value3) {
           var axLetter2 = ax2._id.charAt(0);
           if (type2 === "histogram2dcontour") {
             var counterAxLetter = ax2._counterAxes[0];
@@ -23555,8 +23555,8 @@ var Plotly = (() => {
             var yCategorical = axLetter2 === "y" || counterAxLetter === "y" && counterAx.type === "category";
             return function(o2, l2) {
               if (o2 === 0 || l2 === 0) return -1;
-              if (xCategorical && o2 === value2[l2].length - 1) return -1;
-              if (yCategorical && l2 === value2.length - 1) return -1;
+              if (xCategorical && o2 === value3[l2].length - 1) return -1;
+              if (yCategorical && l2 === value3.length - 1) return -1;
               return (axLetter2 === "y" ? l2 : o2) - 1;
             };
           } else {
@@ -23625,7 +23625,7 @@ var Plotly = (() => {
               var cd = gd.calcdata[traceIndex];
               for (k = 0; k < cd.length; k++) {
                 var cdi = cd[k];
-                var catIndex, value;
+                var catIndex, value2;
                 if (isSplom) {
                   var currentDimensionIndex = fullTrace._axesDim[ax._id];
                   if (!isX) {
@@ -23645,38 +23645,38 @@ var Plotly = (() => {
                   for (l = 0; l < cdi.t.x.length; l++) {
                     if (isX) {
                       catIndex = cdi.t.x[l];
-                      value = cdi.t.y[l];
+                      value2 = cdi.t.y[l];
                     } else {
                       catIndex = cdi.t.y[l];
-                      value = cdi.t.x[l];
+                      value2 = cdi.t.x[l];
                     }
-                    categoriesValue[catIndex][1].push(value);
+                    categoriesValue[catIndex][1].push(value2);
                   }
                   if (cdi.t && cdi.t._scene) {
                     delete cdi.t._scene.dirty;
                   }
                 } else if (cdi.hasOwnProperty("z")) {
-                  value = cdi.z;
-                  var mapping = zMapCategory(fullTrace.type, ax, value);
-                  for (l = 0; l < value.length; l++) {
-                    for (o = 0; o < value[l].length; o++) {
+                  value2 = cdi.z;
+                  var mapping = zMapCategory(fullTrace.type, ax, value2);
+                  for (l = 0; l < value2.length; l++) {
+                    for (o = 0; o < value2[l].length; o++) {
                       catIndex = mapping(o, l);
-                      if (catIndex + 1) categoriesValue[catIndex][1].push(value[l][o]);
+                      if (catIndex + 1) categoriesValue[catIndex][1].push(value2[l][o]);
                     }
                   }
                 } else {
                   catIndex = cdi.p;
                   if (catIndex === void 0) catIndex = cdi[axLetter];
                   if (isNaN(catIndex) || catIndex < 0) continue;
-                  value = cdi.s;
-                  if (value === void 0) value = cdi.v;
-                  if (value === void 0) value = isX ? cdi.y : cdi.x;
-                  if (!Array.isArray(value)) {
-                    if (value === void 0) value = [];
-                    else value = [value];
+                  value2 = cdi.s;
+                  if (value2 === void 0) value2 = cdi.v;
+                  if (value2 === void 0) value2 = isX ? cdi.y : cdi.x;
+                  if (!Array.isArray(value2)) {
+                    if (value2 === void 0) value2 = [];
+                    else value2 = [value2];
                   }
-                  for (l = 0; l < value.length; l++) {
-                    categoriesValue[catIndex][1].push(value[l]);
+                  for (l = 0; l < value2.length; l++) {
+                    categoriesValue[catIndex][1].push(value2[l]);
                   }
                 }
               }
@@ -26754,7 +26754,7 @@ var Plotly = (() => {
         z: 0
       };
       var segment = /([astvzqmhlc])([^astvzqmhlc]*)/gi;
-      var number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/gi;
+      var number2 = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/gi;
       function parse(path) {
         const data = [];
         path.replace(segment, (_, cmd, args) => {
@@ -26778,7 +26778,7 @@ var Plotly = (() => {
         return data;
       }
       function parseValues(args) {
-        const numbers = args.match(number);
+        const numbers = args.match(number2);
         return numbers ? numbers.map(Number) : [];
       }
       module.exports = parse;
@@ -26790,7 +26790,7 @@ var Plotly = (() => {
     "src/components/drawing/symbol_defs.js"(exports, module) {
       "use strict";
       var parseSvgPath = require_dist();
-      var round = (
+      var round2 = (
         // require('@plotly/d3').round;
         function(x, n) {
           return n ? Math.round(x * (n = Math.pow(10, n))) / n : Math.round(x);
@@ -26807,7 +26807,7 @@ var Plotly = (() => {
           n: 0,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
+            var rs = round2(r, 2);
             var circle = "M" + rs + ",0A" + rs + "," + rs + " 0 1,1 0,-" + rs + "A" + rs + "," + rs + " 0 0,1 " + rs + ",0Z";
             return standoff ? align(angle, standoff, circle) : circle;
           }
@@ -26816,7 +26816,7 @@ var Plotly = (() => {
           n: 1,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M" + rs + "," + rs + "H-" + rs + "V-" + rs + "H" + rs + "Z");
           }
         },
@@ -26824,7 +26824,7 @@ var Plotly = (() => {
           n: 2,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rd = round(r * 1.3, 2);
+            var rd = round2(r * 1.3, 2);
             return align(angle, standoff, "M" + rd + ",0L0," + rd + "L-" + rd + ",0L0,-" + rd + "Z");
           }
         },
@@ -26832,8 +26832,8 @@ var Plotly = (() => {
           n: 3,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rc = round(r * 0.4, 2);
-            var rc2 = round(r * 1.2, 2);
+            var rc = round2(r * 0.4, 2);
+            var rc2 = round2(r * 1.2, 2);
             return align(angle, standoff, "M" + rc2 + "," + rc + "H" + rc + "V" + rc2 + "H-" + rc + "V" + rc + "H-" + rc2 + "V-" + rc + "H-" + rc + "V-" + rc2 + "H" + rc + "V-" + rc + "H" + rc2 + "Z");
           }
         },
@@ -26841,7 +26841,7 @@ var Plotly = (() => {
           n: 4,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r * 0.8 / sqrt2, 2);
+            var rx3 = round2(r * 0.8 / sqrt2, 2);
             var ne = "l" + rx3 + "," + rx3;
             var se = "l" + rx3 + ",-" + rx3;
             var sw = "l-" + rx3 + ",-" + rx3;
@@ -26853,9 +26853,9 @@ var Plotly = (() => {
           n: 5,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rt = round(r * 2 / sqrt3, 2);
-            var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rt = round2(r * 2 / sqrt3, 2);
+            var r2 = round2(r / 2, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M-" + rt + "," + r2 + "H" + rt + "L0,-" + rs + "Z");
           }
         },
@@ -26863,9 +26863,9 @@ var Plotly = (() => {
           n: 6,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rt = round(r * 2 / sqrt3, 2);
-            var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rt = round2(r * 2 / sqrt3, 2);
+            var r2 = round2(r / 2, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M-" + rt + ",-" + r2 + "H" + rt + "L0," + rs + "Z");
           }
         },
@@ -26873,9 +26873,9 @@ var Plotly = (() => {
           n: 7,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rt = round(r * 2 / sqrt3, 2);
-            var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rt = round2(r * 2 / sqrt3, 2);
+            var r2 = round2(r / 2, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M" + r2 + ",-" + rt + "V" + rt + "L-" + rs + ",0Z");
           }
         },
@@ -26883,9 +26883,9 @@ var Plotly = (() => {
           n: 8,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rt = round(r * 2 / sqrt3, 2);
-            var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rt = round2(r * 2 / sqrt3, 2);
+            var r2 = round2(r / 2, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M-" + r2 + ",-" + rt + "V" + rt + "L" + rs + ",0Z");
           }
         },
@@ -26893,8 +26893,8 @@ var Plotly = (() => {
           n: 9,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var r1 = round(r * 0.6, 2);
-            var r2 = round(r * 1.2, 2);
+            var r1 = round2(r * 0.6, 2);
+            var r2 = round2(r * 1.2, 2);
             return align(angle, standoff, "M-" + r2 + ",-" + r1 + "H" + r1 + "V" + r2 + "Z");
           }
         },
@@ -26902,8 +26902,8 @@ var Plotly = (() => {
           n: 10,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var r1 = round(r * 0.6, 2);
-            var r2 = round(r * 1.2, 2);
+            var r1 = round2(r * 0.6, 2);
+            var r2 = round2(r * 1.2, 2);
             return align(angle, standoff, "M" + r1 + ",-" + r2 + "V" + r1 + "H-" + r2 + "Z");
           }
         },
@@ -26911,8 +26911,8 @@ var Plotly = (() => {
           n: 11,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var r1 = round(r * 0.6, 2);
-            var r2 = round(r * 1.2, 2);
+            var r1 = round2(r * 0.6, 2);
+            var r2 = round2(r * 1.2, 2);
             return align(angle, standoff, "M" + r2 + "," + r1 + "H-" + r1 + "V-" + r2 + "Z");
           }
         },
@@ -26920,8 +26920,8 @@ var Plotly = (() => {
           n: 12,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var r1 = round(r * 0.6, 2);
-            var r2 = round(r * 1.2, 2);
+            var r1 = round2(r * 0.6, 2);
+            var r2 = round2(r * 1.2, 2);
             return align(angle, standoff, "M-" + r1 + "," + r2 + "V-" + r1 + "H" + r2 + "Z");
           }
         },
@@ -26929,11 +26929,11 @@ var Plotly = (() => {
           n: 13,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x1 = round(r * 0.951, 2);
-            var x2 = round(r * 0.588, 2);
-            var y0 = round(-r, 2);
-            var y1 = round(r * -0.309, 2);
-            var y2 = round(r * 0.809, 2);
+            var x1 = round2(r * 0.951, 2);
+            var x2 = round2(r * 0.588, 2);
+            var y0 = round2(-r, 2);
+            var y1 = round2(r * -0.309, 2);
+            var y2 = round2(r * 0.809, 2);
             return align(angle, standoff, "M" + x1 + "," + y1 + "L" + x2 + "," + y2 + "H-" + x2 + "L-" + x1 + "," + y1 + "L0," + y0 + "Z");
           }
         },
@@ -26941,9 +26941,9 @@ var Plotly = (() => {
           n: 14,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var y0 = round(r, 2);
-            var y1 = round(r / 2, 2);
-            var x = round(r * sqrt3 / 2, 2);
+            var y0 = round2(r, 2);
+            var y1 = round2(r / 2, 2);
+            var x = round2(r * sqrt3 / 2, 2);
             return align(angle, standoff, "M" + x + ",-" + y1 + "V" + y1 + "L0," + y0 + "L-" + x + "," + y1 + "V-" + y1 + "L0,-" + y0 + "Z");
           }
         },
@@ -26951,9 +26951,9 @@ var Plotly = (() => {
           n: 15,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x0 = round(r, 2);
-            var x1 = round(r / 2, 2);
-            var y = round(r * sqrt3 / 2, 2);
+            var x0 = round2(r, 2);
+            var x1 = round2(r / 2, 2);
+            var y = round2(r * sqrt3 / 2, 2);
             return align(angle, standoff, "M-" + x1 + "," + y + "H" + x1 + "L" + x0 + ",0L" + x1 + ",-" + y + "H-" + x1 + "L-" + x0 + ",0Z");
           }
         },
@@ -26961,8 +26961,8 @@ var Plotly = (() => {
           n: 16,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var a = round(r * 0.924, 2);
-            var b = round(r * 0.383, 2);
+            var a = round2(r * 0.924, 2);
+            var b = round2(r * 0.383, 2);
             return align(angle, standoff, "M-" + b + ",-" + a + "H" + b + "L" + a + ",-" + b + "V" + b + "L" + b + "," + a + "H-" + b + "L-" + a + "," + b + "V-" + b + "Z");
           }
         },
@@ -26971,15 +26971,15 @@ var Plotly = (() => {
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
             var rs = r * 1.4;
-            var x1 = round(rs * 0.225, 2);
-            var x2 = round(rs * 0.951, 2);
-            var x3 = round(rs * 0.363, 2);
-            var x4 = round(rs * 0.588, 2);
-            var y0 = round(-rs, 2);
-            var y1 = round(rs * -0.309, 2);
-            var y3 = round(rs * 0.118, 2);
-            var y4 = round(rs * 0.809, 2);
-            var y5 = round(rs * 0.382, 2);
+            var x1 = round2(rs * 0.225, 2);
+            var x2 = round2(rs * 0.951, 2);
+            var x3 = round2(rs * 0.363, 2);
+            var x4 = round2(rs * 0.588, 2);
+            var y0 = round2(-rs, 2);
+            var y1 = round2(rs * -0.309, 2);
+            var y3 = round2(rs * 0.118, 2);
+            var y4 = round2(rs * 0.809, 2);
+            var y5 = round2(rs * 0.382, 2);
             return align(angle, standoff, "M" + x1 + "," + y1 + "H" + x2 + "L" + x3 + "," + y3 + "L" + x4 + "," + y4 + "L0," + y5 + "L-" + x4 + "," + y4 + "L-" + x3 + "," + y3 + "L-" + x2 + "," + y1 + "H-" + x1 + "L0," + y0 + "Z");
           }
         },
@@ -26987,9 +26987,9 @@ var Plotly = (() => {
           n: 18,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var y = round(r * 0.66, 2);
-            var x1 = round(r * 0.38, 2);
-            var x2 = round(r * 0.76, 2);
+            var y = round2(r * 0.66, 2);
+            var x1 = round2(r * 0.38, 2);
+            var x2 = round2(r * 0.76, 2);
             return align(angle, standoff, "M-" + x2 + ",0l-" + x1 + ",-" + y + "h" + x2 + "l" + x1 + ",-" + y + "l" + x1 + "," + y + "h" + x2 + "l-" + x1 + "," + y + "l" + x1 + "," + y + "h-" + x2 + "l-" + x1 + "," + y + "l-" + x1 + ",-" + y + "h-" + x2 + "Z");
           }
         },
@@ -26997,10 +26997,10 @@ var Plotly = (() => {
           n: 19,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x = round(r * sqrt3 * 0.8, 2);
-            var y1 = round(r * 0.8, 2);
-            var y2 = round(r * 1.6, 2);
-            var rc = round(r * 4, 2);
+            var x = round2(r * sqrt3 * 0.8, 2);
+            var y1 = round2(r * 0.8, 2);
+            var y2 = round2(r * 1.6, 2);
+            var rc = round2(r * 4, 2);
             var aPart = "A " + rc + "," + rc + " 0 0 1 ";
             return align(angle, standoff, "M-" + x + "," + y1 + aPart + x + "," + y1 + aPart + "0,-" + y2 + aPart + "-" + x + "," + y1 + "Z");
           }
@@ -27009,10 +27009,10 @@ var Plotly = (() => {
           n: 20,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x = round(r * sqrt3 * 0.8, 2);
-            var y1 = round(r * 0.8, 2);
-            var y2 = round(r * 1.6, 2);
-            var rc = round(r * 4, 2);
+            var x = round2(r * sqrt3 * 0.8, 2);
+            var y1 = round2(r * 0.8, 2);
+            var y2 = round2(r * 1.6, 2);
+            var rc = round2(r * 4, 2);
             var aPart = "A " + rc + "," + rc + " 0 0 1 ";
             return align(angle, standoff, "M" + x + ",-" + y1 + aPart + "-" + x + ",-" + y1 + aPart + "0," + y2 + aPart + x + ",-" + y1 + "Z");
           }
@@ -27021,8 +27021,8 @@ var Plotly = (() => {
           n: 21,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rp = round(r * 1.1, 2);
-            var rc = round(r * 2, 2);
+            var rp = round2(r * 1.1, 2);
+            var rc = round2(r * 2, 2);
             var aPart = "A " + rc + "," + rc + " 0 0 1 ";
             return align(angle, standoff, "M-" + rp + ",-" + rp + aPart + "-" + rp + "," + rp + aPart + rp + "," + rp + aPart + rp + ",-" + rp + aPart + "-" + rp + ",-" + rp + "Z");
           }
@@ -27031,8 +27031,8 @@ var Plotly = (() => {
           n: 22,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rp = round(r * 1.4, 2);
-            var rc = round(r * 1.9, 2);
+            var rp = round2(r * 1.4, 2);
+            var rc = round2(r * 1.9, 2);
             var aPart = "A " + rc + "," + rc + " 0 0 1 ";
             return align(angle, standoff, "M-" + rp + ",0" + aPart + "0," + rp + aPart + rp + ",0" + aPart + "0,-" + rp + aPart + "-" + rp + ",0Z");
           }
@@ -27041,8 +27041,8 @@ var Plotly = (() => {
           n: 23,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x = round(r * 0.7, 2);
-            var y = round(r * 1.4, 2);
+            var x = round2(r * 0.7, 2);
+            var y = round2(r * 1.4, 2);
             return align(angle, standoff, "M0," + y + "L" + x + ",0L0,-" + y + "L-" + x + ",0Z");
           }
         },
@@ -27050,8 +27050,8 @@ var Plotly = (() => {
           n: 24,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x = round(r * 1.4, 2);
-            var y = round(r * 0.7, 2);
+            var x = round2(r * 1.4, 2);
+            var y = round2(r * 0.7, 2);
             return align(angle, standoff, "M0," + y + "L" + x + ",0L0,-" + y + "L-" + x + ",0Z");
           }
         },
@@ -27059,7 +27059,7 @@ var Plotly = (() => {
           n: 25,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M" + rs + "," + rs + "H-" + rs + "L" + rs + ",-" + rs + "H-" + rs + "Z");
           },
           noDot: true
@@ -27068,7 +27068,7 @@ var Plotly = (() => {
           n: 26,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M" + rs + "," + rs + "V-" + rs + "L-" + rs + "," + rs + "V-" + rs + "Z");
           },
           noDot: true
@@ -27077,7 +27077,7 @@ var Plotly = (() => {
           n: 27,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M0," + rs + "V-" + rs + "M" + rs + ",0H-" + rs + "M" + rs + ",0A" + rs + "," + rs + " 0 1,1 0,-" + rs + "A" + rs + "," + rs + " 0 0,1 " + rs + ",0Z");
           },
           needLine: true,
@@ -27087,8 +27087,8 @@ var Plotly = (() => {
           n: 28,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
-            var rc = round(r / sqrt2, 2);
+            var rs = round2(r, 2);
+            var rc = round2(r / sqrt2, 2);
             return align(angle, standoff, "M" + rc + "," + rc + "L-" + rc + ",-" + rc + "M" + rc + ",-" + rc + "L-" + rc + "," + rc + "M" + rs + ",0A" + rs + "," + rs + " 0 1,1 0,-" + rs + "A" + rs + "," + rs + " 0 0,1 " + rs + ",0Z");
           },
           needLine: true,
@@ -27098,7 +27098,7 @@ var Plotly = (() => {
           n: 29,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M0," + rs + "V-" + rs + "M" + rs + ",0H-" + rs + "M" + rs + "," + rs + "H-" + rs + "V-" + rs + "H" + rs + "Z");
           },
           needLine: true,
@@ -27108,7 +27108,7 @@ var Plotly = (() => {
           n: 30,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rs = round(r, 2);
+            var rs = round2(r, 2);
             return align(angle, standoff, "M" + rs + "," + rs + "L-" + rs + ",-" + rs + "M" + rs + ",-" + rs + "L-" + rs + "," + rs + "M" + rs + "," + rs + "H-" + rs + "V-" + rs + "H" + rs + "Z");
           },
           needLine: true,
@@ -27118,7 +27118,7 @@ var Plotly = (() => {
           n: 31,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rd = round(r * 1.3, 2);
+            var rd = round2(r * 1.3, 2);
             return align(angle, standoff, "M" + rd + ",0L0," + rd + "L-" + rd + ",0L0,-" + rd + "ZM0,-" + rd + "V" + rd + "M-" + rd + ",0H" + rd);
           },
           needLine: true,
@@ -27128,8 +27128,8 @@ var Plotly = (() => {
           n: 32,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rd = round(r * 1.3, 2);
-            var r2 = round(r * 0.65, 2);
+            var rd = round2(r * 1.3, 2);
+            var r2 = round2(r * 0.65, 2);
             return align(angle, standoff, "M" + rd + ",0L0," + rd + "L-" + rd + ",0L0,-" + rd + "ZM-" + r2 + ",-" + r2 + "L" + r2 + "," + r2 + "M-" + r2 + "," + r2 + "L" + r2 + ",-" + r2);
           },
           needLine: true,
@@ -27139,7 +27139,7 @@ var Plotly = (() => {
           n: 33,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rc = round(r * 1.4, 2);
+            var rc = round2(r * 1.4, 2);
             return align(angle, standoff, "M0," + rc + "V-" + rc + "M" + rc + ",0H-" + rc);
           },
           needLine: true,
@@ -27150,7 +27150,7 @@ var Plotly = (() => {
           n: 34,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r, 2);
+            var rx3 = round2(r, 2);
             return align(angle, standoff, "M" + rx3 + "," + rx3 + "L-" + rx3 + ",-" + rx3 + "M" + rx3 + ",-" + rx3 + "L-" + rx3 + "," + rx3);
           },
           needLine: true,
@@ -27161,8 +27161,8 @@ var Plotly = (() => {
           n: 35,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rc = round(r * 1.2, 2);
-            var rs = round(r * 0.85, 2);
+            var rc = round2(r * 1.2, 2);
+            var rs = round2(r * 0.85, 2);
             return align(angle, standoff, "M0," + rc + "V-" + rc + "M" + rc + ",0H-" + rc + "M" + rs + "," + rs + "L-" + rs + ",-" + rs + "M" + rs + ",-" + rs + "L-" + rs + "," + rs);
           },
           needLine: true,
@@ -27173,8 +27173,8 @@ var Plotly = (() => {
           n: 36,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var r1 = round(r / 2, 2);
-            var r2 = round(r, 2);
+            var r1 = round2(r / 2, 2);
+            var r2 = round2(r, 2);
             return align(angle, standoff, "M" + r1 + "," + r2 + "V-" + r2 + "M" + (r1 - r2) + ",-" + r2 + "V" + r2 + "M" + r2 + "," + r1 + "H-" + r2 + "M-" + r2 + "," + (r1 - r2) + "H" + r2);
           },
           needLine: true,
@@ -27184,9 +27184,9 @@ var Plotly = (() => {
           n: 37,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x = round(r * 1.2, 2);
-            var y0 = round(r * 1.6, 2);
-            var y1 = round(r * 0.8, 2);
+            var x = round2(r * 1.2, 2);
+            var y0 = round2(r * 1.6, 2);
+            var y1 = round2(r * 0.8, 2);
             return align(angle, standoff, "M-" + x + "," + y1 + "L0,0M" + x + "," + y1 + "L0,0M0,-" + y0 + "L0,0");
           },
           needLine: true,
@@ -27197,9 +27197,9 @@ var Plotly = (() => {
           n: 38,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var x = round(r * 1.2, 2);
-            var y0 = round(r * 1.6, 2);
-            var y1 = round(r * 0.8, 2);
+            var x = round2(r * 1.2, 2);
+            var y0 = round2(r * 1.6, 2);
+            var y1 = round2(r * 0.8, 2);
             return align(angle, standoff, "M-" + x + ",-" + y1 + "L0,0M" + x + ",-" + y1 + "L0,0M0," + y0 + "L0,0");
           },
           needLine: true,
@@ -27210,9 +27210,9 @@ var Plotly = (() => {
           n: 39,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var y = round(r * 1.2, 2);
-            var x0 = round(r * 1.6, 2);
-            var x1 = round(r * 0.8, 2);
+            var y = round2(r * 1.2, 2);
+            var x0 = round2(r * 1.6, 2);
+            var x1 = round2(r * 0.8, 2);
             return align(angle, standoff, "M" + x1 + "," + y + "L0,0M" + x1 + ",-" + y + "L0,0M-" + x0 + ",0L0,0");
           },
           needLine: true,
@@ -27223,9 +27223,9 @@ var Plotly = (() => {
           n: 40,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var y = round(r * 1.2, 2);
-            var x0 = round(r * 1.6, 2);
-            var x1 = round(r * 0.8, 2);
+            var y = round2(r * 1.2, 2);
+            var x0 = round2(r * 1.6, 2);
+            var x1 = round2(r * 0.8, 2);
             return align(angle, standoff, "M-" + x1 + "," + y + "L0,0M-" + x1 + ",-" + y + "L0,0M" + x0 + ",0L0,0");
           },
           needLine: true,
@@ -27236,7 +27236,7 @@ var Plotly = (() => {
           n: 41,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rc = round(r * 1.4, 2);
+            var rc = round2(r * 1.4, 2);
             return align(angle, standoff, "M" + rc + ",0H-" + rc);
           },
           needLine: true,
@@ -27247,7 +27247,7 @@ var Plotly = (() => {
           n: 42,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rc = round(r * 1.4, 2);
+            var rc = round2(r * 1.4, 2);
             return align(angle, standoff, "M0," + rc + "V-" + rc);
           },
           needLine: true,
@@ -27258,7 +27258,7 @@ var Plotly = (() => {
           n: 43,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r, 2);
+            var rx3 = round2(r, 2);
             return align(angle, standoff, "M" + rx3 + ",-" + rx3 + "L-" + rx3 + "," + rx3);
           },
           needLine: true,
@@ -27269,7 +27269,7 @@ var Plotly = (() => {
           n: 44,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r, 2);
+            var rx3 = round2(r, 2);
             return align(angle, standoff, "M" + rx3 + "," + rx3 + "L-" + rx3 + ",-" + rx3);
           },
           needLine: true,
@@ -27280,8 +27280,8 @@ var Plotly = (() => {
           n: 45,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r, 2);
-            var ry3 = round(r * 2, 2);
+            var rx3 = round2(r, 2);
+            var ry3 = round2(r * 2, 2);
             return align(angle, standoff, "M0,0L-" + rx3 + "," + ry3 + "H" + rx3 + "Z");
           },
           backoff: 1,
@@ -27291,8 +27291,8 @@ var Plotly = (() => {
           n: 46,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r, 2);
-            var ry3 = round(r * 2, 2);
+            var rx3 = round2(r, 2);
+            var ry3 = round2(r * 2, 2);
             return align(angle, standoff, "M0,0L-" + rx3 + ",-" + ry3 + "H" + rx3 + "Z");
           },
           noDot: true
@@ -27301,8 +27301,8 @@ var Plotly = (() => {
           n: 47,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r * 2, 2);
-            var ry3 = round(r, 2);
+            var rx3 = round2(r * 2, 2);
+            var ry3 = round2(r, 2);
             return align(angle, standoff, "M0,0L" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           noDot: true
@@ -27311,8 +27311,8 @@ var Plotly = (() => {
           n: 48,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r * 2, 2);
-            var ry3 = round(r, 2);
+            var rx3 = round2(r * 2, 2);
+            var ry3 = round2(r, 2);
             return align(angle, standoff, "M0,0L-" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           noDot: true
@@ -27321,8 +27321,8 @@ var Plotly = (() => {
           n: 49,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r, 2);
-            var ry3 = round(r * 2, 2);
+            var rx3 = round2(r, 2);
+            var ry3 = round2(r * 2, 2);
             return align(angle, standoff, "M-" + rx3 + ",0H" + rx3 + "M0,0L-" + rx3 + "," + ry3 + "H" + rx3 + "Z");
           },
           backoff: 1,
@@ -27333,8 +27333,8 @@ var Plotly = (() => {
           n: 50,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r, 2);
-            var ry3 = round(r * 2, 2);
+            var rx3 = round2(r, 2);
+            var ry3 = round2(r * 2, 2);
             return align(angle, standoff, "M-" + rx3 + ",0H" + rx3 + "M0,0L-" + rx3 + ",-" + ry3 + "H" + rx3 + "Z");
           },
           needLine: true,
@@ -27344,8 +27344,8 @@ var Plotly = (() => {
           n: 51,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r * 2, 2);
-            var ry3 = round(r, 2);
+            var rx3 = round2(r * 2, 2);
+            var ry3 = round2(r, 2);
             return align(angle, standoff, "M0,-" + ry3 + "V" + ry3 + "M0,0L" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           needLine: true,
@@ -27355,8 +27355,8 @@ var Plotly = (() => {
           n: 52,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx3 = round(r * 2, 2);
-            var ry3 = round(r, 2);
+            var rx3 = round2(r * 2, 2);
+            var ry3 = round2(r, 2);
             return align(angle, standoff, "M0,-" + ry3 + "V" + ry3 + "M0,0L-" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           needLine: true,
@@ -29646,22 +29646,23 @@ var Plotly = (() => {
             min = Lib.constrain(min, r0, r1);
             max = Lib.constrain(max, r0, r1);
             if (min === max) return;
-            var isNewBreak = true;
-            for (var j2 = 0; j2 < rangebreaksOut.length; j2++) {
-              var brkj = rangebreaksOut[j2];
+            let merged;
+            for (let j2 = 0; j2 < rangebreaksOut.length; j2++) {
+              const brkj = rangebreaksOut[j2];
               if (min < brkj.max && max >= brkj.min) {
-                if (min < brkj.min) {
-                  brkj.min = min;
+                if (merged) {
+                  merged.min = Math.min(merged.min, brkj.min);
+                  merged.max = Math.max(merged.max, brkj.max);
+                  rangebreaksOut.splice(j2, 1);
+                  j2--;
+                } else {
+                  merged = brkj;
+                  merged.min = Math.min(merged.min, min);
+                  merged.max = Math.max(merged.max, max);
                 }
-                if (max > brkj.max) {
-                  brkj.max = max;
-                }
-                isNewBreak = false;
               }
             }
-            if (isNewBreak) {
-              rangebreaksOut.push({ min, max });
-            }
+            if (!merged) rangebreaksOut.push({ min, max });
           };
           for (i = 0; i < rangebreaksIn.length; i++) {
             var brk = rangebreaksIn[i];
@@ -29856,9 +29857,9 @@ var Plotly = (() => {
       var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
       var isDateTime = Lib.isDateTime;
       var cleanNumber2 = Lib.cleanNumber;
-      var round = Math.round;
-      module.exports = function autoType(array, calendar, opts) {
-        var a = array;
+      var round2 = Math.round;
+      module.exports = function autoType(array2, calendar, opts) {
+        var a = array2;
         var noMultiCategory = opts.noMultiCategory;
         if (isArrayOrTypedArray(a) && !a.length) return "-";
         if (!noMultiCategory && multiCategory(a)) return "multicategory";
@@ -29896,7 +29897,7 @@ var Plotly = (() => {
         var nums = 0;
         var seen = {};
         for (var f = 0; f < len; f += inc) {
-          var i = round(f);
+          var i = round2(f);
           var ai = a[i];
           var stri = String(ai);
           if (seen[stri]) continue;
@@ -29916,7 +29917,7 @@ var Plotly = (() => {
         var cats = 0;
         var seen = {};
         for (var f = 0; f < len; f += inc) {
-          var i = round(f);
+          var i = round2(f);
           var ai = a[i];
           var stri = String(ai);
           if (seen[stri]) continue;
@@ -30295,29 +30296,29 @@ var Plotly = (() => {
           opts
         };
       }
-      function collapseMinArray(array, newVal, newPad, opts) {
-        collapseArray(array, newVal, newPad, opts, lessOrEqual);
+      function collapseMinArray(array2, newVal, newPad, opts) {
+        collapseArray(array2, newVal, newPad, opts, lessOrEqual);
       }
-      function collapseMaxArray(array, newVal, newPad, opts) {
-        collapseArray(array, newVal, newPad, opts, greaterOrEqual);
+      function collapseMaxArray(array2, newVal, newPad, opts) {
+        collapseArray(array2, newVal, newPad, opts, greaterOrEqual);
       }
-      function collapseArray(array, newVal, newPad, opts, atLeastAsExtreme) {
+      function collapseArray(array2, newVal, newPad, opts, atLeastAsExtreme) {
         var tozero = opts.tozero;
         var extrapad = opts.extrapad;
         var includeThis = true;
-        for (var j = 0; j < array.length && includeThis; j++) {
-          var v = array[j];
+        for (var j = 0; j < array2.length && includeThis; j++) {
+          var v = array2[j];
           if (atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
             includeThis = false;
             break;
           } else if (atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
-            array.splice(j, 1);
+            array2.splice(j, 1);
             j--;
           }
         }
         if (includeThis) {
           var clipAtZero = tozero && newVal === 0;
-          array.push({
+          array2.push({
             val: newVal,
             pad: clipAtZero ? 0 : newPad,
             extrapad: clipAtZero ? false : extrapad
@@ -31046,6 +31047,11 @@ var Plotly = (() => {
         var allTicklabelVals = [];
         var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
         var calcMinor = hasMinor || ax._useTicklabelIndex;
+        let helperSteps = 0;
+        if (isPeriod) {
+          const maxLabelIndex = ax._useTicklabelIndex ? Math.max(0, ...Array.from(ticklabelIndex, Math.abs)) : 0;
+          helperSteps = Math.min(maxLabelIndex + 1, Math.floor(maxTicks / 2));
+        }
         for (var major = 1; major >= (calcMinor ? 0 : 1); major--) {
           var isMinor = !major;
           if (major) {
@@ -31079,8 +31085,10 @@ var Plotly = (() => {
           var exRng = expandRange(rng);
           var startTick = exRng[0];
           var endTick = exRng[1];
-          var numDtick = isNumeric2(mockAx.dtick);
-          var isDLog = type === "log" && !(numDtick || mockAx.dtick.charAt(0) === "L");
+          const visibleEndTick = endTick;
+          var dtick = mockAx.dtick;
+          const numDtick = isNumeric2(dtick);
+          const isDLog = type === "log" && !(numDtick || dtick.charAt(0) === "L");
           var x0 = axes.tickFirst(mockAx, opts);
           if (major) {
             ax._tmin = x0;
@@ -31107,7 +31115,6 @@ var Plotly = (() => {
             }
             majorId = Math.round((ax.r2l(x) - ax.r2l(ax.tick0)) / _dTick) - 1;
           }
-          var dtick = mockAx.dtick;
           var tick0l = type === "linear" ? mockAx.r2l(mockAx.tick0) : void 0;
           if (mockAx.rangebreaks && mockAx._tick0Init !== mockAx.tick0) {
             x = moveOutsideBreak(x, ax);
@@ -31115,9 +31122,18 @@ var Plotly = (() => {
               x = axes.tickIncrement(x, dtick, !axrev, calendar);
             }
           }
-          if ((major || ax._useTicklabelIndex) && isPeriod) {
-            x = axes.tickIncrement(x, dtick, !axrev, calendar);
-            if (major) majorId--;
+          if (major && helperSteps) {
+            for (let k2 = 0; k2 < helperSteps; k2++) {
+              x = axes.tickIncrement(x, dtick, !axrev, calendar);
+              if (ax._useTicklabelIndex) endTick = axes.tickIncrement(endTick, dtick, axrev, calendar);
+            }
+            majorId -= helperSteps;
+          } else if (isMinor && helperSteps && ax._useTicklabelIndex && tickVals.length) {
+            const firstMajor = tickVals[0].value;
+            while (axrev ? x < firstMajor : x > firstMajor) {
+              x = axes.tickIncrement(x, dtick, !axrev, calendar);
+            }
+            endTick = tickVals[tickVals.length - 1].value;
           }
           for (; axrev ? x >= endTick : x <= endTick; x = axes.tickIncrement(
             x,
@@ -31132,9 +31148,12 @@ var Plotly = (() => {
                 if (mockAx.maskBreaks(x) === BADNUM2 && moveOutsideBreak(x, mockAx) >= maxRange) break;
               }
             }
-            if (tickVals.length > maxTicks || x === prevX) break;
+            if (tickVals.length > maxTicks + 2 * helperSteps || x === prevX) break;
             prevX = x;
             var obj = { value: snapToGrid(x, tick0l, dtick) };
+            if (axrev ? x > startTick || x < visibleEndTick : x < startTick || x > visibleEndTick) {
+              obj.noTick = true;
+            }
             if (major) {
               if (x === x0) obj.first = true;
               if (isDLog && x !== (x | 0)) {
@@ -31164,13 +31183,15 @@ var Plotly = (() => {
           return null;
         }
         ;
-        if (!minorTickVals || minorTickVals.length < 3) {
-          ax._useTicklabelIndex = false;
-        } else {
-          const diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
-          if (!periodCompatibleWithTickformat(diff, ax.tickformat)) {
+        if (ax._useTicklabelIndex) {
+          const visibleMinorTicks = minorTickVals.filter((minorTick) => !minorTick.noTick);
+          if (visibleMinorTicks.length < 2) {
             ax._useTicklabelIndex = false;
-            minorTickVals = minorTickVals.slice(1);
+          } else {
+            const diff = (visibleMinorTicks[1].value - visibleMinorTicks[0].value) * (isReversed ? -1 : 1);
+            if (!periodCompatibleWithTickformat(diff, ax.tickformat)) {
+              ax._useTicklabelIndex = false;
+            }
           }
         }
         if (!ax._useTicklabelIndex) {
@@ -31178,9 +31199,13 @@ var Plotly = (() => {
         } else {
           const filteredMinors = minorTickVals.filter((minor) => findOverlappingTick(minor, tickVals) == null);
           const labelTickValsAscending = tickVals.concat(filteredMinors).sort((a, b) => a.value - b.value);
-          if (isPeriod && tickVals.length) {
-            tickVals[0].skipLabel = true;
-          }
+          const addTicklabel = (ticks, index) => {
+            const tickToLabel = ticks[index];
+            const periodEndTick = isPeriod ? ticks[index + 1] : void 0;
+            if (tickToLabel.noTick && !(periodEndTick && !periodEndTick.noTick)) return;
+            allTicklabelVals.push(tickToLabel);
+            if (periodEndTick) tickToLabel.periodEndTick = periodEndTick;
+          };
           tickVals.forEach(function(majorTick) {
             if (!majorTick.skipLabel) {
               ticklabelIndex.forEach((labelIndex) => {
@@ -31189,20 +31214,12 @@ var Plotly = (() => {
                   const absLabelIndex = Math.abs(labelIndex);
                   const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
                   if (absLabelIndex < smallerTicks.length) {
-                    const tickToLabel = smallerTicks[labeledTickIndex];
-                    allTicklabelVals.push(tickToLabel);
-                    if (isPeriod) {
-                      tickToLabel.periodEndTick = smallerTicks[labeledTickIndex + 1];
-                    }
+                    addTicklabel(smallerTicks, labeledTickIndex);
                   }
                 } else {
                   const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
                   if (labelIndex < largerTicks.length) {
-                    const tickToLabel = largerTicks[labelIndex];
-                    allTicklabelVals.push(tickToLabel);
-                    if (isPeriod && largerTicks[labelIndex + 1]) {
-                      tickToLabel.periodEndTick = largerTicks[labelIndex + 1];
-                    }
+                    addTicklabel(largerTicks, labelIndex);
                   }
                 }
               });
@@ -31291,8 +31308,9 @@ var Plotly = (() => {
             if (ax._useTicklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
               t = setTickLabel(ax, tickVals[i]);
             } else {
-              t = { x: _value };
+              t = { x: _value, text: "" };
             }
+            t.noTick = tickVals[i].noTick;
             t.minor = true;
             minorTicks.push(t);
           } else {
@@ -31301,17 +31319,12 @@ var Plotly = (() => {
             if (tickVals[i].skipLabel) {
               hideLabel(t);
             }
+            t.noTick = tickVals[i].noTick;
             ticksOut.push(t);
           }
         }
-        if (isPeriod && ax._useTicklabelIndex && minorTicks.length) {
-          minorTicks[0].noTick = true;
-        }
-        ticksOut = ticksOut.concat(minorTicks);
         ax._inCalcTicks = false;
-        if (isPeriod && ticksOut.length) {
-          ticksOut[0].noTick = true;
-        }
+        ticksOut = ticksOut.concat(minorTicks);
         return ticksOut;
       };
       function filterRangeBreaks(ax, ticksOut) {
@@ -31845,11 +31858,11 @@ var Plotly = (() => {
           return e;
         }
         var precision = findPrecision(num);
-        var number = num * precision;
-        var gcd = Math.abs(findGCD(number, precision));
+        var number2 = num * precision;
+        var gcd = Math.abs(findGCD(number2, precision));
         return [
           // numerator
-          Math.round(number / gcd),
+          Math.round(number2 / gcd),
           // denominator
           Math.round(precision / gcd)
         ];
@@ -34507,7 +34520,7 @@ var Plotly = (() => {
         var dataIndices = [];
         var carrs = [];
         var carrIdx = [];
-        function insertDataUpdate(traceIndex, value) {
+        function insertDataUpdate(traceIndex, value2) {
           var attrIndex = dataIndices.indexOf(traceIndex);
           var valueArray = dataUpdate.visible;
           if (!valueArray) {
@@ -34517,15 +34530,15 @@ var Plotly = (() => {
             dataIndices.push(traceIndex);
             attrIndex = dataIndices.length - 1;
           }
-          valueArray[attrIndex] = value;
+          valueArray[attrIndex] = value2;
           return attrIndex;
         }
         var updatedShapes = (fullLayout.shapes || []).map(function(d2) {
           return d2._input;
         });
         var shapesUpdated = false;
-        function insertShapesUpdate(shapeIndex, value) {
-          updatedShapes[shapeIndex].visible = value;
+        function insertShapesUpdate(shapeIndex, value2) {
+          updatedShapes[shapeIndex].visible = value2;
           shapesUpdated = true;
         }
         function setVisibility(fullTrace2, visibility) {
@@ -34903,10 +34916,10 @@ var Plotly = (() => {
         var vRounded = format(v.toPrecision(10));
         return Lib.numSeparate(vRounded, separators);
       };
-      exports.getFirstFilled = function getFirstFilled(array, indices) {
-        if (!Lib.isArrayOrTypedArray(array)) return;
+      exports.getFirstFilled = function getFirstFilled(array2, indices) {
+        if (!Lib.isArrayOrTypedArray(array2)) return;
         for (var i = 0; i < indices.length; i++) {
-          var v = array[indices[i]];
+          var v = array2[indices[i]];
           if (v || v === 0 || v === "") return v;
         }
       };
@@ -35093,9 +35106,9 @@ var Plotly = (() => {
             }
             return valToBound;
           }
-          function pickFirst(array) {
-            if (d0._distinct && d0.index && array[d0.index]) return array[d0.index];
-            return array[0];
+          function pickFirst(array2) {
+            if (d0._distinct && d0.index && array2[d0.index]) return array2[d0.index];
+            return array2[0];
           }
           if (showMarker || showText || showLine) {
             var dEdit = {};
@@ -36171,6 +36184,10 @@ var Plotly = (() => {
         maxheight || (maxheight = useFullLayoutHeight ? 0.5 : 1);
         const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
         legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
+        if (yref === "container") {
+          const roomHeight = getContainerRoom(legendObj.y, yanchor) * fullLayout.height;
+          legendObj._maxHeight = Math.max(Math.min(legendObj._maxHeight, roomHeight), 30);
+        }
         var toggleRectWidth = 0;
         legendObj._width = 0;
         legendObj._height = 0;
@@ -36205,6 +36222,10 @@ var Plotly = (() => {
             isLeftOfPlotArea ? isBeyondPlotAreaY && xanchor === "left" ? gs.l + gs.w : hw : isRightOfPlotArea ? isBeyondPlotAreaY && xanchor === "right" ? gs.r + gs.w : hw : gs.w,
             2 * textGap
           );
+          if (legendObj.xref === "container") {
+            const roomWidth = getContainerRoom(legendObj.x, xanchor) * fullLayout.width;
+            legendObj._maxWidth = Math.max(roomWidth, 2 * textGap);
+          }
           var maxItemWidth = 0;
           var combinedItemWidth = 0;
           traces.each(function(d) {
@@ -36385,6 +36406,18 @@ var Plotly = (() => {
       }
       function getYanchor(legendObj) {
         return Lib.isBottomAnchor(legendObj) ? "bottom" : Lib.isMiddleAnchor(legendObj) ? "middle" : "top";
+      }
+      function getContainerRoom(pos, anchor) {
+        switch (anchor) {
+          case "left":
+          case "bottom":
+            return 1 - pos;
+          case "right":
+          case "top":
+            return pos;
+          default:
+            return 2 * Math.min(pos, 1 - pos);
+        }
       }
     }
   });
@@ -36967,6 +37000,18 @@ var Plotly = (() => {
         };
         sortHoverData();
         var axLetter = hovermode.charAt(0);
+        const isCategoryAxis = (ax) => ax && ["category", "multicategory"].includes(ax.type);
+        const axArray = axLetter === "x" ? xaArray : yaArray;
+        const valArray = axLetter === "x" ? xvalArray : yvalArray;
+        if (helpers.isXYhover(_mode) && valArray) {
+          const filteredHoverData = hoverData.filter((point) => {
+            const ax = point[axLetter + "a"];
+            const i2 = axArray.indexOf(ax);
+            if (!isCategoryAxis(ax) || i2 === -1) return true;
+            return point[axLetter + "LabelVal"] === Math.round(valArray[i2]);
+          });
+          if (filteredHoverData.length) hoverData = filteredHoverData;
+        }
         var spikeOnWinning = (axLetter === "x" || axLetter === "y") && hoverData[0] && cartesianScatterPoints[hoverData[0].trace.type];
         if (hasCartesian && spikedistance !== 0) {
           if (hoverData.length !== 0) {
@@ -37044,6 +37089,17 @@ var Plotly = (() => {
           }
           for (k = hoverData.length - 1; k > initLen - 1; k--) {
             insert(hoverData[k]);
+          }
+          var winAx = winningPoint[axLetter + "a"];
+          if (winAx && (winAx.type === "category" || winAx.type === "multicategory")) {
+            var winCat = winningPoint[axLetter + "LabelVal"];
+            finalPoints = finalPoints.filter(function(point) {
+              var pointAx = point[axLetter + "a"];
+              if (!pointAx || pointAx.type !== "category" && pointAx.type !== "multicategory") {
+                return true;
+              }
+              return point[axLetter + "LabelVal"] === winCat;
+            });
           }
           hoverData = finalPoints;
           sortHoverData();
@@ -42542,12 +42598,16 @@ var Plotly = (() => {
         var hasDayOfWeekBreaks = false;
         function setAttrVal() {
           val = axOut[attr];
+          if (attr === "range") {
+            hasRange = !!(val && axIn.range && axIn.range.length === 2 && axIn.range[0] !== null && axIn.range[1] !== null);
+          }
           if (attr === "rangebreaks") {
             hasDayOfWeekBreaks = axOut._hasDayOfWeekBreaks;
           }
         }
         for (i = 0; i < matchGroups.length; i++) {
           group = matchGroups[i];
+          hasRange = false;
           for (var j = 0; j < matchAttrs.length; j++) {
             attr = matchAttrs[j];
             val = null;
@@ -42569,9 +42629,6 @@ var Plotly = (() => {
               if (val === null && attr in axIn) {
                 setAttrVal();
               }
-            }
-            if (attr === "range" && val && axIn.range && axIn.range.length === 2 && axIn.range[0] !== null && axIn.range[1] !== null) {
-              hasRange = true;
             }
             if (attr === "autorange" && val === null && hasRange) {
               val = false;
@@ -47125,8 +47182,8 @@ var Plotly = (() => {
       var axisIds = require_axis_ids();
       module.exports = function makeIncludeComponents(containerArrayName) {
         return function includeComponents(layoutIn, layoutOut) {
-          var array = layoutIn[containerArrayName];
-          if (!Array.isArray(array)) return;
+          var array2 = layoutIn[containerArrayName];
+          if (!Array.isArray(array2)) return;
           var Cartesian = Registry.subplotsRegistry.cartesian;
           var idRegex2 = Cartesian.idRegex;
           var subplots = layoutOut._subplots;
@@ -47134,8 +47191,8 @@ var Plotly = (() => {
           var yaList = subplots.yaxis;
           var cartesianList = subplots.cartesian;
           var hasCartesian = layoutOut._has("cartesian");
-          for (var i = 0; i < array.length; i++) {
-            var itemi = array[i];
+          for (var i = 0; i < array2.length; i++) {
+            var itemi = array2[i];
             if (!Lib.isPlainObject(itemi)) continue;
             var xref = axisIds.cleanId(itemi.xref, "x", false);
             var yref = axisIds.cleanId(itemi.yref, "y", false);
@@ -47533,37 +47590,37 @@ var Plotly = (() => {
             return;
           }
           gd._fullLayout._replotting = true;
-          var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200);
+          var zoom2 = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200);
           var gbb = mainplot.draglayer.select(".nsewdrag").node().getBoundingClientRect();
           var xfrac = (e.clientX - gbb.left) / gbb.width;
           var yfrac = (gbb.bottom - e.clientY) / gbb.height;
           var i;
-          function zoomWheelOneAxis(ax, centerFraction, zoom2) {
+          function zoomWheelOneAxis(ax, centerFraction, zoom3) {
             if (ax.fixedrange) return;
             var axRange = Lib.simpleMap(ax.range, ax.r2l);
             var v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
             function doZoom(v) {
-              return ax.l2r(v0 + (v - v0) * zoom2);
+              return ax.l2r(v0 + (v - v0) * zoom3);
             }
             ax.range = axRange.map(doZoom);
           }
           if (editX) {
             if (!ew) xfrac = 0.5;
             for (i = 0; i < xaxes.length; i++) {
-              zoomWheelOneAxis(xaxes[i], xfrac, zoom);
+              zoomWheelOneAxis(xaxes[i], xfrac, zoom2);
             }
             updateMatchedAxRange("x");
-            scrollViewBox[2] *= zoom;
-            scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1);
+            scrollViewBox[2] *= zoom2;
+            scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom2 - 1);
           }
           if (editY) {
             if (!ns) yfrac = 0.5;
             for (i = 0; i < yaxes.length; i++) {
-              zoomWheelOneAxis(yaxes[i], yfrac, zoom);
+              zoomWheelOneAxis(yaxes[i], yfrac, zoom2);
             }
             updateMatchedAxRange("y");
-            scrollViewBox[3] *= zoom;
-            scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
+            scrollViewBox[3] *= zoom2;
+            scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom2 - 1);
           }
           updateSubplots(scrollViewBox);
           ticksAndAnnotations();
@@ -49310,7 +49367,7 @@ var Plotly = (() => {
         }
       }
       function checkAddTracesArgs(gd, traces, newIndices) {
-        var i, value;
+        var i, value2;
         if (!Array.isArray(gd.data)) {
           throw new Error("gd.data must be an array.");
         }
@@ -49321,8 +49378,8 @@ var Plotly = (() => {
           traces = [traces];
         }
         for (i = 0; i < traces.length; i++) {
-          value = traces[i];
-          if (typeof value !== "object" || Array.isArray(value) || value === null) {
+          value2 = traces[i];
+          if (typeof value2 !== "object" || Array.isArray(value2) || value2 === null) {
             throw new Error("all values in traces array must be non-array objects");
           }
         }
@@ -53311,18 +53368,18 @@ var Plotly = (() => {
         this.binWidth = this.minDiff;
         this.bins = {};
       }
-      Sieve.prototype.put = function put(position, group, value) {
-        var label = this.getLabel(position, group, value);
+      Sieve.prototype.put = function put(position, group, value2) {
+        var label = this.getLabel(position, group, value2);
         var oldValue = this.bins[label] || 0;
-        this.bins[label] = oldValue + value;
+        this.bins[label] = oldValue + value2;
         return oldValue;
       };
-      Sieve.prototype.get = function get(position, group, value) {
-        var label = this.getLabel(position, group, value);
+      Sieve.prototype.get = function get(position, group, value2) {
+        var label = this.getLabel(position, group, value2);
         return this.bins[label] || 0;
       };
-      Sieve.prototype.getLabel = function getLabel(position, group, value) {
-        var prefix = value < 0 && this.sepNegVal ? "v" : "^";
+      Sieve.prototype.getLabel = function getLabel(position, group, value2) {
+        var prefix = value2 < 0 && this.sepNegVal ? "v" : "^";
         var label = this.overlapNoMerge ? position : Math.round(position / this.binWidth);
         return prefix + label + "g" + group;
       };
@@ -53790,14 +53847,14 @@ var Plotly = (() => {
           for (j = 0; j < calcTrace.length; j++) {
             bar = calcTrace[j];
             if (bar.s !== BADNUM2) {
-              var value;
+              var value2;
               if (isFunnel) {
-                value = bar.s;
+                value2 = bar.s;
               } else {
-                value = bar.s + bar.b;
+                value2 = bar.s + bar.b;
               }
-              var base = sieve.put(bar.p, offsetIndex, value);
-              var top = base + value;
+              var base = sieve.put(bar.p, offsetIndex, value2);
+              var top = base + value2;
               bar.b = base;
               bar[sLetter] = top;
               if (!opts.norm) {
@@ -53953,7 +54010,7 @@ var Plotly = (() => {
           }
         }
         var roundFactor = 1e4 / (pMax - pMin);
-        var round = extents.round = function(p2) {
+        var round2 = extents.round = function(p2) {
           return String(Math.round(roundFactor * (p2 - pMin)));
         };
         var sMinByPos = {};
@@ -53972,7 +54029,7 @@ var Plotly = (() => {
             var p0 = di[pLetter] - di.w / 2;
             if (isNumeric2(p0)) {
               var p1 = di[pLetter] + di.w / 2;
-              var pVal = round(di.p);
+              var pVal = round2(di.p);
               if (extents[pVal]) {
                 extents[pVal] = [Math.min(p0, extents[pVal][0]), Math.max(p1, extents[pVal][1])];
               } else {
@@ -55500,9 +55557,9 @@ var Plotly = (() => {
         var orderDefault;
         if (isValidArray) orderDefault = "array";
         var order = coerce("categoryorder", orderDefault);
-        var array;
+        var array2;
         if (order === "array") {
-          array = coerce("categoryarray");
+          array2 = coerce("categoryarray");
         }
         if (!isValidArray && order === "array") {
           order = containerOut.categoryorder = "trace";
@@ -55510,13 +55567,13 @@ var Plotly = (() => {
         if (order === "trace") {
           containerOut._initialCategories = [];
         } else if (order === "array") {
-          containerOut._initialCategories = array.slice();
+          containerOut._initialCategories = array2.slice();
         } else {
-          array = findCategories(containerOut, opts).sort();
+          array2 = findCategories(containerOut, opts).sort();
           if (order === "category ascending") {
-            containerOut._initialCategories = array;
+            containerOut._initialCategories = array2;
           } else if (order === "category descending") {
-            containerOut._initialCategories = array.reverse();
+            containerOut._initialCategories = array2.reverse();
           }
         }
       };
@@ -62641,16 +62698,16 @@ var Plotly = (() => {
         var type = opts.type;
         var symmetric = opts.symmetric;
         if (type === "data") {
-          var array = opts.array || [];
+          var array2 = opts.array || [];
           if (symmetric) {
             return function computeError(dataPt, index) {
-              var val = +array[index];
+              var val = +array2[index];
               return [val, val];
             };
           } else {
             var arrayminus = opts.arrayminus || [];
             return function computeError(dataPt, index) {
-              var val = +array[index];
+              var val = +array2[index];
               var valMinus = +arrayminus[index];
               if (!isNaN(val) || !isNaN(valMinus)) {
                 return [valMinus || 0, val || 0];
@@ -62676,15 +62733,15 @@ var Plotly = (() => {
           }
         }
       };
-      function makeComputeErrorValue(type, value) {
+      function makeComputeErrorValue(type, value2) {
         if (type === "percent") {
           return function(dataPt) {
-            return Math.abs(dataPt * value / 100);
+            return Math.abs(dataPt * value2 / 100);
           };
         }
         if (type === "constant") {
           return function() {
-            return Math.abs(value);
+            return Math.abs(value2);
           };
         }
         if (type === "sqrt") {
@@ -64636,38 +64693,38 @@ var Plotly = (() => {
       var Color2 = require_color();
       var isNumeric2 = require_fast_isnumeric();
       var isArrayOrTypedArray = require_lib().isArrayOrTypedArray;
-      exports.coerceString = function(attributeDefinition, value, defaultValue) {
-        if (typeof value === "string") {
-          if (value || !attributeDefinition.noBlank) return value;
-        } else if (typeof value === "number" || value === true) {
-          if (!attributeDefinition.strict) return String(value);
+      exports.coerceString = function(attributeDefinition, value2, defaultValue) {
+        if (typeof value2 === "string") {
+          if (value2 || !attributeDefinition.noBlank) return value2;
+        } else if (typeof value2 === "number" || value2 === true) {
+          if (!attributeDefinition.strict) return String(value2);
         }
         return defaultValue !== void 0 ? defaultValue : attributeDefinition.dflt;
       };
-      exports.coerceNumber = function(attributeDefinition, value, defaultValue) {
-        if (isNumeric2(value)) {
-          value = +value;
+      exports.coerceNumber = function(attributeDefinition, value2, defaultValue) {
+        if (isNumeric2(value2)) {
+          value2 = +value2;
           var min = attributeDefinition.min;
           var max = attributeDefinition.max;
-          var isOutOfBounds = min !== void 0 && value < min || max !== void 0 && value > max;
-          if (!isOutOfBounds) return value;
+          var isOutOfBounds = min !== void 0 && value2 < min || max !== void 0 && value2 > max;
+          if (!isOutOfBounds) return value2;
         }
         return defaultValue !== void 0 ? defaultValue : attributeDefinition.dflt;
       };
-      exports.coerceColor = function(attributeDefinition, value, defaultValue) {
-        if (Color2.isValid(value)) return value;
+      exports.coerceColor = function(attributeDefinition, value2, defaultValue) {
+        if (Color2.isValid(value2)) return value2;
         return defaultValue !== void 0 ? defaultValue : attributeDefinition.dflt;
       };
-      exports.coerceEnumerated = function(attributeDefinition, value, defaultValue) {
-        if (attributeDefinition.coerceNumber) value = +value;
-        if (attributeDefinition.values.indexOf(value) !== -1) return value;
+      exports.coerceEnumerated = function(attributeDefinition, value2, defaultValue) {
+        if (attributeDefinition.coerceNumber) value2 = +value2;
+        if (attributeDefinition.values.indexOf(value2) !== -1) return value2;
         return defaultValue !== void 0 ? defaultValue : attributeDefinition.dflt;
       };
       exports.getValue = function(arrayOrScalar, index) {
-        var value;
-        if (!isArrayOrTypedArray(arrayOrScalar)) value = arrayOrScalar;
-        else if (index < arrayOrScalar.length) value = arrayOrScalar[index];
-        return value;
+        var value2;
+        if (!isArrayOrTypedArray(arrayOrScalar)) value2 = arrayOrScalar;
+        else if (index < arrayOrScalar.length) value2 = arrayOrScalar[index];
+        return value2;
       };
       exports.getLineWidth = function(trace, di) {
         var w = 0 < di.mlw ? di.mlw : !isArrayOrTypedArray(trace.marker.line.width) ? trace.marker.line.width : 0;
@@ -65468,19 +65525,19 @@ var Plotly = (() => {
       function getText(fullLayout, cd, index, xa, ya) {
         var trace = cd[0].trace;
         var texttemplate = trace.texttemplate;
-        var value;
+        var value2;
         if (texttemplate) {
-          value = calcTexttemplate(fullLayout, cd, index, xa, ya);
+          value2 = calcTexttemplate(fullLayout, cd, index, xa, ya);
         } else if (trace.textinfo) {
-          value = calcTextinfo(cd, index, xa, ya);
+          value2 = calcTextinfo(cd, index, xa, ya);
         } else {
-          value = helpers.getValue(trace.text, index);
+          value2 = helpers.getValue(trace.text, index);
         }
-        return helpers.coerceString(attributeText, value);
+        return helpers.coerceString(attributeText, value2);
       }
       function getTextPosition(trace, index) {
-        var value = helpers.getValue(trace.textposition, index);
-        return helpers.coerceEnumerated(attributeTextPosition, value);
+        var value2 = helpers.getValue(trace.textposition, index);
+        return helpers.coerceEnumerated(attributeTextPosition, value2);
       }
       function getZeroBarDir(cd, isHorizontal, xa, ya) {
         var hasPositive = false;
@@ -70701,8 +70758,8 @@ var Plotly = (() => {
         traceOut._hasNumber = traceOut.mode.indexOf("number") !== -1;
         traceOut._hasDelta = traceOut.mode.indexOf("delta") !== -1;
         traceOut._hasGauge = traceOut.mode.indexOf("gauge") !== -1;
-        var value = coerce("value");
-        traceOut._range = [0, typeof value === "number" ? 1.5 * value : 1];
+        var value2 = coerce("value");
+        traceOut._range = [0, typeof value2 === "number" ? 1.5 * value2 : 1];
         var auto = new Array(2);
         var bignumberFontSize;
         if (traceOut._hasNumber) {
@@ -70916,12 +70973,12 @@ var Plotly = (() => {
   function clampa(opacity) {
     return isNaN(opacity) ? 1 : Math.max(0, Math.min(1, opacity));
   }
-  function clampi(value) {
-    return Math.max(0, Math.min(255, Math.round(value) || 0));
+  function clampi(value2) {
+    return Math.max(0, Math.min(255, Math.round(value2) || 0));
   }
-  function hex(value) {
-    value = clampi(value);
-    return (value < 16 ? "0" : "") + value.toString(16);
+  function hex(value2) {
+    value2 = clampi(value2);
+    return (value2 < 16 ? "0" : "") + value2.toString(16);
   }
   function hsla(h, s, l, a) {
     if (a <= 0) h = s = l = NaN;
@@ -70956,12 +71013,12 @@ var Plotly = (() => {
     this.l = +l;
     this.opacity = +opacity;
   }
-  function clamph(value) {
-    value = (value || 0) % 360;
-    return value < 0 ? value + 360 : value;
+  function clamph(value2) {
+    value2 = (value2 || 0) % 360;
+    return value2 < 0 ? value2 + 360 : value2;
   }
-  function clampt(value) {
-    return Math.max(0, Math.min(1, value || 0));
+  function clampt(value2) {
+    return Math.max(0, Math.min(1, value2 || 0));
   }
   function hsl2rgb(h, m1, m2) {
     return (h < 60 ? m1 + (m2 - m1) * h / 60 : h < 180 ? m2 : h < 240 ? m1 + (m2 - m1) * (240 - h) / 60 : m1) * 255;
@@ -71377,46 +71434,55 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/d3-interpolate/src/basis.js
+  // node_modules/d3-interpolate/dist/d3-interpolate.mjs
+  var d3_interpolate_exports = {};
+  __export(d3_interpolate_exports, {
+    interpolate: () => value,
+    interpolateArray: () => array,
+    interpolateBasis: () => basis$1,
+    interpolateBasisClosed: () => basisClosed,
+    interpolateCubehelix: () => cubehelix_default,
+    interpolateCubehelixLong: () => cubehelixLong,
+    interpolateDate: () => date,
+    interpolateDiscrete: () => discrete,
+    interpolateHcl: () => hcl_default,
+    interpolateHclLong: () => hclLong,
+    interpolateHsl: () => hsl_default,
+    interpolateHslLong: () => hslLong,
+    interpolateHue: () => hue,
+    interpolateLab: () => lab2,
+    interpolateNumber: () => number,
+    interpolateNumberArray: () => numberArray,
+    interpolateObject: () => object,
+    interpolateRgb: () => rgb2,
+    interpolateRgbBasis: () => rgbBasis,
+    interpolateRgbBasisClosed: () => rgbBasisClosed,
+    interpolateRound: () => round,
+    interpolateString: () => string,
+    interpolateTransformCss: () => interpolateTransformCss,
+    interpolateTransformSvg: () => interpolateTransformSvg,
+    interpolateZoom: () => zoom,
+    piecewise: () => piecewise,
+    quantize: () => quantize
+  });
   function basis(t12, v0, v1, v2, v3) {
     var t22 = t12 * t12, t32 = t22 * t12;
     return ((1 - 3 * t12 + 3 * t22 - t32) * v0 + (4 - 6 * t22 + 3 * t32) * v1 + (1 + 3 * t12 + 3 * t22 - 3 * t32) * v2 + t32 * v3) / 6;
   }
-  function basis_default(values) {
+  function basis$1(values) {
     var n = values.length - 1;
     return function(t) {
       var i = t <= 0 ? t = 0 : t >= 1 ? (t = 1, n - 1) : Math.floor(t * n), v1 = values[i], v2 = values[i + 1], v0 = i > 0 ? values[i - 1] : 2 * v1 - v2, v3 = i < n - 1 ? values[i + 2] : 2 * v2 - v1;
       return basis((t - i / n) * n, v0, v1, v2, v3);
     };
   }
-  var init_basis = __esm({
-    "node_modules/d3-interpolate/src/basis.js"() {
-    }
-  });
-
-  // node_modules/d3-interpolate/src/basisClosed.js
-  function basisClosed_default(values) {
+  function basisClosed(values) {
     var n = values.length;
     return function(t) {
       var i = Math.floor(((t %= 1) < 0 ? ++t : t) * n), v0 = values[(i + n - 1) % n], v1 = values[i % n], v2 = values[(i + 1) % n], v3 = values[(i + 2) % n];
       return basis((t - i / n) * n, v0, v1, v2, v3);
     };
   }
-  var init_basisClosed = __esm({
-    "node_modules/d3-interpolate/src/basisClosed.js"() {
-      init_basis();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/constant.js
-  var constant_default;
-  var init_constant = __esm({
-    "node_modules/d3-interpolate/src/constant.js"() {
-      constant_default = (x) => () => x;
-    }
-  });
-
-  // node_modules/d3-interpolate/src/color.js
   function linear(a, d) {
     return function(t) {
       return a + t * d;
@@ -71427,26 +71493,19 @@ var Plotly = (() => {
       return Math.pow(a + t * b, y);
     };
   }
-  function hue(a, b) {
+  function hue$1(a, b) {
     var d = b - a;
-    return d ? linear(a, d > 180 || d < -180 ? d - 360 * Math.round(d / 360) : d) : constant_default(isNaN(a) ? b : a);
+    return d ? linear(a, d > 180 || d < -180 ? d - 360 * Math.round(d / 360) : d) : constant(isNaN(a) ? b : a);
   }
   function gamma(y) {
     return (y = +y) === 1 ? nogamma : function(a, b) {
-      return b - a ? exponential(a, b, y) : constant_default(isNaN(a) ? b : a);
+      return b - a ? exponential(a, b, y) : constant(isNaN(a) ? b : a);
     };
   }
   function nogamma(a, b) {
     var d = b - a;
-    return d ? linear(a, d) : constant_default(isNaN(a) ? b : a);
+    return d ? linear(a, d) : constant(isNaN(a) ? b : a);
   }
-  var init_color2 = __esm({
-    "node_modules/d3-interpolate/src/color.js"() {
-      init_constant();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/rgb.js
   function rgbSpline(spline) {
     return function(colors) {
       var n = colors.length, r = new Array(n), g = new Array(n), b = new Array(n), i, color2;
@@ -71468,35 +71527,7 @@ var Plotly = (() => {
       };
     };
   }
-  var rgb_default, rgbBasis, rgbBasisClosed;
-  var init_rgb = __esm({
-    "node_modules/d3-interpolate/src/rgb.js"() {
-      init_src();
-      init_basis();
-      init_basisClosed();
-      init_color2();
-      rgb_default = (function rgbGamma(y) {
-        var color2 = gamma(y);
-        function rgb2(start, end) {
-          var r = color2((start = rgb(start)).r, (end = rgb(end)).r), g = color2(start.g, end.g), b = color2(start.b, end.b), opacity = nogamma(start.opacity, end.opacity);
-          return function(t) {
-            start.r = r(t);
-            start.g = g(t);
-            start.b = b(t);
-            start.opacity = opacity(t);
-            return start + "";
-          };
-        }
-        rgb2.gamma = rgbGamma;
-        return rgb2;
-      })(1);
-      rgbBasis = rgbSpline(basis_default);
-      rgbBasisClosed = rgbSpline(basisClosed_default);
-    }
-  });
-
-  // node_modules/d3-interpolate/src/numberArray.js
-  function numberArray_default(a, b) {
+  function numberArray(a, b) {
     if (!b) b = [];
     var n = a ? Math.min(b.length, a.length) : 0, c = b.slice(), i;
     return function(t) {
@@ -71507,62 +71538,36 @@ var Plotly = (() => {
   function isNumberArray(x) {
     return ArrayBuffer.isView(x) && !(x instanceof DataView);
   }
-  var init_numberArray = __esm({
-    "node_modules/d3-interpolate/src/numberArray.js"() {
-    }
-  });
-
-  // node_modules/d3-interpolate/src/array.js
-  function array_default(a, b) {
-    return (isNumberArray(b) ? numberArray_default : genericArray)(a, b);
+  function array(a, b) {
+    return (isNumberArray(b) ? numberArray : genericArray)(a, b);
   }
   function genericArray(a, b) {
     var nb = b ? b.length : 0, na = a ? Math.min(nb, a.length) : 0, x = new Array(na), c = new Array(nb), i;
-    for (i = 0; i < na; ++i) x[i] = value_default(a[i], b[i]);
+    for (i = 0; i < na; ++i) x[i] = value(a[i], b[i]);
     for (; i < nb; ++i) c[i] = b[i];
     return function(t) {
       for (i = 0; i < na; ++i) c[i] = x[i](t);
       return c;
     };
   }
-  var init_array = __esm({
-    "node_modules/d3-interpolate/src/array.js"() {
-      init_value();
-      init_numberArray();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/date.js
-  function date_default(a, b) {
+  function date(a, b) {
     var d = /* @__PURE__ */ new Date();
     return a = +a, b = +b, function(t) {
       return d.setTime(a * (1 - t) + b * t), d;
     };
   }
-  var init_date = __esm({
-    "node_modules/d3-interpolate/src/date.js"() {
-    }
-  });
-
-  // node_modules/d3-interpolate/src/number.js
-  function number_default(a, b) {
+  function number(a, b) {
     return a = +a, b = +b, function(t) {
       return a * (1 - t) + b * t;
     };
   }
-  var init_number = __esm({
-    "node_modules/d3-interpolate/src/number.js"() {
-    }
-  });
-
-  // node_modules/d3-interpolate/src/object.js
-  function object_default(a, b) {
+  function object(a, b) {
     var i = {}, c = {}, k;
     if (a === null || typeof a !== "object") a = {};
     if (b === null || typeof b !== "object") b = {};
     for (k in b) {
       if (k in a) {
-        i[k] = value_default(a[k], b[k]);
+        i[k] = value(a[k], b[k]);
       } else {
         c[k] = b[k];
       }
@@ -71572,13 +71577,6 @@ var Plotly = (() => {
       return c;
     };
   }
-  var init_object = __esm({
-    "node_modules/d3-interpolate/src/object.js"() {
-      init_value();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/string.js
   function zero(b) {
     return function() {
       return b;
@@ -71589,7 +71587,7 @@ var Plotly = (() => {
       return b(t) + "";
     };
   }
-  function string_default(a, b) {
+  function string(a, b) {
     var bi = reA.lastIndex = reB.lastIndex = 0, am, bm, bs, i = -1, s = [], q = [];
     a = a + "", b = b + "";
     while ((am = reA.exec(a)) && (bm = reB.exec(b))) {
@@ -71603,7 +71601,7 @@ var Plotly = (() => {
         else s[++i] = bm;
       } else {
         s[++i] = null;
-        q.push({ i, x: number_default(am, bm) });
+        q.push({ i, x: number(am, bm) });
       }
       bi = reB.lastIndex;
     }
@@ -71617,73 +71615,29 @@ var Plotly = (() => {
       return s.join("");
     });
   }
-  var reA, reB;
-  var init_string = __esm({
-    "node_modules/d3-interpolate/src/string.js"() {
-      init_number();
-      reA = /[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?/g;
-      reB = new RegExp(reA.source, "g");
-    }
-  });
-
-  // node_modules/d3-interpolate/src/value.js
-  function value_default(a, b) {
+  function value(a, b) {
     var t = typeof b, c;
-    return b == null || t === "boolean" ? constant_default(b) : (t === "number" ? number_default : t === "string" ? (c = color(b)) ? (b = c, rgb_default) : string_default : b instanceof color ? rgb_default : b instanceof Date ? date_default : isNumberArray(b) ? numberArray_default : Array.isArray(b) ? genericArray : typeof b.valueOf !== "function" && typeof b.toString !== "function" || isNaN(b) ? object_default : number_default)(a, b);
+    return b == null || t === "boolean" ? constant(b) : (t === "number" ? number : t === "string" ? (c = color(b)) ? (b = c, rgb2) : string : b instanceof color ? rgb2 : b instanceof Date ? date : isNumberArray(b) ? numberArray : Array.isArray(b) ? genericArray : typeof b.valueOf !== "function" && typeof b.toString !== "function" || isNaN(b) ? object : number)(a, b);
   }
-  var init_value = __esm({
-    "node_modules/d3-interpolate/src/value.js"() {
-      init_src();
-      init_rgb();
-      init_array();
-      init_date();
-      init_number();
-      init_object();
-      init_string();
-      init_constant();
-      init_numberArray();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/discrete.js
-  function discrete_default(range) {
+  function discrete(range) {
     var n = range.length;
     return function(t) {
       return range[Math.max(0, Math.min(n - 1, Math.floor(t * n)))];
     };
   }
-  var init_discrete = __esm({
-    "node_modules/d3-interpolate/src/discrete.js"() {
-    }
-  });
-
-  // node_modules/d3-interpolate/src/hue.js
-  function hue_default(a, b) {
-    var i = hue(+a, +b);
+  function hue(a, b) {
+    var i = hue$1(+a, +b);
     return function(t) {
       var x = i(t);
       return x - 360 * Math.floor(x / 360);
     };
   }
-  var init_hue = __esm({
-    "node_modules/d3-interpolate/src/hue.js"() {
-      init_color2();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/round.js
-  function round_default(a, b) {
+  function round(a, b) {
     return a = +a, b = +b, function(t) {
       return Math.round(a * (1 - t) + b * t);
     };
   }
-  var init_round = __esm({
-    "node_modules/d3-interpolate/src/round.js"() {
-    }
-  });
-
-  // node_modules/d3-interpolate/src/transform/decompose.js
-  function decompose_default(a, b, c, d, e, f) {
+  function decompose(a, b, c, d, e, f) {
     var scaleX, scaleY, skewX;
     if (scaleX = Math.sqrt(a * a + b * b)) a /= scaleX, b /= scaleX;
     if (skewX = a * c + b * d) c -= a * skewX, d -= b * skewX;
@@ -71698,42 +71652,18 @@ var Plotly = (() => {
       scaleY
     };
   }
-  var degrees2, identity;
-  var init_decompose = __esm({
-    "node_modules/d3-interpolate/src/transform/decompose.js"() {
-      degrees2 = 180 / Math.PI;
-      identity = {
-        translateX: 0,
-        translateY: 0,
-        rotate: 0,
-        skewX: 0,
-        scaleX: 1,
-        scaleY: 1
-      };
-    }
-  });
-
-  // node_modules/d3-interpolate/src/transform/parse.js
-  function parseCss(value) {
-    const m = new (typeof DOMMatrix === "function" ? DOMMatrix : WebKitCSSMatrix)(value + "");
-    return m.isIdentity ? identity : decompose_default(m.a, m.b, m.c, m.d, m.e, m.f);
+  function parseCss(value2) {
+    const m = new (typeof DOMMatrix === "function" ? DOMMatrix : WebKitCSSMatrix)(value2 + "");
+    return m.isIdentity ? identity : decompose(m.a, m.b, m.c, m.d, m.e, m.f);
   }
-  function parseSvg(value) {
-    if (value == null) return identity;
+  function parseSvg(value2) {
+    if (value2 == null) return identity;
     if (!svgNode) svgNode = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    svgNode.setAttribute("transform", value);
-    if (!(value = svgNode.transform.baseVal.consolidate())) return identity;
-    value = value.matrix;
-    return decompose_default(value.a, value.b, value.c, value.d, value.e, value.f);
+    svgNode.setAttribute("transform", value2);
+    if (!(value2 = svgNode.transform.baseVal.consolidate())) return identity;
+    value2 = value2.matrix;
+    return decompose(value2.a, value2.b, value2.c, value2.d, value2.e, value2.f);
   }
-  var svgNode;
-  var init_parse = __esm({
-    "node_modules/d3-interpolate/src/transform/parse.js"() {
-      init_decompose();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/transform/index.js
   function interpolateTransform(parse, pxComma, pxParen, degParen) {
     function pop(s) {
       return s.length ? s.pop() + " " : "";
@@ -71741,7 +71671,7 @@ var Plotly = (() => {
     function translate(xa, ya, xb, yb, s, q) {
       if (xa !== xb || ya !== yb) {
         var i = s.push("translate(", null, pxComma, null, pxParen);
-        q.push({ i: i - 4, x: number_default(xa, xb) }, { i: i - 2, x: number_default(ya, yb) });
+        q.push({ i: i - 4, x: number(xa, xb) }, { i: i - 2, x: number(ya, yb) });
       } else if (xb || yb) {
         s.push("translate(" + xb + pxComma + yb + pxParen);
       }
@@ -71750,14 +71680,14 @@ var Plotly = (() => {
       if (a !== b) {
         if (a - b > 180) b += 360;
         else if (b - a > 180) a += 360;
-        q.push({ i: s.push(pop(s) + "rotate(", null, degParen) - 2, x: number_default(a, b) });
+        q.push({ i: s.push(pop(s) + "rotate(", null, degParen) - 2, x: number(a, b) });
       } else if (b) {
         s.push(pop(s) + "rotate(" + b + degParen);
       }
     }
     function skewX(a, b, s, q) {
       if (a !== b) {
-        q.push({ i: s.push(pop(s) + "skewX(", null, degParen) - 2, x: number_default(a, b) });
+        q.push({ i: s.push(pop(s) + "skewX(", null, degParen) - 2, x: number(a, b) });
       } else if (b) {
         s.push(pop(s) + "skewX(" + b + degParen);
       }
@@ -71765,7 +71695,7 @@ var Plotly = (() => {
     function scale(xa, ya, xb, yb, s, q) {
       if (xa !== xb || ya !== yb) {
         var i = s.push(pop(s) + "scale(", null, ",", null, ")");
-        q.push({ i: i - 4, x: number_default(xa, xb) }, { i: i - 2, x: number_default(ya, yb) });
+        q.push({ i: i - 4, x: number(xa, xb) }, { i: i - 2, x: number(ya, yb) });
       } else if (xb !== 1 || yb !== 1) {
         s.push(pop(s) + "scale(" + xb + "," + yb + ")");
       }
@@ -71785,17 +71715,6 @@ var Plotly = (() => {
       };
     };
   }
-  var interpolateTransformCss, interpolateTransformSvg;
-  var init_transform = __esm({
-    "node_modules/d3-interpolate/src/transform/index.js"() {
-      init_number();
-      init_parse();
-      interpolateTransformCss = interpolateTransform(parseCss, "px, ", "px)", "deg)");
-      interpolateTransformSvg = interpolateTransform(parseSvg, ", ", ")", ")");
-    }
-  });
-
-  // node_modules/d3-interpolate/src/zoom.js
   function cosh(x) {
     return ((x = Math.exp(x)) + 1 / x) / 2;
   }
@@ -71805,12 +71724,109 @@ var Plotly = (() => {
   function tanh(x) {
     return ((x = Math.exp(2 * x)) - 1) / (x + 1);
   }
-  var epsilon2, zoom_default;
-  var init_zoom = __esm({
-    "node_modules/d3-interpolate/src/zoom.js"() {
+  function hsl2(hue2) {
+    return function(start, end) {
+      var h = hue2((start = hsl(start)).h, (end = hsl(end)).h), s = nogamma(start.s, end.s), l = nogamma(start.l, end.l), opacity = nogamma(start.opacity, end.opacity);
+      return function(t) {
+        start.h = h(t);
+        start.s = s(t);
+        start.l = l(t);
+        start.opacity = opacity(t);
+        return start + "";
+      };
+    };
+  }
+  function lab2(start, end) {
+    var l = nogamma((start = lab(start)).l, (end = lab(end)).l), a = nogamma(start.a, end.a), b = nogamma(start.b, end.b), opacity = nogamma(start.opacity, end.opacity);
+    return function(t) {
+      start.l = l(t);
+      start.a = a(t);
+      start.b = b(t);
+      start.opacity = opacity(t);
+      return start + "";
+    };
+  }
+  function hcl2(hue2) {
+    return function(start, end) {
+      var h = hue2((start = hcl(start)).h, (end = hcl(end)).h), c = nogamma(start.c, end.c), l = nogamma(start.l, end.l), opacity = nogamma(start.opacity, end.opacity);
+      return function(t) {
+        start.h = h(t);
+        start.c = c(t);
+        start.l = l(t);
+        start.opacity = opacity(t);
+        return start + "";
+      };
+    };
+  }
+  function cubehelix2(hue2) {
+    return (function cubehelixGamma(y) {
+      y = +y;
+      function cubehelix3(start, end) {
+        var h = hue2((start = cubehelix(start)).h, (end = cubehelix(end)).h), s = nogamma(start.s, end.s), l = nogamma(start.l, end.l), opacity = nogamma(start.opacity, end.opacity);
+        return function(t) {
+          start.h = h(t);
+          start.s = s(t);
+          start.l = l(Math.pow(t, y));
+          start.opacity = opacity(t);
+          return start + "";
+        };
+      }
+      cubehelix3.gamma = cubehelixGamma;
+      return cubehelix3;
+    })(1);
+  }
+  function piecewise(interpolate, values) {
+    if (values === void 0) values = interpolate, interpolate = value;
+    var i = 0, n = values.length - 1, v = values[0], I = new Array(n < 0 ? 0 : n);
+    while (i < n) I[i] = interpolate(v, v = values[++i]);
+    return function(t) {
+      var i2 = Math.max(0, Math.min(n - 1, Math.floor(t *= n)));
+      return I[i2](t - i2);
+    };
+  }
+  function quantize(interpolator, n) {
+    var samples = new Array(n);
+    for (var i = 0; i < n; ++i) samples[i] = interpolator(i / (n - 1));
+    return samples;
+  }
+  var constant, rgb2, rgbBasis, rgbBasisClosed, reA, reB, degrees2, identity, svgNode, interpolateTransformCss, interpolateTransformSvg, epsilon2, zoom, hsl_default, hslLong, hcl_default, hclLong, cubehelix_default, cubehelixLong;
+  var init_d3_interpolate = __esm({
+    "node_modules/d3-interpolate/dist/d3-interpolate.mjs"() {
+      init_src();
+      constant = (x) => () => x;
+      rgb2 = (function rgbGamma(y) {
+        var color2 = gamma(y);
+        function rgb3(start, end) {
+          var r = color2((start = rgb(start)).r, (end = rgb(end)).r), g = color2(start.g, end.g), b = color2(start.b, end.b), opacity = nogamma(start.opacity, end.opacity);
+          return function(t) {
+            start.r = r(t);
+            start.g = g(t);
+            start.b = b(t);
+            start.opacity = opacity(t);
+            return start + "";
+          };
+        }
+        rgb3.gamma = rgbGamma;
+        return rgb3;
+      })(1);
+      rgbBasis = rgbSpline(basis$1);
+      rgbBasisClosed = rgbSpline(basisClosed);
+      reA = /[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?/g;
+      reB = new RegExp(reA.source, "g");
+      degrees2 = 180 / Math.PI;
+      identity = {
+        translateX: 0,
+        translateY: 0,
+        rotate: 0,
+        skewX: 0,
+        scaleX: 1,
+        scaleY: 1
+      };
+      interpolateTransformCss = interpolateTransform(parseCss, "px, ", "px)", "deg)");
+      interpolateTransformSvg = interpolateTransform(parseSvg, ", ", ")", ")");
       epsilon2 = 1e-12;
-      zoom_default = (function zoomRho(rho, rho2, rho4) {
-        function zoom(p0, p1) {
+      zoom = (function zoomRho(rho, rho2, rho4) {
+        function zoom2(p0, p1) {
           var ux0 = p0[0], uy0 = p0[1], w0 = p0[2], ux1 = p1[0], uy1 = p1[1], w1 = p1[2], dx = ux1 - ux0, dy = uy1 - uy0, d2 = dx * dx + dy * dy, i, S;
           if (d2 < epsilon2) {
             S = Math.log(w1 / w0) / rho;
@@ -71833,191 +71849,21 @@ var Plotly = (() => {
               ];
             };
           }
-          i.duration = S * 1e3 * rho / Math.SQRT2;
+          i.duration = Math.abs(S) * 1e3 * rho / Math.SQRT2;
           return i;
         }
-        zoom.rho = function(_) {
+        zoom2.rho = function(_) {
           var _1 = Math.max(1e-3, +_), _2 = _1 * _1, _4 = _2 * _2;
           return zoomRho(_1, _2, _4);
         };
-        return zoom;
+        return zoom2;
       })(Math.SQRT2, 2, 4);
-    }
-  });
-
-  // node_modules/d3-interpolate/src/hsl.js
-  function hsl2(hue2) {
-    return function(start, end) {
-      var h = hue2((start = hsl(start)).h, (end = hsl(end)).h), s = nogamma(start.s, end.s), l = nogamma(start.l, end.l), opacity = nogamma(start.opacity, end.opacity);
-      return function(t) {
-        start.h = h(t);
-        start.s = s(t);
-        start.l = l(t);
-        start.opacity = opacity(t);
-        return start + "";
-      };
-    };
-  }
-  var hsl_default, hslLong;
-  var init_hsl = __esm({
-    "node_modules/d3-interpolate/src/hsl.js"() {
-      init_src();
-      init_color2();
-      hsl_default = hsl2(hue);
+      hsl_default = hsl2(hue$1);
       hslLong = hsl2(nogamma);
-    }
-  });
-
-  // node_modules/d3-interpolate/src/lab.js
-  function lab2(start, end) {
-    var l = nogamma((start = lab(start)).l, (end = lab(end)).l), a = nogamma(start.a, end.a), b = nogamma(start.b, end.b), opacity = nogamma(start.opacity, end.opacity);
-    return function(t) {
-      start.l = l(t);
-      start.a = a(t);
-      start.b = b(t);
-      start.opacity = opacity(t);
-      return start + "";
-    };
-  }
-  var init_lab2 = __esm({
-    "node_modules/d3-interpolate/src/lab.js"() {
-      init_src();
-      init_color2();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/hcl.js
-  function hcl2(hue2) {
-    return function(start, end) {
-      var h = hue2((start = hcl(start)).h, (end = hcl(end)).h), c = nogamma(start.c, end.c), l = nogamma(start.l, end.l), opacity = nogamma(start.opacity, end.opacity);
-      return function(t) {
-        start.h = h(t);
-        start.c = c(t);
-        start.l = l(t);
-        start.opacity = opacity(t);
-        return start + "";
-      };
-    };
-  }
-  var hcl_default, hclLong;
-  var init_hcl = __esm({
-    "node_modules/d3-interpolate/src/hcl.js"() {
-      init_src();
-      init_color2();
-      hcl_default = hcl2(hue);
+      hcl_default = hcl2(hue$1);
       hclLong = hcl2(nogamma);
-    }
-  });
-
-  // node_modules/d3-interpolate/src/cubehelix.js
-  function cubehelix2(hue2) {
-    return (function cubehelixGamma(y) {
-      y = +y;
-      function cubehelix3(start, end) {
-        var h = hue2((start = cubehelix(start)).h, (end = cubehelix(end)).h), s = nogamma(start.s, end.s), l = nogamma(start.l, end.l), opacity = nogamma(start.opacity, end.opacity);
-        return function(t) {
-          start.h = h(t);
-          start.s = s(t);
-          start.l = l(Math.pow(t, y));
-          start.opacity = opacity(t);
-          return start + "";
-        };
-      }
-      cubehelix3.gamma = cubehelixGamma;
-      return cubehelix3;
-    })(1);
-  }
-  var cubehelix_default, cubehelixLong;
-  var init_cubehelix2 = __esm({
-    "node_modules/d3-interpolate/src/cubehelix.js"() {
-      init_src();
-      init_color2();
-      cubehelix_default = cubehelix2(hue);
+      cubehelix_default = cubehelix2(hue$1);
       cubehelixLong = cubehelix2(nogamma);
-    }
-  });
-
-  // node_modules/d3-interpolate/src/piecewise.js
-  function piecewise(interpolate, values) {
-    if (values === void 0) values = interpolate, interpolate = value_default;
-    var i = 0, n = values.length - 1, v = values[0], I = new Array(n < 0 ? 0 : n);
-    while (i < n) I[i] = interpolate(v, v = values[++i]);
-    return function(t) {
-      var i2 = Math.max(0, Math.min(n - 1, Math.floor(t *= n)));
-      return I[i2](t - i2);
-    };
-  }
-  var init_piecewise = __esm({
-    "node_modules/d3-interpolate/src/piecewise.js"() {
-      init_value();
-    }
-  });
-
-  // node_modules/d3-interpolate/src/quantize.js
-  function quantize_default(interpolator, n) {
-    var samples = new Array(n);
-    for (var i = 0; i < n; ++i) samples[i] = interpolator(i / (n - 1));
-    return samples;
-  }
-  var init_quantize = __esm({
-    "node_modules/d3-interpolate/src/quantize.js"() {
-    }
-  });
-
-  // node_modules/d3-interpolate/src/index.js
-  var src_exports = {};
-  __export(src_exports, {
-    interpolate: () => value_default,
-    interpolateArray: () => array_default,
-    interpolateBasis: () => basis_default,
-    interpolateBasisClosed: () => basisClosed_default,
-    interpolateCubehelix: () => cubehelix_default,
-    interpolateCubehelixLong: () => cubehelixLong,
-    interpolateDate: () => date_default,
-    interpolateDiscrete: () => discrete_default,
-    interpolateHcl: () => hcl_default,
-    interpolateHclLong: () => hclLong,
-    interpolateHsl: () => hsl_default,
-    interpolateHslLong: () => hslLong,
-    interpolateHue: () => hue_default,
-    interpolateLab: () => lab2,
-    interpolateNumber: () => number_default,
-    interpolateNumberArray: () => numberArray_default,
-    interpolateObject: () => object_default,
-    interpolateRgb: () => rgb_default,
-    interpolateRgbBasis: () => rgbBasis,
-    interpolateRgbBasisClosed: () => rgbBasisClosed,
-    interpolateRound: () => round_default,
-    interpolateString: () => string_default,
-    interpolateTransformCss: () => interpolateTransformCss,
-    interpolateTransformSvg: () => interpolateTransformSvg,
-    interpolateZoom: () => zoom_default,
-    piecewise: () => piecewise,
-    quantize: () => quantize_default
-  });
-  var init_src2 = __esm({
-    "node_modules/d3-interpolate/src/index.js"() {
-      init_value();
-      init_array();
-      init_basis();
-      init_basisClosed();
-      init_date();
-      init_discrete();
-      init_hue();
-      init_number();
-      init_numberArray();
-      init_object();
-      init_round();
-      init_string();
-      init_transform();
-      init_zoom();
-      init_rgb();
-      init_hsl();
-      init_lab2();
-      init_hcl();
-      init_cubehelix2();
-      init_piecewise();
-      init_quantize();
     }
   });
 
@@ -72026,8 +71872,8 @@ var Plotly = (() => {
     "src/traces/indicator/plot.js"(exports, module) {
       "use strict";
       var d3 = require_d3();
-      var interpolate = (init_src2(), __toCommonJS(src_exports)).interpolate;
-      var interpolateNumber = (init_src2(), __toCommonJS(src_exports)).interpolateNumber;
+      var interpolate = (init_d3_interpolate(), __toCommonJS(d3_interpolate_exports)).interpolate;
+      var interpolateNumber = (init_d3_interpolate(), __toCommonJS(d3_interpolate_exports)).interpolateNumber;
       var Lib = require_lib();
       var strScale = Lib.strScale;
       var strTranslate = Lib.strTranslate;
@@ -72469,13 +72315,13 @@ var Plotly = (() => {
           };
           var bignumberSuffix = trace.number.suffix;
           var bignumberPrefix = trace.number.prefix;
-          var number = numbers.select("text.number");
+          var number2 = numbers.select("text.number");
           function writeNumber() {
             var txt = typeof cd[0].y === "number" ? bignumberPrefix + bignumberFmt(cd[0].y) + bignumberSuffix : "-";
-            number.text(txt).call(Drawing.font, trace.number.font).call(svgTextUtils.convertToTspans, gd);
+            number2.text(txt).call(Drawing.font, trace.number.font).call(svgTextUtils.convertToTspans, gd);
           }
           if (hasTransition(transitionOpts)) {
-            number.transition().duration(transitionOpts.duration).ease(transitionOpts.easing).each("end", function() {
+            number2.transition().duration(transitionOpts.duration).ease(transitionOpts.easing).each("end", function() {
               writeNumber();
               onComplete && onComplete();
             }).each("interrupt", function() {
@@ -72494,7 +72340,7 @@ var Plotly = (() => {
             writeNumber();
           }
           bignumberbBox = measureText(bignumberPrefix + bignumberFmt(cd[0].y) + bignumberSuffix, trace.number.font, numbersAnchor, gd);
-          return number;
+          return number2;
         }
         function drawDelta() {
           var deltaAx = mockAxis(gd, { tickformat: trace.delta.valueformat }, trace._range);
@@ -72506,12 +72352,12 @@ var Plotly = (() => {
           var deltaSuffix = trace.delta.suffix;
           var deltaPrefix = trace.delta.prefix;
           var deltaValue = function(d) {
-            var value = trace.delta.relative ? d.relativeDelta : d.delta;
-            return value;
+            var value2 = trace.delta.relative ? d.relativeDelta : d.delta;
+            return value2;
           };
-          var deltaFormatText = function(value, numberFmt) {
-            if (value === 0 || typeof value !== "number" || isNaN(value)) return "-";
-            return (value > 0 ? trace.delta.increasing.symbol : trace.delta.decreasing.symbol) + deltaPrefix + numberFmt(value) + deltaSuffix;
+          var deltaFormatText = function(value2, numberFmt) {
+            if (value2 === 0 || typeof value2 !== "number" || isNaN(value2)) return "-";
+            return (value2 > 0 ? trace.delta.increasing.symbol : trace.delta.decreasing.symbol) + deltaPrefix + numberFmt(value2) + deltaSuffix;
           };
           var deltaFill = function(d) {
             return d.delta >= 0 ? trace.delta.increasing.color : trace.delta.decreasing.color;
@@ -72702,12 +72548,12 @@ var Plotly = (() => {
         sel.text(txt).attr("x", 0).attr("y", 0).attr("text-anchor", textAnchor).attr("data-unformatted", txt).call(svgTextUtils.convertToTspans, gd).call(Drawing.font, font);
         return Drawing.bBox(sel.node());
       }
-      function cache(trace, name4, initialValue, value, key, fn) {
+      function cache(trace, name4, initialValue, value2, key, fn) {
         var objName = "_cache" + name4;
         if (!(trace[objName] && trace[objName].key === key)) {
           trace[objName] = { key, value: initialValue };
         }
-        var v = Lib.aggNums(fn, null, [trace[objName].value, value], 2);
+        var v = Lib.aggNums(fn, null, [trace[objName].value, value2], 2);
         trace[objName].value = v;
         return v;
       }
@@ -74342,8 +74188,8 @@ var Plotly = (() => {
             @param digits {string[]} The substitute digits, for 0 through 9.
             @return {function} The substitution function. */
         substituteDigits: function(digits) {
-          return function(value) {
-            return (value + "").replace(/[0-9]/g, function(digit) {
+          return function(value2) {
+            return (value2 + "").replace(/[0-9]/g, function(digit) {
               return digits[digit];
             });
           };
@@ -74354,14 +74200,14 @@ var Plotly = (() => {
             @param powers {string[]} The characters denoting powers of 10, i.e. 1, 10, 100, 1000.
             @return {function} The substitution function. */
         substituteChineseDigits: function(digits, powers) {
-          return function(value) {
+          return function(value2) {
             var localNumber = "";
             var power = 0;
-            while (value > 0) {
-              var units = value % 10;
+            while (value2 > 0) {
+              var units = value2 % 10;
               localNumber = (units === 0 ? "" : digits[units] + powers[power]) + localNumber;
               power++;
-              value = Math.floor(value / 10);
+              value2 = Math.floor(value2 / 10);
             }
             if (localNumber.indexOf(digits[1] + powers[1]) === 0) {
               localNumber = localNumber.substr(1);
@@ -74379,9 +74225,9 @@ var Plotly = (() => {
           throw (_exports.local.invalidDate || _exports.regionalOptions[""].invalidDate).replace(/\{0\}/, this._calendar.local.name);
         }
       }
-      function pad(value, length) {
-        value = "" + value;
-        return "000000".substring(0, length - value.length) + value;
+      function pad(value2, length) {
+        value2 = "" + value2;
+        return "000000".substring(0, length - value2.length) + value2;
       }
       assign(CDate.prototype, {
         /** Create a new date.
@@ -74515,19 +74361,19 @@ var Plotly = (() => {
             @param period {string} One of 'y' for year, 'm' for month, 'd' for day.
             @return {CDate} The updated date.
             @throws Error if not a valid date. */
-        set: function(value, period) {
-          return this._calendar.set(this, value, period);
+        set: function(value2, period) {
+          return this._calendar.set(this, value2, period);
         },
         /** Compare this date to another date.
             @memberof CDate
             @param date {CDate} The other date.
             @return {number} -1 if this date is before the other date,
                     0 if they are equal, or +1 if this date is after the other date. */
-        compareTo: function(date) {
-          if (this._calendar.name !== date._calendar.name) {
-            throw (_exports.local.differentCalendars || _exports.regionalOptions[""].differentCalendars).replace(/\{0\}/, this._calendar.local.name).replace(/\{1\}/, date._calendar.local.name);
+        compareTo: function(date2) {
+          if (this._calendar.name !== date2._calendar.name) {
+            throw (_exports.local.differentCalendars || _exports.regionalOptions[""].differentCalendars).replace(/\{0\}/, this._calendar.local.name).replace(/\{1\}/, date2._calendar.local.name);
           }
-          var c = this._year !== date._year ? this._year - date._year : this._month !== date._month ? this.monthOfYear() - date.monthOfYear() : this._day - date._day;
+          var c = this._year !== date2._year ? this._year - date2._year : this._month !== date2._month ? this.monthOfYear() - date2.monthOfYear() : this._day - date2._day;
           return c === 0 ? 0 : c < 0 ? -1 : 1;
         },
         /** Retrieve the calendar backing this date.
@@ -74612,13 +74458,13 @@ var Plotly = (() => {
             @return {string} The current epoch.
             @throws Error if an invalid year or a different calendar used. */
         epoch: function(year) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             this.minMonth,
             this.minDay,
             _exports.local.invalidYear || _exports.regionalOptions[""].invalidYear
           );
-          return date.year() < 0 ? this.local.epochs[0] : this.local.epochs[1];
+          return date2.year() < 0 ? this.local.epochs[0] : this.local.epochs[1];
         },
         /** Format the year, if not a simple sequential number
             @memberof BaseCalendar
@@ -74626,13 +74472,13 @@ var Plotly = (() => {
             @return {string} The formatted year.
             @throws Error if an invalid year or a different calendar used. */
         formatYear: function(year) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             this.minMonth,
             this.minDay,
             _exports.local.invalidYear || _exports.regionalOptions[""].invalidYear
           );
-          return (date.year() < 0 ? "-" : "") + pad(Math.abs(date.year()), 4);
+          return (date2.year() < 0 ? "-" : "") + pad(Math.abs(date2.year()), 4);
         },
         /** Retrieve the number of months in a year.
             @memberof BaseCalendar
@@ -74656,13 +74502,13 @@ var Plotly = (() => {
             @return {number} The ordinal position, starting from <code>minMonth</code>.
             @throws Error if an invalid year/month or a different calendar used. */
         monthOfYear: function(year, month) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             month,
             this.minDay,
             _exports.local.invalidMonth || _exports.regionalOptions[""].invalidMonth
           );
-          return (date.month() + this.monthsInYear(date) - this.firstMonth) % this.monthsInYear(date) + this.minMonth;
+          return (date2.month() + this.monthsInYear(date2) - this.firstMonth) % this.monthsInYear(date2) + this.minMonth;
         },
         /** Calculate actual month from ordinal position, starting from minMonth.
             @memberof BaseCalendar
@@ -74686,13 +74532,13 @@ var Plotly = (() => {
             @return {number} The number of days.
             @throws Error if an invalid year or a different calendar used. */
         daysInYear: function(year) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             this.minMonth,
             this.minDay,
             _exports.local.invalidYear || _exports.regionalOptions[""].invalidYear
           );
-          return this.leapYear(date) ? 366 : 365;
+          return this.leapYear(date2) ? 366 : 365;
         },
         /** Retrieve the day of the year for a date.
             @memberof BaseCalendar
@@ -74702,15 +74548,15 @@ var Plotly = (() => {
             @return {number} The day of the year.
             @throws Error if an invalid date or a different calendar used. */
         dayOfYear: function(year, month, day) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             month,
             day,
             _exports.local.invalidDate || _exports.regionalOptions[""].invalidDate
           );
-          return date.toJD() - this.newDate(
-            date.year(),
-            this.fromMonthOfYear(date.year(), this.minMonth),
+          return date2.toJD() - this.newDate(
+            date2.year(),
+            this.fromMonthOfYear(date2.year(), this.minMonth),
             this.minDay
           ).toJD() + 1;
         },
@@ -74728,13 +74574,13 @@ var Plotly = (() => {
             @return {number} The day of the week: 0 to number of days - 1.
             @throws Error if an invalid date or a different calendar used. */
         dayOfWeek: function(year, month, day) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             month,
             day,
             _exports.local.invalidDate || _exports.regionalOptions[""].invalidDate
           );
-          return (Math.floor(this.toJD(date)) + 2) % this.daysInWeek();
+          return (Math.floor(this.toJD(date2)) + 2) % this.daysInWeek();
         },
         /** Retrieve additional information about a date.
             @memberof BaseCalendar
@@ -74760,14 +74606,14 @@ var Plotly = (() => {
             @param period {string} One of 'y' for year, 'm' for month, 'w' for week, 'd' for day.
             @return {CDate} The updated date.
             @throws Error if a different calendar used. */
-        add: function(date, offset, period) {
+        add: function(date2, offset, period) {
           this._validate(
-            date,
+            date2,
             this.minMonth,
             this.minDay,
             _exports.local.invalidDate || _exports.regionalOptions[""].invalidDate
           );
-          return this._correctAdd(date, this._add(date, offset, period), offset, period);
+          return this._correctAdd(date2, this._add(date2, offset, period), offset, period);
         },
         /** Add period(s) to a date.
             @memberof BaseCalendar
@@ -74776,18 +74622,18 @@ var Plotly = (() => {
             @param offset {number} The number of periods to adjust by.
             @param period {string} One of 'y' for year, 'm' for month, 'w' for week, 'd' for day.
             @return {CDate} The updated date. */
-        _add: function(date, offset, period) {
+        _add: function(date2, offset, period) {
           this._validateLevel++;
           if (period === "d" || period === "w") {
-            var jd = date.toJD() + offset * (period === "w" ? this.daysInWeek() : 1);
-            var d = date.calendar().fromJD(jd);
+            var jd = date2.toJD() + offset * (period === "w" ? this.daysInWeek() : 1);
+            var d = date2.calendar().fromJD(jd);
             this._validateLevel--;
             return [d.year(), d.month(), d.day()];
           }
           try {
-            var y = date.year() + (period === "y" ? offset : 0);
-            var m = date.monthOfYear() + (period === "m" ? offset : 0);
-            var d = date.day();
+            var y = date2.year() + (period === "y" ? offset : 0);
+            var m = date2.monthOfYear() + (period === "m" ? offset : 0);
+            var d = date2.day();
             var resyncYearMonth = function(calendar) {
               while (m < calendar.minMonth) {
                 y--;
@@ -74801,8 +74647,8 @@ var Plotly = (() => {
               }
             };
             if (period === "y") {
-              if (date.month() !== this.fromMonthOfYear(y, m)) {
-                m = this.newDate(y, date.month(), this.minDay).monthOfYear();
+              if (date2.month() !== this.fromMonthOfYear(y, m)) {
+                m = this.newDate(y, date2.month(), this.minDay).monthOfYear();
               }
               m = Math.min(m, this.monthsInYear(y));
               d = Math.min(d, this.daysInMonth(y, this.fromMonthOfYear(y, m)));
@@ -74827,10 +74673,10 @@ var Plotly = (() => {
             @param offset {number} The number of periods to adjust by.
             @param period {string} One of 'y' for year, 'm' for month, 'w' for week, 'd' for day.
             @return {CDate} The updated date. */
-        _correctAdd: function(date, ymd, offset, period) {
+        _correctAdd: function(date2, ymd, offset, period) {
           if (!this.hasYearZero && (period === "y" || period === "m")) {
             if (ymd[0] === 0 || // In year zero
-            date.year() > 0 !== ymd[0] > 0) {
+            date2.year() > 0 !== ymd[0] > 0) {
               var adj = {
                 y: [1, 1, "y"],
                 m: [1, this.monthsInYear(-1), "m"],
@@ -74838,10 +74684,10 @@ var Plotly = (() => {
                 d: [1, this.daysInYear(-1), "d"]
               }[period];
               var dir = offset < 0 ? -1 : 1;
-              ymd = this._add(date, offset * adj[0] + dir * adj[1], adj[2]);
+              ymd = this._add(date2, offset * adj[0] + dir * adj[1], adj[2]);
             }
           }
-          return date.date(ymd[0], ymd[1], ymd[2]);
+          return date2.date(ymd[0], ymd[1], ymd[2]);
         },
         /** Set a portion of the date.
             @memberof BaseCalendar
@@ -74850,20 +74696,20 @@ var Plotly = (() => {
             @param period {string} One of 'y' for year, 'm' for month, 'd' for day.
             @return {CDate} The updated date.
             @throws Error if an invalid date or a different calendar used. */
-        set: function(date, value, period) {
+        set: function(date2, value2, period) {
           this._validate(
-            date,
+            date2,
             this.minMonth,
             this.minDay,
             _exports.local.invalidDate || _exports.regionalOptions[""].invalidDate
           );
-          var y = period === "y" ? value : date.year();
-          var m = period === "m" ? value : date.month();
-          var d = period === "d" ? value : date.day();
+          var y = period === "y" ? value2 : date2.year();
+          var m = period === "m" ? value2 : date2.month();
+          var d = period === "d" ? value2 : date2.day();
           if (period === "y" || period === "m") {
             d = Math.min(d, this.daysInMonth(y, m));
           }
-          return date.date(y, m, d);
+          return date2.date(y, m, d);
         },
         /** Determine whether a date is valid for this calendar.
             @memberof BaseCalendar
@@ -74875,8 +74721,8 @@ var Plotly = (() => {
           this._validateLevel++;
           var valid = this.hasYearZero || year !== 0;
           if (valid) {
-            var date = this.newDate(year, month, this.minDay);
-            valid = month >= this.minMonth && month - this.minMonth < this.monthsInYear(date) && (day >= this.minDay && day - this.minDay < this.daysInMonth(date));
+            var date2 = this.newDate(year, month, this.minDay);
+            valid = month >= this.minMonth && month - this.minMonth < this.monthsInYear(date2) && (day >= this.minDay && day - this.minDay < this.daysInMonth(date2));
           }
           this._validateLevel--;
           return valid;
@@ -74889,13 +74735,13 @@ var Plotly = (() => {
             @return {Date} The equivalent JavaScript date.
             @throws Error if an invalid date or a different calendar used. */
         toJSDate: function(year, month, day) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             month,
             day,
             _exports.local.invalidDate || _exports.regionalOptions[""].invalidDate
           );
-          return _exports.instance().fromJD(this.toJD(date)).toJSDate();
+          return _exports.instance().fromJD(this.toJD(date2)).toJSDate();
         },
         /** Convert the date from a standard (Gregorian) JavaScript Date.
             @memberof BaseCalendar
@@ -74924,9 +74770,9 @@ var Plotly = (() => {
             if (this._validateLevel === 1 && !this.isValid(year, month, day)) {
               throw error.replace(/\{0\}/, this.local.name);
             }
-            var date = this.newDate(year, month, day);
+            var date2 = this.newDate(year, month, day);
             this._validateLevel--;
-            return date;
+            return date2;
           } catch (e) {
             this._validateLevel--;
             throw e;
@@ -75009,13 +74855,13 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             this.minMonth,
             this.minDay,
             _exports.local.invalidYear || _exports.regionalOptions[""].invalidYear
           );
-          var year = date.year() + (date.year() < 0 ? 1 : 0);
+          var year = date2.year() + (date2.year() < 0 ? 1 : 0);
           return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
         },
         /** Determine the week of the year for a date - ISO 8601.
@@ -75037,13 +74883,13 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             month,
             this.minDay,
             _exports.local.invalidMonth || _exports.regionalOptions[""].invalidMonth
           );
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 2 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof GregorianCalendar
@@ -75064,15 +74910,15 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             month,
             day,
             _exports.local.invalidDate || _exports.regionalOptions[""].invalidDate
           );
-          year = date.year();
-          month = date.month();
-          day = date.day();
+          year = date2.year();
+          month = date2.month();
+          day = date2.day();
           if (year < 0) {
             year++;
           }
@@ -75112,13 +74958,13 @@ var Plotly = (() => {
             @return {Date} The equivalent JavaScript date.
             @throws Error if an invalid date or a different calendar used. */
         toJSDate: function(year, month, day) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             month,
             day,
             _exports.local.invalidDate || _exports.regionalOptions[""].invalidDate
           );
-          var jsd = new Date(date.year(), date.month() - 1, date.day());
+          var jsd = new Date(date2.year(), date2.month() - 1, date2.day());
           jsd.setHours(0);
           jsd.setMinutes(0);
           jsd.setSeconds(0);
@@ -75270,16 +75116,16 @@ var Plotly = (() => {
                       <code>false</code> to use normal Arabic numerals.
             @return {string} The date in the above format.
             @throws Errors if the date is from a different calendar. */
-        formatDate: function(format, date, settings) {
+        formatDate: function(format, date2, settings) {
           if (typeof format !== "string") {
-            settings = date;
-            date = format;
+            settings = date2;
+            date2 = format;
             format = "";
           }
-          if (!date) {
+          if (!date2) {
             return "";
           }
-          if (date.calendar() !== this) {
+          if (date2.calendar() !== this) {
             throw main.local.invalidFormat || main.regionalOptions[""].invalidFormat;
           }
           format = format || this.local.dateFormat;
@@ -75298,8 +75144,8 @@ var Plotly = (() => {
             iFormat += matches - 1;
             return Math.floor(matches / (step || 1)) > 1;
           };
-          var formatNumber = function(match, value, len, step) {
-            var num = "" + value;
+          var formatNumber = function(match, value2, len, step) {
+            var num = "" + value2;
             if (doubled(match, step)) {
               while (num.length < len) {
                 num = "0" + num;
@@ -75307,23 +75153,23 @@ var Plotly = (() => {
             }
             return num;
           };
-          var formatName = function(match, value, shortNames, longNames) {
-            return doubled(match) ? longNames[value] : shortNames[value];
+          var formatName = function(match, value2, shortNames, longNames) {
+            return doubled(match) ? longNames[value2] : shortNames[value2];
           };
           var calendar = this;
-          var formatMonth = function(date2) {
-            return typeof monthNumbers === "function" ? monthNumbers.call(calendar, date2, doubled("m")) : localiseNumbers(formatNumber("m", date2.month(), 2));
+          var formatMonth = function(date3) {
+            return typeof monthNumbers === "function" ? monthNumbers.call(calendar, date3, doubled("m")) : localiseNumbers(formatNumber("m", date3.month(), 2));
           };
-          var formatMonthName = function(date2, useLongName) {
+          var formatMonthName = function(date3, useLongName) {
             if (useLongName) {
-              return typeof monthNames === "function" ? monthNames.call(calendar, date2) : monthNames[date2.month() - calendar.minMonth];
+              return typeof monthNames === "function" ? monthNames.call(calendar, date3) : monthNames[date3.month() - calendar.minMonth];
             } else {
-              return typeof monthNamesShort === "function" ? monthNamesShort.call(calendar, date2) : monthNamesShort[date2.month() - calendar.minMonth];
+              return typeof monthNamesShort === "function" ? monthNamesShort.call(calendar, date3) : monthNamesShort[date3.month() - calendar.minMonth];
             }
           };
           var digits = this.local.digits;
-          var localiseNumbers = function(value) {
-            return settings.localNumbers && digits ? digits(value) : value;
+          var localiseNumbers = function(value2) {
+            return settings.localNumbers && digits ? digits(value2) : value2;
           };
           var output = "";
           var literal = false;
@@ -75337,43 +75183,43 @@ var Plotly = (() => {
             } else {
               switch (format.charAt(iFormat)) {
                 case "d":
-                  output += localiseNumbers(formatNumber("d", date.day(), 2));
+                  output += localiseNumbers(formatNumber("d", date2.day(), 2));
                   break;
                 case "D":
                   output += formatName(
                     "D",
-                    date.dayOfWeek(),
+                    date2.dayOfWeek(),
                     dayNamesShort,
                     dayNames
                   );
                   break;
                 case "o":
-                  output += formatNumber("o", date.dayOfYear(), 3);
+                  output += formatNumber("o", date2.dayOfYear(), 3);
                   break;
                 case "w":
-                  output += formatNumber("w", date.weekOfYear(), 2);
+                  output += formatNumber("w", date2.weekOfYear(), 2);
                   break;
                 case "m":
-                  output += formatMonth(date);
+                  output += formatMonth(date2);
                   break;
                 case "M":
-                  output += formatMonthName(date, doubled("M"));
+                  output += formatMonthName(date2, doubled("M"));
                   break;
                 case "y":
-                  output += doubled("y", 2) ? date.year() : (date.year() % 100 < 10 ? "0" : "") + date.year() % 100;
+                  output += doubled("y", 2) ? date2.year() : (date2.year() % 100 < 10 ? "0" : "") + date2.year() % 100;
                   break;
                 case "Y":
                   doubled("Y", 2);
-                  output += date.formatYear();
+                  output += date2.formatYear();
                   break;
                 case "J":
-                  output += date.toJD();
+                  output += date2.toJD();
                   break;
                 case "@":
-                  output += (date.toJD() - this.UNIX_EPOCH) * this.SECS_PER_DAY;
+                  output += (date2.toJD() - this.UNIX_EPOCH) * this.SECS_PER_DAY;
                   break;
                 case "!":
-                  output += (date.toJD() - this.TICKS_EPOCH) * this.TICKS_PER_DAY;
+                  output += (date2.toJD() - this.TICKS_EPOCH) * this.TICKS_PER_DAY;
                   break;
                 case "'":
                   if (doubled("'")) {
@@ -75407,12 +75253,12 @@ var Plotly = (() => {
             @return {CDate} The extracted date value or <code>null</code> if value is blank.
             @throws Errors if the format and/or value are missing,
                     if the value doesn't match the format, or if the date is invalid. */
-        parseDate: function(format, value, settings) {
-          if (value == null) {
+        parseDate: function(format, value2, settings) {
+          if (value2 == null) {
             throw main.local.invalidArguments || main.regionalOptions[""].invalidArguments;
           }
-          value = typeof value === "object" ? value.toString() : value + "";
-          if (value === "") {
+          value2 = typeof value2 === "object" ? value2.toString() : value2 + "";
+          if (value2 === "") {
             return null;
           }
           format = format || this.local.dateFormat;
@@ -75444,7 +75290,7 @@ var Plotly = (() => {
             var isDoubled = doubled(match, step);
             var size = [2, 3, isDoubled ? 4 : 2, isDoubled ? 4 : 2, 10, 11, 20]["oyYJ@!".indexOf(match) + 1];
             var digits = new RegExp("^-?\\d{1," + size + "}");
-            var num = value.substring(iValue).match(digits);
+            var num = value2.substring(iValue).match(digits);
             if (!num) {
               throw (main.local.missingNumberAt || main.regionalOptions[""].missingNumberAt).replace(/\{0\}/, iValue);
             }
@@ -75455,7 +75301,7 @@ var Plotly = (() => {
           var getMonthNumber = function() {
             if (typeof monthNumbers === "function") {
               doubled("m");
-              var month2 = monthNumbers.call(calendar, value.substring(iValue));
+              var month2 = monthNumbers.call(calendar, value2.substring(iValue));
               iValue += month2.length;
               return month2;
             }
@@ -75464,7 +75310,7 @@ var Plotly = (() => {
           var getName = function(match, shortNames, longNames, step) {
             var names = doubled(match, step) ? longNames : shortNames;
             for (var i = 0; i < names.length; i++) {
-              if (value.substr(iValue, names[i].length).toLowerCase() === names[i].toLowerCase()) {
+              if (value2.substr(iValue, names[i].length).toLowerCase() === names[i].toLowerCase()) {
                 iValue += names[i].length;
                 return i + calendar.minMonth;
               }
@@ -75473,14 +75319,14 @@ var Plotly = (() => {
           };
           var getMonthName = function() {
             if (typeof monthNames === "function") {
-              var month2 = doubled("M") ? monthNames.call(calendar, value.substring(iValue)) : monthNamesShort.call(calendar, value.substring(iValue));
+              var month2 = doubled("M") ? monthNames.call(calendar, value2.substring(iValue)) : monthNamesShort.call(calendar, value2.substring(iValue));
               iValue += month2.length;
               return month2;
             }
             return getName("M", monthNamesShort, monthNames);
           };
           var checkLiteral = function() {
-            if (value.charAt(iValue) !== format.charAt(iFormat)) {
+            if (value2.charAt(iValue) !== format.charAt(iFormat)) {
               throw (main.local.unexpectedLiteralAt || main.regionalOptions[""].unexpectedLiteralAt).replace(/\{0\}/, iValue);
             }
             iValue++;
@@ -75524,7 +75370,7 @@ var Plotly = (() => {
                   break;
                 case "J":
                   jd = getNumber("J") + 0.5;
-                  if (value.charAt(iValue) === ".") {
+                  if (value2.charAt(iValue) === ".") {
                     iValue++;
                     getNumber("J");
                   }
@@ -75536,7 +75382,7 @@ var Plotly = (() => {
                   jd = getNumber("!") / this.TICKS_PER_DAY + this.TICKS_EPOCH;
                   break;
                 case "*":
-                  iValue = value.length;
+                  iValue = value2.length;
                   break;
                 case "'":
                   if (doubled("'")) {
@@ -75550,7 +75396,7 @@ var Plotly = (() => {
               }
             }
           }
-          if (iValue < value.length) {
+          if (iValue < value2.length) {
             throw main.local.unexpectedText || main.regionalOptions[""].unexpectedText;
           }
           if (year === -1) {
@@ -75604,14 +75450,14 @@ var Plotly = (() => {
             } catch (e) {
             }
             offset = offset.toLowerCase();
-            var date = (offset.match(/^c/) && currentDate ? currentDate.newDate() : null) || calendar.today();
+            var date2 = (offset.match(/^c/) && currentDate ? currentDate.newDate() : null) || calendar.today();
             var pattern = /([+-]?[0-9]+)\s*(d|w|m|y)?/g;
             var matches = pattern.exec(offset);
             while (matches) {
-              date.add(parseInt(matches[1], 10), matches[2] || "d");
+              date2.add(parseInt(matches[1], 10), matches[2] || "d");
               matches = pattern.exec(offset);
             }
-            return date;
+            return date2;
           };
           defaultDate = defaultDate ? defaultDate.newDate() : null;
           dateSpec = dateSpec == null ? defaultDate : typeof dateSpec === "string" ? offsetString(dateSpec) : typeof dateSpec === "number" ? isNaN(dateSpec) || dateSpec === Infinity || dateSpec === -Infinity ? defaultDate : calendar.today().add(dateSpec, "d") : calendar.newDate(dateSpec);
@@ -75672,13 +75518,13 @@ var Plotly = (() => {
           "": {
             name: "Chinese",
             epochs: ["BEC", "EC"],
-            monthNumbers: function(date, padded) {
-              if (typeof date === "string") {
-                var match = date.match(MONTH_NUMBER_REGEXP);
+            monthNumbers: function(date2, padded) {
+              if (typeof date2 === "string") {
+                var match = date2.match(MONTH_NUMBER_REGEXP);
                 return match ? match[0] : "";
               }
-              var year = this._validateYear(date);
-              var monthIndex = date.month();
+              var year = this._validateYear(date2);
+              var monthIndex = date2.month();
               var month = "" + this.toChineseMonth(year, monthIndex);
               if (padded && month.length < 2) {
                 month = "0" + month;
@@ -75688,13 +75534,13 @@ var Plotly = (() => {
               }
               return month;
             },
-            monthNames: function(date) {
-              if (typeof date === "string") {
-                var match = date.match(MONTH_NAME_REGEXP);
+            monthNames: function(date2) {
+              if (typeof date2 === "string") {
+                var match = date2.match(MONTH_NAME_REGEXP);
                 return match ? match[0] : "";
               }
-              var year = this._validateYear(date);
-              var monthIndex = date.month();
+              var year = this._validateYear(date2);
+              var monthIndex = date2.month();
               var month = this.toChineseMonth(year, monthIndex);
               var monthName = [
                 "\u4E00\u6708",
@@ -75715,13 +75561,13 @@ var Plotly = (() => {
               }
               return monthName;
             },
-            monthNamesShort: function(date) {
-              if (typeof date === "string") {
-                var match = date.match(MONTH_SHORT_NAME_REGEXP);
+            monthNamesShort: function(date2) {
+              if (typeof date2 === "string") {
+                var match = date2.match(MONTH_SHORT_NAME_REGEXP);
                 return match ? match[0] : "";
               }
-              var year = this._validateYear(date);
-              var monthIndex = date.month();
+              var year = this._validateYear(date2);
+              var monthIndex = date2.month();
               var month = this.toChineseMonth(year, monthIndex);
               var monthName = [
                 "\u4E00",
@@ -75949,10 +75795,10 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, monthIndex, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = this._validateYear(date.year());
-          monthIndex = date.month();
-          day = date.day();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = this._validateYear(date2.year());
+          monthIndex = date2.month();
+          day = date2.day();
           var isIntercalary = this.isIntercalaryMonth(year, monthIndex);
           var month = this.toChineseMonth(year, monthIndex);
           var solar = toSolar(year, month, day, isIntercalary);
@@ -75963,8 +75809,8 @@ var Plotly = (() => {
             @param jd {number} The Julian date to convert.
             @return {CDate} The equivalent date. */
         fromJD: function(jd) {
-          var date = gregorianCalendar.fromJD(jd);
-          var lunar = toLunar(date.year(), date.month(), date.day());
+          var date2 = gregorianCalendar.fromJD(jd);
+          var lunar = toLunar(date2.year(), date2.month(), date2.day());
           var monthIndex = this.toMonthIndex(
             lunar.year,
             lunar.month,
@@ -75994,12 +75840,12 @@ var Plotly = (() => {
             @param period {string} One of 'y' for year, 'm' for month, 'w' for week, 'd' for day.
             @return {CDate} The updated date.
             @throws Error if a different calendar used. */
-        add: function(date, offset, period) {
-          var year = date.year();
-          var monthIndex = date.month();
+        add: function(date2, offset, period) {
+          var year = date2.year();
+          var monthIndex = date2.month();
           var isIntercalary = this.isIntercalaryMonth(year, monthIndex);
           var month = this.toChineseMonth(year, monthIndex);
-          var cdate = Object.getPrototypeOf(ChineseCalendar.prototype).add.call(this, date, offset, period);
+          var cdate = Object.getPrototypeOf(ChineseCalendar.prototype).add.call(this, date2, offset, period);
           if (period === "y") {
             var resultYear = cdate.year();
             var resultMonthIndex = cdate.month();
@@ -76688,8 +76534,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          var year = date.year() + (date.year() < 0 ? 1 : 0);
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          var year = date2.year() + (date2.year() < 0 ? 1 : 0);
           return year % 4 === 3 || year % 4 === -1;
         },
         /** Retrieve the number of months in a year.
@@ -76725,8 +76571,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 13 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 13 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof CopticCalendar
@@ -76747,12 +76593,12 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = date.year();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = date2.year();
           if (year < 0) {
             year++;
           }
-          return date.day() + (date.month() - 1) * 30 + (year - 1) * 365 + Math.floor(year / 4) + this.jdEpoch - 1;
+          return date2.day() + (date2.month() - 1) * 30 + (year - 1) * 365 + Math.floor(year / 4) + this.jdEpoch - 1;
         },
         /** Create a new date from a Julian date.
             @memberof CopticCalendar
@@ -76896,8 +76742,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1];
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1];
         },
         /** Retrieve the number of days in a week.
             @memberof DiscworldCalendar
@@ -76913,8 +76759,8 @@ var Plotly = (() => {
             @return {number} The day of the week: 0 to number of days - 1.
             @throws Error if an invalid date or a different calendar used. */
         dayOfWeek: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          return (date.day() + 1) % 8;
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          return (date2.day() + 1) % 8;
         },
         /** Determine whether this date is a week day.
             @memberof DiscworldCalendar
@@ -76935,8 +76781,8 @@ var Plotly = (() => {
             @return {object} Additional information - contents depends on calendar.
             @throws Error if an invalid date or a different calendar used. */
         extraInfo: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          return { century: centuries[Math.floor((date.year() - 1) / 100) + 1] || "" };
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          return { century: centuries[Math.floor((date2.year() - 1) / 100) + 1] || "" };
         },
         /** Retrieve the Julian date equivalent for this date,
             i.e. days since January 1, 4713 BCE Greenwich noon.
@@ -76947,10 +76793,10 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = date.year() + (date.year() < 0 ? 1 : 0);
-          month = date.month();
-          day = date.day();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = date2.year() + (date2.year() < 0 ? 1 : 0);
+          month = date2.month();
+          day = date2.day();
           return day + (month > 1 ? 16 : 0) + (month > 2 ? (month - 2) * 32 : 0) + (year - 1) * 400 + this.jdEpoch - 1;
         },
         /** Create a new date from a Julian date.
@@ -77071,8 +76917,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          var year = date.year() + (date.year() < 0 ? 1 : 0);
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          var year = date2.year() + (date2.year() < 0 ? 1 : 0);
           return year % 4 === 3 || year % 4 === -1;
         },
         /** Retrieve the number of months in a year.
@@ -77108,8 +76954,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 13 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 13 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof EthiopianCalendar
@@ -77130,12 +76976,12 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = date.year();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = date2.year();
           if (year < 0) {
             year++;
           }
-          return date.day() + (date.month() - 1) * 30 + (year - 1) * 365 + Math.floor(year / 4) + this.jdEpoch - 1;
+          return date2.day() + (date2.month() - 1) * 30 + (year - 1) * 365 + Math.floor(year / 4) + this.jdEpoch - 1;
         },
         /** Create a new date from a Julian date.
             @memberof EthiopianCalendar
@@ -77239,8 +77085,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return this._leapYear(date.year());
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          return this._leapYear(date2.year());
         },
         /** Determine whether this date is in a leap year.
             @memberof HebrewCalendar
@@ -77279,8 +77125,8 @@ var Plotly = (() => {
             @return {number} The number of days.
             @throws Error if an invalid year or a different calendar used. */
         daysInYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          year = date.year();
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          year = date2.year();
           return this.toJD(year === -1 ? 1 : year + 1, 7, 1) - this.toJD(year, 7, 1);
         },
         /** Retrieve the number of days in a month.
@@ -77324,8 +77170,8 @@ var Plotly = (() => {
             @return {object} Additional information - contents depends on calendar.
             @throws Error if an invalid date or a different calendar used. */
         extraInfo: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          return { yearType: (this.leapYear(date) ? "embolismic" : "common") + " " + ["deficient", "regular", "complete"][this.daysInYear(date) % 10 - 3] };
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          return { yearType: (this.leapYear(date2) ? "embolismic" : "common") + " " + ["deficient", "regular", "complete"][this.daysInYear(date2) % 10 - 3] };
         },
         /** Retrieve the Julian date equivalent for this date,
             i.e. days since January 1, 4713 BCE Greenwich noon.
@@ -77336,10 +77182,10 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = date.year();
-          month = date.month();
-          day = date.day();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = date2.year();
+          month = date2.month();
+          day = date2.day();
           var adjYear = year <= 0 ? year + 1 : year;
           var jd = this.jdEpoch + this._delay1(adjYear) + this._delay2(adjYear) + day + 1;
           if (month < 7) {
@@ -77496,8 +77342,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return (date.year() * 11 + 14) % 30 < 11;
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          return (date2.year() * 11 + 14) % 30 < 11;
         },
         /** Determine the week of the year for a date.
             @memberof IslamicCalendar
@@ -77526,8 +77372,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 12 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof IslamicCalendar
@@ -77548,10 +77394,10 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = date.year();
-          month = date.month();
-          day = date.day();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = date2.year();
+          month = date2.month();
+          day = date2.day();
           year = year <= 0 ? year + 1 : year;
           return day + Math.ceil(29.5 * (month - 1)) + (year - 1) * 354 + Math.floor((3 + 11 * year) / 30) + this.jdEpoch - 1;
         },
@@ -77653,8 +77499,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          var year = date.year() < 0 ? date.year() + 1 : date.year();
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          var year = date2.year() < 0 ? date2.year() + 1 : date2.year();
           return year % 4 === 0;
         },
         /** Determine the week of the year for a date - ISO 8601.
@@ -77676,8 +77522,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 2 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof JulianCalendar
@@ -77698,10 +77544,10 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = date.year();
-          month = date.month();
-          day = date.day();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = date2.year();
+          month = date2.month();
+          day = date2.day();
           if (year < 0) {
             year++;
           }
@@ -77954,8 +77800,8 @@ var Plotly = (() => {
             @return {string} The formatted year.
             @throws Error if an invalid year or a different calendar used. */
         formatYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          year = date.year();
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          year = date2.year();
           var baktun = Math.floor(year / 400);
           year = year % 400;
           year += year < 0 ? 400 : 0;
@@ -78035,8 +77881,8 @@ var Plotly = (() => {
             @return {number} The day of the week: 0 to number of days - 1.
             @throws Error if an invalid date or a different calendar used. */
         dayOfWeek: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          return date.day();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          return date2.day();
         },
         /** Determine whether this date is a week day.
             @memberof MayanCalendar
@@ -78057,8 +77903,8 @@ var Plotly = (() => {
             @return {object} Additional information - contents depends on calendar.
             @throws Error if an invalid date or a different calendar used. */
         extraInfo: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          var jd = date.toJD();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          var jd = date2.toJD();
           var haab = this._toHaab(jd);
           var tzolkin = this._toTzolkin(jd);
           return {
@@ -78098,8 +77944,8 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          return date.day() + date.month() * 20 + date.year() * 360 + this.jdEpoch;
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          return date2.day() + date2.month() * 20 + date2.year() * 360 + this.jdEpoch;
         },
         /** Create a new date from a Julian date.
             @memberof MayanCalendar
@@ -78207,13 +78053,13 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(
+          var date2 = this._validate(
             year,
             this.minMonth,
             this.minDay,
             main.local.invalidYear || main.regionalOptions[""].invalidYear
           );
-          return gregorian.leapYear(date.year() + (date.year() < 1 ? 1 : 0) + 1469);
+          return gregorian.leapYear(date2.year() + (date2.year() < 1 ? 1 : 0) + 1469);
         },
         /** Determine the week of the year for a date.
             @memberof NanakshahiCalendar
@@ -78234,8 +78080,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 12 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof NanakshahiCalendar
@@ -78256,13 +78102,13 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidMonth);
-          var year = date.year();
+          var date2 = this._validate(year, month, day, main.local.invalidMonth);
+          var year = date2.year();
           if (year < 0) {
             year++;
           }
-          var doy = date.day();
-          for (var m = 1; m < date.month(); m++) {
+          var doy = date2.day();
+          for (var m = 1; m < date2.month(); m++) {
             doy += this.daysPerMonth[m - 1];
           }
           return doy + gregorian.toJD(year + 1468, 3, 13);
@@ -78394,8 +78240,8 @@ var Plotly = (() => {
             @return {number} The number of days.
             @throws Error if an invalid year or a different calendar used. */
         daysInYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          year = date.year();
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          year = date2.year();
           if (typeof this.NEPALI_CALENDAR_DATA[year] === "undefined") {
             return this.daysPerYear;
           }
@@ -78438,10 +78284,10 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(nepaliYear, nepaliMonth, nepaliDay) {
-          var date = this._validate(nepaliYear, nepaliMonth, nepaliDay, main.local.invalidDate);
-          nepaliYear = date.year();
-          nepaliMonth = date.month();
-          nepaliDay = date.day();
+          var date2 = this._validate(nepaliYear, nepaliMonth, nepaliDay, main.local.invalidDate);
+          nepaliYear = date2.year();
+          nepaliMonth = date2.month();
+          nepaliDay = date2.day();
           var gregorianCalendar = main.instance();
           var gregorianDayOfYear = 0;
           var nepaliMonthToCheck = nepaliMonth;
@@ -78740,8 +78586,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return _leapYear(date.year());
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          return _leapYear(date2.year());
         },
         /** Determine the week of the year for a date.
             @memberof PersianCalendar
@@ -78762,8 +78608,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 12 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof PersianCalendar
@@ -78784,10 +78630,10 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          year = date.year();
-          month = date.month();
-          day = date.day();
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          year = date2.year();
+          month = date2.month();
+          day = date2.day();
           var nLeapYearsSince = 0;
           if (year > 0) {
             for (var i = 1; i < year; i++) {
@@ -78909,8 +78755,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          var year = this._t2gYear(date.year());
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          var year = this._t2gYear(date2.year());
           return gregorianCalendar.leapYear(year);
         },
         /** Determine the week of the year for a date - ISO 8601.
@@ -78921,9 +78767,9 @@ var Plotly = (() => {
             @return {number} The week of the year.
             @throws Error if an invalid date or a different calendar used. */
         weekOfYear: function(year, month, day) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          var year = this._t2gYear(date.year());
-          return gregorianCalendar.weekOfYear(year, date.month(), date.day());
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          var year = this._t2gYear(date2.year());
+          return gregorianCalendar.weekOfYear(year, date2.month(), date2.day());
         },
         /** Retrieve the number of days in a month.
             @memberof TaiwanCalendar
@@ -78932,8 +78778,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 2 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof TaiwanCalendar
@@ -78954,18 +78800,18 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          var year = this._t2gYear(date.year());
-          return gregorianCalendar.toJD(year, date.month(), date.day());
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          var year = this._t2gYear(date2.year());
+          return gregorianCalendar.toJD(year, date2.month(), date2.day());
         },
         /** Create a new date from a Julian date.
             @memberof TaiwanCalendar
             @param jd {number} The Julian date to convert.
             @return {CDate} The equivalent date. */
         fromJD: function(jd) {
-          var date = gregorianCalendar.fromJD(jd);
-          var year = this._g2tYear(date.year());
-          return this.newDate(year, date.month(), date.day());
+          var date2 = gregorianCalendar.fromJD(jd);
+          var year = this._g2tYear(date2.year());
+          return this.newDate(year, date2.month(), date2.day());
         },
         /** Convert Taiwanese to Gregorian year.
             @memberof TaiwanCalendar
@@ -79073,8 +78919,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          var year = this._t2gYear(date.year());
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          var year = this._t2gYear(date2.year());
           return gregorianCalendar.leapYear(year);
         },
         /** Determine the week of the year for a date - ISO 8601.
@@ -79085,9 +78931,9 @@ var Plotly = (() => {
             @return {number} The week of the year.
             @throws Error if an invalid date or a different calendar used. */
         weekOfYear: function(year, month, day) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          var year = this._t2gYear(date.year());
-          return gregorianCalendar.weekOfYear(year, date.month(), date.day());
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          var year = this._t2gYear(date2.year());
+          return gregorianCalendar.weekOfYear(year, date2.month(), date2.day());
         },
         /** Retrieve the number of days in a month.
             @memberof ThaiCalendar
@@ -79096,8 +78942,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          return this.daysPerMonth[date2.month() - 1] + (date2.month() === 2 && this.leapYear(date2.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof ThaiCalendar
@@ -79118,18 +78964,18 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          var year = this._t2gYear(date.year());
-          return gregorianCalendar.toJD(year, date.month(), date.day());
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          var year = this._t2gYear(date2.year());
+          return gregorianCalendar.toJD(year, date2.month(), date2.day());
         },
         /** Create a new date from a Julian date.
             @memberof ThaiCalendar
             @param jd {number} The Julian date to convert.
             @return {CDate} The equivalent date. */
         fromJD: function(jd) {
-          var date = gregorianCalendar.fromJD(jd);
-          var year = this._g2tYear(date.year());
-          return this.newDate(year, date.month(), date.day());
+          var date2 = gregorianCalendar.fromJD(jd);
+          var year = this._g2tYear(date2.year());
+          return this.newDate(year, date2.month(), date2.day());
         },
         /** Convert Thai to Gregorian year.
             @memberof ThaiCalendar
@@ -79228,8 +79074,8 @@ var Plotly = (() => {
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
-          var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return this.daysInYear(date.year()) === 355;
+          var date2 = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
+          return this.daysInYear(date2.year()) === 355;
         },
         /** Determine the week of the year for a date.
             @memberof UmmAlQuraCalendar
@@ -79262,8 +79108,8 @@ var Plotly = (() => {
             @return {number} The number of days in this month.
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
-          var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          var mcjdn = date.toJD() - 24e5 + 0.5;
+          var date2 = this._validate(year, month, this.minDay, main.local.invalidMonth);
+          var mcjdn = date2.toJD() - 24e5 + 0.5;
           var index = 0;
           for (var i = 0; i < ummalqura_dat.length; i++) {
             if (ummalqura_dat[i] > mcjdn) {
@@ -79292,9 +79138,9 @@ var Plotly = (() => {
             @return {number} The equivalent Julian date.
             @throws Error if an invalid date or a different calendar used. */
         toJD: function(year, month, day) {
-          var date = this._validate(year, month, day, main.local.invalidDate);
-          var index = 12 * (date.year() - 1) + date.month() - 15292;
-          var mcjdn = date.day() + ummalqura_dat[index - 1] - 1;
+          var date2 = this._validate(year, month, day, main.local.invalidDate);
+          var index = 12 * (date2.year() - 1) + date2.month() - 15292;
+          var mcjdn = date2.day() + ummalqura_dat[index - 1] - 1;
           return mcjdn + 24e5 - 0.5;
         },
         /** Create a new date from a Julian date.
@@ -79338,11 +79184,11 @@ var Plotly = (() => {
             @param error {string} Error message if invalid.
             @throws Error if different calendars used or invalid date. */
         _validate: function(year, month, day, error) {
-          var date = main.baseCalendar.prototype._validate.apply(this, arguments);
-          if (date.year < 1276 || date.year > 1500) {
+          var date2 = main.baseCalendar.prototype._validate.apply(this, arguments);
+          if (date2.year < 1276 || date2.year > 1500) {
             throw error.replace(/\{0\}/, this.local.name);
           }
-          return date;
+          return date2;
         }
       });
       main.calendars.ummalqura = UmmAlQuraCalendar;

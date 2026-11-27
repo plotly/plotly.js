@@ -9,6 +9,19 @@ To see all merged commits on the main branch that will be part of the next plotl
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [4.3.1] -- 2026-11-27
+
+### Fixed
+- Fix maximum height and width of a legend with `yref` or `xref` set to `"container"` [[#7158](https://github.com/plotly/plotly.js/pull/7158)], with thanks to @attatrol for the contribution!
+- Fix missing period labels at the range ends when using `ticklabelindex` [[#7937](https://github.com/plotly/plotly.js/pull/7937)], with thanks to @my-tien for the contribution!
+- Fix `node.x` and `node.y` scaling for vertical `sankey` traces [[#7957](https://github.com/plotly/plotly.js/pull/7957)], with thanks to @waterWang for the contribution!
+- Ensure that hoverlabels on category axes with `hovermode` "x", "y", "x unified" and "y unified" never include data points from categories other than the hovered one [[#7960](https://github.com/plotly/plotly.js/pull/7960)], with thanks to @my-tien for the contribution!
+- Fix heatmap hover on category axes to report the cell center, not the cell edge, as the point position [[#7960](https://github.com/plotly/plotly.js/pull/7960)]
+- Fix normalization of `contours.value` for interval constraints in `contour` and `contourcarpet` [[#8125](https://github.com/plotly/plotly.js/pull/8125)], with thanks to @Lexachoc for the contribution!
+- Fix matching axes losing autorange when another group of matching axes has an explicit range [[#8165](https://github.com/plotly/plotly.js/pull/8165)], with thanks to @X6M-Work for the contribution!
+- Fix `rangebreaks` when one break overlaps two other breaks, which hid the plot or drew later data over earlier data [[#8167](https://github.com/plotly/plotly.js/pull/8167)], with thanks to @Tornacyclo for the contribution!
+
+
 ## [4.3.0] -- 2026-11-10
 
 ### Added

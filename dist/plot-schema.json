@@ -2822,7 +2822,7 @@
         "valType": "boolean"
       },
       "hoverdistance": {
-        "description": "Sets the default distance (in pixels) to look for data to add hover labels (-1 means no cutoff, 0 means no looking for data). This is only a real distance for hovering on point-like objects, like scatter points. For area-like objects (bars, scatter fills, etc) hovering is on inside the area and off outside, but these objects will not supersede hover on point-like objects in case of conflict.",
+        "description": "Sets the default distance (in pixels) to look for data to add hover labels (-1 means no cutoff, 0 means no looking for data). This is only a real distance for hovering on point-like objects, like scatter points. For area-like objects (bars, scatter fills, etc) hovering is on inside the area and off outside, but these objects will not supersede hover on point-like objects in case of conflict. For hovermodes *x*, *y*, *x unified* and *y unified* on a category axis, only points that fall in the hovered category are shown in the hover label, regardless of this distance.",
         "dflt": 20,
         "editType": "none",
         "min": -1,
@@ -3495,7 +3495,7 @@
           "valType": "number"
         },
         "maxheight": {
-          "description": "Sets the max height (in px) of the legend, or max height ratio (reference height * ratio) if less than or equal to 1. Default value is: 0.5 for horizontal legends; 1 for vertical legends. The minimum allowed height is 30px. For a ratio of 0.5, the legend will take up to 50% of the reference height before displaying a scrollbar. The reference height is the full layout height with the following exception: vertically oriented legends with a `yref` of `\"paper\", located to the side of the plot. In this case, the reference height is the plot height.",
+          "description": "Sets the max height (in px) of the legend, or max height ratio (reference height * ratio) if less than or equal to 1. Default value is: 1 for vertically oriented legends with a `yref` of `\"paper\"`, located to the side of the plot; 0.5 for all other legends. The minimum allowed height is 30px. For a ratio of 0.5, the legend will take up to 50% of the reference height before displaying a scrollbar. The reference height is the full layout height with the following exception: vertically oriented legends with a `yref` of `\"paper\"`, located to the side of the plot. In this case, the reference height is the plot height. For a legend with a `yref` of `\"container\"`, the max height is also limited to the space between the legend anchor and the container edge.",
           "editType": "legend",
           "min": 0,
           "valType": "number"
@@ -52459,13 +52459,13 @@
             "valType": "number"
           },
           "x": {
-            "description": "The normalized horizontal position of the node.",
+            "description": "The normalized position of the node center along the flow axis, measured from the source end. For `orientation` *h* the flow axis is horizontal. For `orientation` *v* the flow axis is vertical. With `direction` *reversed* the source end is the right or bottom edge.",
             "dflt": [],
             "editType": "calc",
             "valType": "data_array"
           },
           "y": {
-            "description": "The normalized vertical position of the node.",
+            "description": "The normalized position of the node center across the flow axis. For `orientation` *h* the value counts down from the top edge. For `orientation` *v* the value counts from the left edge. The value does not depend on `direction`.",
             "dflt": [],
             "editType": "calc",
             "valType": "data_array"
