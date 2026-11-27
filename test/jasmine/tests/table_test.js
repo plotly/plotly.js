@@ -193,6 +193,29 @@ describe('table', function() {
     afterEach(destroyGraphDiv);
 
     describe('edge cases', function() {
+        it('applies cells.format only to numeric values', function(done) {
+            var gd = createGraphDiv();
+            Plotly.newPlot(gd, [{
+                type: 'table',
+                header: {values: ['Color', 'Value']},
+                cells: {
+                    values: [['rgb(239, 243, 255)', 'rgb(8, 81, 156)'], [0.5, '0.25']],
+                    format: ['.1f', '.0%']
+                }
+            }]).then(function() {
+                var texts = Array.prototype.map.call(
+                    document.querySelectorAll('.' + cn.cellText),
+                    function(node) { return node.textContent; }
+                );
+                expect(texts).toContain('rgb(239, 243, 255)');
+                expect(texts).toContain('rgb(8, 81, 156)');
+                expect(texts).toContain('50%');
+                expect(texts).toContain('25%');
+                expect(texts).not.toContain('NaN');
+            })
+            .then(done, done.fail);
+        });
+
         it('Works with more than one column', function(done) {
             var mockCopy = Lib.extendDeep({}, mock2);
             var gd = createGraphDiv();

@@ -2,6 +2,7 @@
 
 var c = require('./constants');
 var d3 = require('@plotly/d3');
+var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
 var gup = require('../../lib/gup');
@@ -536,7 +537,9 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
 
-            var prefixSuffixedText = prefix + (format ? numberFormat(format)(d.value) : d.value) + suffix;
+            // cells.format is a number format: a cell whose value is not a number keeps its text
+            var formatted = format && isNumeric(d.value) ? numberFormat(format)(d.value) : d.value;
+            var prefixSuffixedText = prefix + formatted + suffix;
 
             var hasWrapSplitCharacter;
             d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hasWrapCharacter(prefixSuffixedText));
