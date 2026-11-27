@@ -1052,6 +1052,9 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
             legendObj._titleWidth + 2 * (bw + constants.titlePad)
         )
     );
+    if (!isVertical) {
+        opts._width = gs.w;
+    }
 
     legendObj._height = Math.ceil(
         Math.max(
