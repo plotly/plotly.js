@@ -1,4 +1,5 @@
 {
+  "name": "stackgl_modules",
   "browserify": {
     "transform": [
       "glslify"
