@@ -1,0 +1,13 @@
+name: Documentation improvement
+description: Report an issue with the official documentation or API reference. Alternatively, just open a PR with the suggested change.
+title: "[DOCS]: "
+labels: "documentation"
+
+body:
+  - type: textarea
+    attributes:
+      label: Instructions
+      description: >
+        Describe what is missing or inaccurate in the Plotly documentation.
+
+        Consider just opening a PR with the suggested text changes in place.
