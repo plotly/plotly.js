@@ -42,6 +42,57 @@ function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     ];
 }
 
+// Positions of a 'tozerox' or 'tozeroy' fill between the first and the last
+// defined points, without the two end points on the zero line.
+// The fill closes its polygon along the zero line. If the line crosses zero,
+// that closing edge crosses the line and the polygon cannot be triangulated.
+// So close the polygon on the zero line at each crossing and at each point on
+// zero, and start a new one there. A null point separates the polygons, and the
+// fill splits at it with the `splitNull` option. Gaps are skipped, so the fill
+// goes across them as in SVG scatter.
+// `ax` is the index of the coordinate that goes to zero: 1 for y, 0 for x.
+function fillToZeroPositions(srcPos, first, last, ax) {
+    var pos = [];
+    var prev = -1;
+
+    function zeroPoint(x, y) {
+        return ax ? [x, 0] : [0, y];
+    }
+
+    for(var j = first; j <= last; j += 2) {
+        var x = srcPos[j];
+        var y = srcPos[j + 1];
+        if(isNaN(x) || isNaN(y)) continue;
+
+        if(prev !== -1) {
+            var x0 = srcPos[prev];
+            var y0 = srcPos[prev + 1];
+            var v0 = ax ? y0 : x0;
+            var v = ax ? y : x;
+
+            if((v0 < 0 && v > 0) || (v0 > 0 && v < 0)) {
+                var t = v0 / (v0 - v);
+                var cross = zeroPoint(x0 + t * (x - x0), y0 + t * (y - y0));
+                pos.push.apply(pos, cross);
+                pos.push(null, null);
+                pos.push.apply(pos, cross);
+            }
+        }
+
+        pos.push(x, y);
+
+        // a point on the zero line closes the polygon too
+        if((ax ? y : x) === 0 && j < last) {
+            pos.push(null, null);
+            pos.push(x, y);
+        }
+
+        prev = j;
+    }
+
+    return pos;
+}
+
 var exports = module.exports = function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
@@ -178,7 +229,8 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
                     if(srcPos[firstptdef + 1] !== 0) {
                         pos = [srcPos[firstptdef], 0];
                     }
-                    pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
+                    pos = pos.concat(fillToZeroPositions(srcPos, firstptdef, lastptdef, 1));
+                    fillOptions.splitNull = pos.indexOf(null) !== -1;
                     if(srcPos[lastptdef + 1] !== 0) {
                         pos = pos.concat([srcPos[lastptdef], 0]);
                     }
@@ -194,7 +246,8 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
                     if(srcPos[firstptdef] !== 0) {
                         pos = [0, srcPos[firstptdef + 1]];
                     }
-                    pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
+                    pos = pos.concat(fillToZeroPositions(srcPos, firstptdef, lastptdef, 0));
+                    fillOptions.splitNull = pos.indexOf(null) !== -1;
                     if(srcPos[lastptdef] !== 0) {
                         pos = pos.concat([ 0, srcPos[lastptdef + 1]]);
                     }
