@@ -33,7 +33,7 @@ describe('scattermap defaults', function() {
     function _supply(traceIn) {
         var traceOut = { visible: true };
         var defaultColor = '#444';
-        var layout = { _dataLength: 1 };
+        var layout = { _dataLength: 1, font: { family: 'Arial', size: 12, color: '#444' } };
 
         ScatterMap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -122,6 +122,18 @@ describe('scattermap defaults', function() {
 
         expect(fullTrace.marker).toBeDefined();
         expect(fullTrace.marker.line).toBeUndefined();
+    });
+
+    it('should not accept *auto* textposition', function() {
+        var fullTrace = _supply({
+            mode: 'markers+text',
+            lon: [10, 20],
+            lat: [10, 20],
+            text: ['a', 'b'],
+            textposition: 'auto'
+        });
+
+        expect(fullTrace.textposition).toBe('middle center');
     });
 });
 

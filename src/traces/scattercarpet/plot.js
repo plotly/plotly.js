@@ -17,6 +17,8 @@ module.exports = function plot(gd, plotinfoproxy, data, layer) {
         xaxis: xaxis,
         yaxis: yaxis,
         plot: plotinfoproxy.plot,
+        // Keep *auto* text clear of the carpet labels and titles, which the carpet draws inside the plot area
+        axisLayers: [plotinfoproxy.plot.selectAll('.carpetlayer .labellayer')]
     };
 
     for(i = 0; i < data.length; i++) {
