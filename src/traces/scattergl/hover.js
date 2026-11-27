@@ -4,6 +4,27 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
 const Drawing = require('../../components/drawing');
+const subTypes = require('../scatter/subtypes');
+const { getAxisDistance, getPointDistance } = require('../scatter/hover');
+
+// Marker radius of each point in px, from the sizes that `convert` computes for the WebGL markers.
+// The marker options hold diameters, so halve them: `mrc` in the SVG `scatter` trace is a radius.
+// `max` loops over every point, so call it only when needed.
+const getMarkerRadii = (markerOptions) => {
+    if (!markerOptions) return { radius: () => 0, max: () => 0 };
+
+    const { sizes, size } = markerOptions;
+    if (!sizes) return { radius: () => size / 2, max: () => size / 2 };
+
+    return {
+        radius: (i) => sizes[i] / 2,
+        max: () => {
+            let max = 0;
+            for (let i = 0; i < sizes.length; i++) max = Math.max(max, sizes[i]);
+            return max / 2;
+        }
+    };
+};
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -18,12 +39,18 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var maxDistance = pointData.distance;
     var ids;
 
+    // Score points as the SVG `scatter` trace does, so that marker size counts in the same way
+    const minRad = subTypes.hasMarkers(trace) ? 3 : 0.5;
+    const markerRadii = getMarkerRadii(stash._scene && stash._scene.markerOptions[stash.index]);
+
     // FIXME: make sure this is a proper way to calc search radius
     if(stash.tree) {
-        var xl = xa.p2c(xpx - maxDistance);
-        var xr = xa.p2c(xpx + maxDistance);
-        var yl = ya.p2c(ypx - maxDistance);
-        var yr = ya.p2c(ypx + maxDistance);
+        // A marker can be in range of the pointer when its center is not, so widen the box by the largest radius
+        const searchDistance = maxDistance + markerRadii.max();
+        var xl = xa.p2c(xpx - searchDistance);
+        var xr = xa.p2c(xpx + searchDistance);
+        var yl = ya.p2c(ypx - searchDistance);
+        var yr = ya.p2c(ypx + searchDistance);
 
         if(hovermode === 'x') {
             ids = stash.tree.range(
@@ -53,12 +80,14 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             k = ids[i];
             ptx = x[k];
 
-            dx = Math.abs(xa.c2p(ptx) - xpx);
+            const rad = markerRadii.radius(k);
+            let dxPoint = xa.c2p(ptx) - xpx;
+            dx = getAxisDistance(dxPoint, rad);
             if(xPeriod) {
                 var x0 = xa.c2p(trace._xStarts[k]);
                 var x1 = xa.c2p(trace._xEnds[k]);
 
-                dx = (
+                dx = dxPoint = (
                     xpx >= Math.min(x0, x1) &&
                     xpx <= Math.max(x0, x1)
                 ) ? 0 : Infinity;
@@ -80,7 +109,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
                     ) ? 0 : Infinity;
                 }
 
-                dxy = Math.sqrt(dx * dx + dy * dy);
+                dxy = getPointDistance(dxPoint, dy, rad, minRad);
                 closestId = ids[i];
             }
         }
@@ -92,7 +121,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             dx = xa.c2p(ptx) - xpx;
             dy = ya.c2p(pty) - ypx;
 
-            dist = Math.sqrt(dx * dx + dy * dy);
+            dist = getPointDistance(dx, dy, markerRadii.radius(k), minRad);
             // Accept a tie so that the trace drawn last wins, as in `Fx.getClosest`
             if(dist <= minDist) {
                 minDist = dxy = dist;
@@ -224,5 +253,6 @@ function calcHover(pointData, x, y, trace) {
 
 module.exports = {
     hoverPoints: hoverPoints,
-    calcHover: calcHover
+    calcHover: calcHover,
+    getMarkerRadii
 };
