@@ -1,6 +1,10 @@
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
 
+// When plotly loads, some of its WebGL text dependencies call `canvas.getContext('2d')`.
+// jsdom has no canvas backend without the optional `@napi-rs/canvas` package, so `getContext` returns null.
+// For each call, jsdom then prints "Not implemented: HTMLCanvasElement's getContext() method".
+// These scripts never draw, so the message is harmless.
 var window = new JSDOM('', {
     runScripts: 'dangerously'
 }).window;
