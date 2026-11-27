@@ -1,6 +1,7 @@
 import { once } from 'node:events';
+import fs from 'node:fs';
 import http from 'node:http';
-import { build, context } from 'esbuild';
+import { context } from 'esbuild';
 import minimist from 'minimist';
 import sirv from 'sirv';
 import { devtoolsConfig, localDevConfig } from '../../esbuild-config.js';
@@ -25,10 +26,46 @@ var mathjax4chtml = args.mathjax4chtml;
 
 if (strict) localDevConfig.entryPoints = ['./lib/index-strict.js'];
 
-// mock list
-await getMockFiles().then(readFiles).then(createMocksList).then(saveMockListToFile);
+let mockNames = new Set();
 
-build(devtoolsConfig);
+/**
+ * Rewrite the mock list file from the mocks folder.
+ *
+ * @returns The names of the mocks that the previous list did not contain, and the names that it lost
+ */
+const updateMockList = async () => {
+    const files = await readFiles(await getMockFiles());
+    const mocksList = createMocksList(files);
+    await saveMockListToFile(mocksList);
+
+    const oldNames = mockNames;
+    // createMocksList puts undefined in place of a mock that does not parse
+    mockNames = new Set(mocksList.filter(Boolean).map((mock) => mock.name));
+    return { added: [...mockNames.difference(oldNames)], removed: [...oldNames.difference(mockNames)] };
+};
+await updateMockList();
+
+// The dashboard bundle imports the mock list, so this watch rebuilds the bundle when the list changes
+// Log only problems, so that the watch output of the plotly.js bundle stays the only watch output
+const devtoolsCtx = await context({ ...devtoolsConfig, logLevel: 'warning' });
+await devtoolsCtx.watch();
+
+// Wait for a burst of file events to end, so that one save rewrites the mock list only once
+const MOCK_LIST_DELAY_MS = 200;
+let mockListTimer;
+fs.watch(constants.pathToTestImageMocks, (_, fileName) => {
+    if (fileName && !fileName.endsWith('.json')) return;
+    clearTimeout(mockListTimer);
+    mockListTimer = setTimeout(async () => {
+        try {
+            const { added, removed } = await updateMockList();
+            if (added.length) console.log(`Added mocks: ${added.join(', ')}. Reload the dashboard to search them.`);
+            if (removed.length) console.log(`Removed mocks: ${removed.join(', ')}`);
+        } catch (err) {
+            console.error('Could not update the mock list:', err);
+        }
+    }, MOCK_LIST_DELAY_MS);
+});
 
 var ctx = await context(localDevConfig);
 await devServer();
