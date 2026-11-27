@@ -1427,6 +1427,20 @@ describe('waterfall hover', function() {
         });
     });
 
+    [
+        { axType: 'category', x: ['2026-01-15', '2026-02-15', '2026-03-15'], period: 'M1', xval: 1 },
+        { axType: 'linear', x: [1, 2, 3], period: 2, xval: 2 }
+    ].forEach(({ axType, x, period, xval }) => {
+        it(`should return a hover point with xperiod on a ${axType} x axis`, async () => {
+            gd = createGraphDiv();
+            await Plotly.newPlot(gd, [{ type: 'waterfall', x, y: [4, 1, 3], xperiod: period }], {
+                xaxis: { type: axType }
+            });
+
+            expect(_hover(gd, xval, 0, 'x').style[0]).toBe(1);
+        });
+    });
+
     describe('text labels', function() {
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
