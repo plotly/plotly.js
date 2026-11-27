@@ -1472,6 +1472,31 @@ describe('scatter hoverPoints', function() {
         })
         .then(done, done.fail);
     });
+
+    [
+        { axType: 'category', vals: ['2026-01-15', '2026-02-15', '2026-03-15'], period: 'M1', c: [0, 1, 2] },
+        { axType: 'linear', vals: [1, 2, 3], period: 2, c: [1, 2, 3] }
+    ].forEach(({ axType, vals, period, c }) => {
+        it(`should ignore xperiod on a ${axType} x axis`, async () => {
+            const gd = createGraphDiv();
+            await Plotly.newPlot(gd, [{ x: vals, y: [4, 1, 3], xperiod: period }], { xaxis: { type: axType } });
+
+            expect(gd.calcdata[0].map((d) => d.x)).toEqual(c);
+            expect(gd.calcdata[0][1].xStart).toBeUndefined();
+            expect(gd.calcdata[0][1].xEnd).toBeUndefined();
+            expect(_hover(gd, c[1], 1, 'x')[0].index).toBe(1);
+        });
+
+        it(`should ignore yperiod on a ${axType} y axis`, async () => {
+            const gd = createGraphDiv();
+            await Plotly.newPlot(gd, [{ x: [4, 1, 3], y: vals, yperiod: period }], { yaxis: { type: axType } });
+
+            expect(gd.calcdata[0].map((d) => d.y)).toEqual(c);
+            expect(gd.calcdata[0][1].yStart).toBeUndefined();
+            expect(gd.calcdata[0][1].yEnd).toBeUndefined();
+            expect(_hover(gd, 1, c[1], 'y')[0].index).toBe(1);
+        });
+    });
 });
 
 describe('scatter hoverFills', function() {

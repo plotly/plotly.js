@@ -51,7 +51,8 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
         dx = positionFn;
     }
 
-    var period = trace[posLetter + 'period'];
+    // calc writes period bounds only on date axes with a valid period
+    const period = `${posLetter}End` in cd[0];
     var isClosestOrPeriod = isClosest || period;
 
     function thisBarMinPos(di) { return thisBarExtPos(di, -1); }

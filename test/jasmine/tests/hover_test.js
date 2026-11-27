@@ -8261,3 +8261,39 @@ describe('hoversort', function () {
             .then(done, done.fail);
     });
 });
+
+describe('hover with xperiod on non-date axes', () => {
+    let gd;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    [undefined, 2].forEach((xperiod) => {
+        it(`picks the closest scatter point in unified hover on a linear axis with xperiod ${xperiod}`, async () => {
+            await Plotly.newPlot(
+                gd,
+                [
+                    { x: [1, 2, 3], y: [1, 1, 1], xperiod },
+                    { x: [1.05, 2.05, 3.05], y: [2, 2, 2] }
+                ],
+                {
+                    hovermode: 'x unified',
+                    width: 500,
+                    height: 400,
+                    margin: { l: 50, r: 50, t: 50, b: 50 },
+                    // 0.05 x units = 4px, within the default 20px hoverdistance
+                    xaxis: { range: [0, 5] },
+                    yaxis: { range: [0, 3] }
+                }
+            );
+
+            Fx.hover(gd, { xval: 2 });
+            Lib.clearThrottle();
+
+            expect(d3Select('g.hoverlayer g.legend text.legendtitletext').text()).toBe('2');
+        });
+    });
+});

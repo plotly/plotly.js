@@ -20,13 +20,13 @@ module.exports = function calc(gd, trace) {
         size = xa.makeCalcdata(trace, 'x', sizeOpts);
         origPos = ya.makeCalcdata(trace, 'y');
         pObj = alignPeriod(trace, ya, 'y', origPos);
-        hasPeriod = !!trace.yperiodalignment;
+        hasPeriod = !!pObj.ends;
         pLetter = 'y';
     } else {
         size = ya.makeCalcdata(trace, 'y', sizeOpts);
         origPos = xa.makeCalcdata(trace, 'x');
         pObj = alignPeriod(trace, xa, 'x', origPos);
-        hasPeriod = !!trace.xperiodalignment;
+        hasPeriod = !!pObj.ends;
         pLetter = 'x';
     }
     pos = pObj.vals;

@@ -18,8 +18,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var hoveron = trace.hoveron || '';
     var minRad = (trace.mode.indexOf('markers') !== -1) ? 3 : 0.5;
 
-    var xPeriod = !!trace.xperiodalignment;
-    var yPeriod = !!trace.yperiodalignment;
+    const xPeriod = !!trace.xperiodalignment && xa.type === 'date';
+    const yPeriod = !!trace.yperiodalignment && ya.type === 'date';
 
     // look for points to hover on first, then take fills only if we
     // didn't find a point
