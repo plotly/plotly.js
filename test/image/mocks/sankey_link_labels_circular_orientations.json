@@ -1,0 +1,116 @@
+{
+    "data": [
+        {
+            "domain": {
+                "x": [
+                    0,
+                    0.45
+                ]
+            },
+            "type": "sankey",
+            "node": {
+                "pad": 5,
+                "label": [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
+                ]
+            },
+            "link": {
+                "source": [
+                    0,
+                    0,
+                    1,
+                    2,
+                    5,
+                    4,
+                    3
+                ],
+                "target": [
+                    5,
+                    3,
+                    4,
+                    3,
+                    0,
+                    2,
+                    2
+                ],
+                "value": [
+                    1,
+                    2,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "textinfo": "value"
+            }
+        },
+        {
+            "domain": {
+                "x": [
+                    0.55,
+                    1
+                ]
+            },
+            "type": "sankey",
+            "orientation": "v",
+            "direction": "reversed",
+            "node": {
+                "pad": 5,
+                "label": [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
+                ]
+            },
+            "link": {
+                "source": [
+                    0,
+                    0,
+                    1,
+                    2,
+                    5,
+                    4,
+                    3
+                ],
+                "target": [
+                    5,
+                    3,
+                    4,
+                    3,
+                    0,
+                    2,
+                    2
+                ],
+                "value": [
+                    1,
+                    2,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "textinfo": "value"
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "Permanent link labels on circular links (left: h/forward, right: v/reversed)"
+        },
+        "width": 1000,
+        "height": 600,
+        "showlegend": false
+    }
+}

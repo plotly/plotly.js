@@ -11,6 +11,8 @@ export const cn = {
     sankey: 'sankey',
     sankeyLinks: 'sankey-links',
     sankeyLink: 'sankey-link',
+    sankeyLinkLabelSet: 'sankey-link-label-set',
+    sankeyLinkLabel: 'sankey-link-label',
     sankeyNodeSet: 'sankey-node-set',
     sankeyNode: 'sankey-node',
     nodeRect: 'node-rect',

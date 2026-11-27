@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "domain": { "x": [0, 0.45] },
+      "type": "sankey",
+      "valueformat": ".0f",
+      "valuesuffix": " TWh",
+      "textfont": { "family": "Times New Roman", "size": 16, "color": "darkblue" },
+      "node": {
+        "label": ["0", "1", "2", "3", "4", "5"],
+        "color": "gray"
+      },
+      "link": {
+        "source": [0, 1, 4, 2, 1],
+        "target": [1, 4, 5, 4, 3],
+        "value": [4, 2, 3, 1, 2],
+        "textinfo": "value"
+      }
+    },
+    {
+      "domain": { "x": [0.55, 1] },
+      "type": "sankey",
+      "valueformat": ".0f",
+      "valuesuffix": " TWh",
+      "textfont": { "family": "Times New Roman", "size": 16, "color": "darkblue" },
+      "node": {
+        "label": ["0", "1", "2", "3", "4", "5"],
+        "color": "gray"
+      },
+      "link": {
+        "source": [0, 1, 4, 2, 1],
+        "target": [1, 4, 5, 4, 3],
+        "value": [4, 2, 3, 1, 2],
+        "textinfo": "value",
+        "valueformat": ".2f",
+        "valuesuffix": " GW",
+        "textfont": { "family": "Arial", "size": 10, "color": "black" }
+      }
+    }
+  ],
+  "layout": {
+    "title": { "text": "Permanent link labels: trace level inherited (left) vs link level override (right)" },
+    "width": 1000,
+    "height": 600,
+    "showlegend": false
+  }
+}

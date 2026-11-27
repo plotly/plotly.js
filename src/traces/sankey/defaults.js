@@ -106,6 +106,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     Lib.coerceFont(coerce, 'textfont', layout.font, { autoShadowDflt: true });
 
+    // permanent link text labels (opt-in via link.textinfo / link.texttemplate)
+    var linkTextInfo = coerceLink('textinfo');
+    var linkTextTemplate = coerceLink('texttemplate');
+    if(linkTextInfo !== 'none' || linkTextTemplate) {
+        Lib.coerceFont(coerceLink, 'textfont', traceOut.textfont, { autoShadowDflt: true });
+        coerceLink('valueformat', traceOut.valueformat);
+        coerceLink('valuesuffix', traceOut.valuesuffix);
+        if(linkTextTemplate) coerceLink('texttemplatefallback');
+    }
+
     // Ensure _length is defined
     traceOut._length = null;
 };
