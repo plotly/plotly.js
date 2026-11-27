@@ -9559,6 +9559,8 @@ export interface ScatterternaryData {
     fill?: 'none' | 'toself' | 'tonext';
     /** Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. */
     fillcolor?: Color;
+    /** Sets the pattern within the marker. */
+    fillpattern?: Pattern;
     /**
      * Determines what trace information appears on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.
      * @default 'all'
