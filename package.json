@@ -133,7 +133,6 @@
     "@types/node": "^26.6.11",
     "assert": "^2.1.0",
     "buffer": "^6.0.3",
-    "canvas": "^3.2.3",
     "check-node-version": "^4.2.1",
     "deep-equal": "^2.2.3",
     "esbuild": "^0.28.2",
