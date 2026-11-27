@@ -76,7 +76,7 @@ module.exports = function(gd) {
         // update range
         // Expand slider range to the axis range
         if(opts.range) {
-            var rng = Lib.simpleMap(opts.range, axisOpts.r2l);
+            var rng = Lib.simpleMap(opts._input.range || opts.range, axisOpts.r2l);
             var axRng = Lib.simpleMap(axisOpts.range, axisOpts.r2l);
             var newRng;
 
@@ -92,7 +92,7 @@ module.exports = function(gd) {
                 ];
             }
 
-            opts.range = opts._input.range = Lib.simpleMap(newRng, axisOpts.l2r);
+            opts.range = Lib.simpleMap(newRng, axisOpts.l2r);
         }
 
         axisOpts.cleanRange('rangeslider.range');
