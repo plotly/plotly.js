@@ -180,6 +180,11 @@ function getButtonGroups(gd) {
     if(hasCartesian) {
         hoverGroup.push('toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian');
     }
+
+    if(hasTernary) {
+        hoverGroup.push('toggleTernarySpikelines');
+    }
+
     if(hasNoHover(fullData) || hasUnifiedHoverLabel) {
         hoverGroup = [];
     }
@@ -228,6 +233,8 @@ function getButtonGroups(gd) {
                     }
                 } else if(b === 'togglespikelines') {
                     enableHover('toggleSpikelines');
+                } else if(b === 'toggleternaryspikelines') {
+                    enableHover('toggleTernarySpikelines');
                 } else if(b === 'togglehover') {
                     enableHover('toggleHover');
                 } else if(b === 'hovercompare') {
