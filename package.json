@@ -143,7 +143,7 @@
     "falafel": "^2.2.5",
     "fs-extra": "^11.4.1",
     "fuse.js": "^7.5.0",
-    "glob": "^13.0.6",
+    "glob": "^14.0.6",
     "gzip-size": "^7.0.0",
     "into-stream": "^9.1.0",
     "jasmine": "3.5.0",
