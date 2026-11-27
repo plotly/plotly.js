@@ -23,6 +23,7 @@ module.exports = function findEmpties(z) {
     var thisPt;
     var p;
     var neighborCount;
+    var neighborSum;
     var newNeighborHash;
     var foundNewNeighbors;
 
@@ -67,12 +68,17 @@ module.exports = function findEmpties(z) {
             i = thisPt[0];
             j = thisPt[1];
 
-            neighborCount = ((neighborHash[[i - 1, j]] || blank)[2] +
+            neighborSum = (neighborHash[[i - 1, j]] || blank)[2] +
                 (neighborHash[[i + 1, j]] || blank)[2] +
                 (neighborHash[[i, j - 1]] || blank)[2] +
-                (neighborHash[[i, j + 1]] || blank)[2]) / 20;
+                (neighborHash[[i, j + 1]] || blank)[2];
 
-            if(neighborCount) {
+            if(neighborSum) {
+                neighborCount = neighborSum / 20;
+                // neighborSum / 20 can underflow to 0 in float64 when deep empty regions decay
+                // past ~249 layers, but this cell does have neighbours: keep a strictly positive weight
+                if(!neighborCount) neighborCount = Number.MIN_VALUE;
+
                 newNeighborHash[thisPt] = [i, j, neighborCount];
                 noNeighborList.splice(p, 1);
                 foundNewNeighbors = true;
