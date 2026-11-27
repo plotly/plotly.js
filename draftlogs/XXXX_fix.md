@@ -1,1 +1,0 @@
-- Fix `xperiod` and `yperiod` breaking bar, waterfall and scatter traces on non-date axes, where they are now ignored [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)], with thanks to @akysil for the contribution!
