@@ -264,6 +264,88 @@ describe('Test colorbar:', function() {
             .then(done, done.fail);
         });
 
+        // https://github.com/plotly/plotly.js/issues/8012
+        // the default thicknessmode is 'pixels', so restyling an unset
+        // colorbar to 'pixels' must not rescale thickness as if the
+        // current value were a fraction
+        it('does not rescale colorbar thickness when restyling to the mode the colorbar already uses', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                z: [[1, 10], [100, 1000]],
+                colorbar: {}
+            }], {
+                height: 500,
+                width: 500,
+                margin: {l: 50, r: 50, t: 50, b: 50}
+            })
+            .then(function() {
+                expect(gd._fullData[0].colorbar.thicknessmode).toBe('pixels');
+                expect(gd._fullData[0].colorbar.thickness).toBe(30);
+
+                return Plotly.restyle(gd, {'colorbar.thicknessmode': 'pixels'});
+            })
+            .then(function() {
+                expect(gd.data[0].colorbar.thickness).toBeUndefined();
+                expect(gd._fullData[0].colorbar.thickness).toBe(30);
+            })
+            .then(done, done.fail);
+        });
+
+        it('rescales horizontal colorbar thickness against the plot height', function(done) {
+            var gsH;
+
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                z: [[1, 10], [100, 1000]],
+                colorbar: {orientation: 'h'}
+            }], {
+                height: 500,
+                width: 300,
+                margin: {l: 50, r: 50, t: 50, b: 50}
+            })
+            .then(function() {
+                expect(gd._fullData[0].colorbar.thickness).toBe(30);
+
+                gsH = gd._fullLayout._size.h;
+
+                return Plotly.restyle(gd, {'colorbar.thicknessmode': 'fraction'});
+            })
+            .then(function() {
+                expect(gd._fullData[0].colorbar.thickness)
+                    .toBeCloseTo(30 / gsH, 5);
+            })
+            .then(done, done.fail);
+        });
+
+        // splom marker colorbars collapse the whole grid when the
+        // bogus rescale kicks in, see the report in
+        // https://github.com/plotly/plotly.js/issues/8012
+        it('does not rescale splom marker colorbar thickness when restyling to the default pixels mode', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'splom',
+                dimensions: [
+                    {values: [1, 2, 3, 4]},
+                    {values: [2, 3, 4, 5]}
+                ],
+                marker: {color: [1, 2, 3, 4], colorbar: {}}
+            }], {
+                height: 500,
+                width: 500,
+                margin: {l: 50, r: 50, t: 50, b: 50}
+            })
+            .then(function() {
+                expect(gd._fullData[0].marker.colorbar.thicknessmode).toBe('pixels');
+                expect(gd._fullData[0].marker.colorbar.thickness).toBe(30);
+
+                return Plotly.restyle(gd, {'marker.colorbar.thicknessmode': 'pixels'});
+            })
+            .then(function() {
+                expect(gd.data[0].marker.colorbar.thickness).toBeUndefined();
+                expect(gd._fullData[0].marker.colorbar.thickness).toBe(30);
+            })
+            .then(done, done.fail);
+        });
+
         // scatter has trace.marker.{showscale, colorbar}
         it('can show and hide scatter colorbars', function(done) {
             Plotly.newPlot(gd, [{
