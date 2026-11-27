@@ -5,6 +5,8 @@ var d3 = require('@plotly/d3');
 var Fx = require('../../components/fx');
 var dragElement = require('../../components/dragelement');
 var setCursor = require('../../lib/setcursor');
+var dragCursor = require('../../components/dragelement/helpers').dragCursor;
+var modifierKeys = require('../../components/dragelement/modifier_keys');
 
 var makeDragBox = require('./dragbox').makeDragBox;
 var DRAGGERSIZE = require('./constants').DRAGGERSIZE;
@@ -47,6 +49,8 @@ exports.initInteractions = function initInteractions(gd) {
                 xa._length, ya._length, 'ns', 'ew');
 
             maindrag.onmousemove = function(evt) {
+                modifierKeys.update(gd, evt);
+
                 // This is on `gd._fullLayout`, *not* fullLayout because the reference
                 // changes by the time this is called again.
                 gd._fullLayout._rehover = function() {
@@ -128,6 +132,7 @@ exports.initInteractions = function initInteractions(gd) {
     var hoverLayer = fullLayout._hoverlayer.node();
 
     hoverLayer.onmousemove = function(evt) {
+        modifierKeys.update(gd, evt);
         evt.target = gd._fullLayout._lasthover;
         Fx.hover(gd, evt, fullLayout._hoversubplot);
     };
@@ -151,7 +156,11 @@ exports.initInteractions = function initInteractions(gd) {
 // Note that changing the axis configuration and/or the fixedrange attribute
 // should trigger a full initInteractions.
 exports.updateFx = function(gd) {
+    exports.updateCursor(gd);
+};
+
+exports.updateCursor = function(gd) {
     var fullLayout = gd._fullLayout;
-    var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
+    var cursor = dragCursor(fullLayout.dragmode, gd._modifierKeys);
     setCursor(fullLayout._draggers, cursor);
 };

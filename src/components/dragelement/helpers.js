@@ -47,3 +47,26 @@ exports.selectingOrDrawing = function(dragmode) {
         exports.rectMode(dragmode)
     );
 };
+
+exports.effectiveDragmode = (dragmode, { shiftKey } = {}) => {
+    if(!shiftKey || !dragmode || exports.selectingOrDrawing(dragmode)) return dragmode;
+    return dragmode === 'pan' ? 'zoom' : 'pan';
+};
+
+exports.dragCursor = (dragmode, modifiers) =>
+    exports.effectiveDragmode(dragmode, modifiers) === 'pan' ? 'move' : 'crosshair';
+
+const ACTION_BY_MODIFIER = { shiftKey: 'rotate', ctrlKey: 'pan', altKey: 'zoom' };
+const CURSOR_BY_ACTION = { rotate: 'default', pan: 'move', zoom: 'crosshair' };
+
+exports.dragCursor3d = (cameraMode, modifiers = {}) => {
+    if(!cameraMode) return 'default';
+
+    const heldActions = Object.keys(ACTION_BY_MODIFIER)
+        .filter((key) => modifiers[key])
+        .map((key) => ACTION_BY_MODIFIER[key]);
+    if(heldActions.length > 1) return 'default';
+
+    const modeAction = cameraMode === 'pan' || cameraMode === 'zoom' ? cameraMode : 'rotate';
+    return CURSOR_BY_ACTION[heldActions[0] || modeAction];
+};

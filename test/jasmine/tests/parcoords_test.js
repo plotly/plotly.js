@@ -1551,6 +1551,24 @@ describe('parcoords constraint interactions - without defined axis ranges', func
         expect(dashArray.length).toBe(segmentCount, dashArray);
     }
 
+    it('@gl keeps the brush cursor off the body and holds it with a drag cover during a brush drag', function(done) {
+        Plotly.react(gd, initialFigure())
+        .then(function() {
+            mostOfDrag(105, 165, 105, 190);
+
+            var background = document.querySelector('.axis-brush .background');
+            expect(background.getAttribute('class')).toMatch(/cursor-/);
+            expect(document.body.style.cursor).toBe('');
+            expect(document.querySelectorAll('.dragcover').length).toBe(1);
+            expect(document.querySelector('.dragcover').style.cursor).not.toBe('');
+
+            mouseEvent('mouseup', 105, 190);
+            expect(document.querySelectorAll('.dragcover').length).toBe(0);
+            expect(background.getAttribute('class')).not.toMatch(/cursor-/);
+        })
+        .then(done, done.fail);
+    });
+
     it('@gl snaps ordinal constraints', function(done) {
         var newDashArray;
 

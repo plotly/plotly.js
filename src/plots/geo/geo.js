@@ -18,6 +18,8 @@ var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 const { concatExtremes, getAutoRange, makePadFn } = require('../cartesian/autorange');
 var dragElement = require('../../components/dragelement');
+var dragCursor = require('../../components/dragelement/helpers').dragCursor;
+var setCursor = require('../../lib/setcursor');
 var prepSelect = require('../../components/selections').prepSelect;
 var clearOutline = require('../../components/selections').clearOutline;
 var selectOnClick = require('../../components/selections').selectOnClick;
@@ -505,6 +507,8 @@ proto.updateFx = function (fullLayout, geoLayout) {
             }
         }
     };
+
+    setCursor(bgRect, dragMode === false ? '' : dragCursor(dragMode));
 
     if (dragMode === 'pan') {
         bgRect.node().onmousedown = null;

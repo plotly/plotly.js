@@ -101,7 +101,7 @@ proto.makeFramework = function(fullLayout) {
 proto.updateFx = function(fullLayout) {
     fullLayout._ternarylayer
         .selectAll('g.toplevel')
-        .style('cursor', fullLayout.dragmode === 'pan' ? 'move' : 'crosshair');
+        .style('cursor', dragHelpers.dragCursor(fullLayout.dragmode));
 };
 
 proto.updateLayers = function(ternaryLayout) {

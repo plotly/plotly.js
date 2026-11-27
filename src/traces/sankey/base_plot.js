@@ -7,6 +7,7 @@ var fxAttrs = require('../../components/fx/layout_attributes');
 
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
+var dragCursor = require('../../components/dragelement/helpers').dragCursor;
 var prepSelect = require('../../components/selections').prepSelect;
 var Lib = require('../../lib');
 var Registry = require('../../registry');
@@ -46,7 +47,7 @@ function subplotUpdateFx(gd, index) {
     var fullLayout = gd._fullLayout;
 
     var dragMode = fullLayout.dragmode;
-    var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
+    var cursor = dragCursor(fullLayout.dragmode);
     var bgRect = trace._bgRect;
     if(!bgRect) return;
 
