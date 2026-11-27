@@ -11,6 +11,7 @@ var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
+const testFonts = require('../assets/test_fonts');
 
 var RESIZE_DELAY = 300;
 
@@ -1038,6 +1039,218 @@ describe('config argument', function() {
                 expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
             .then(done, done.fail);
+        });
+    });
+
+    describe('fonts:', () => {
+        let gd;
+
+        beforeEach(() => {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        // Each glyph of the test font is 1 em wide, so the title 'ABCDE' at 20px measures 100px
+        const layout = (family) => ({
+            width: 400,
+            height: 300,
+            font: { family: `${family}, Arial` },
+            title: { text: 'ABCDE', font: { size: 20 } }
+        });
+        const titleWidth = () => gd.querySelector('.gtitle').getBoundingClientRect().width;
+        const fontBytes = () => Uint8Array.from(atob(testFonts.square.split(',')[1]), (c) => c.charCodeAt(0));
+
+        // Make fetch answer with the test font only when the test calls the returned function
+        const holdFetch = () => {
+            const answers = [];
+            spyOn(window, 'fetch').and.callFake(
+                () => new Promise((resolve) => answers.push(() => resolve(new Response(fontBytes()))))
+            );
+            return () => answers.forEach((answer) => answer());
+        };
+
+        it('should load the fonts before the graph draws', (done) => {
+            const family = 'ConfigFontsLoad';
+            const promise = Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), {
+                fonts: [{ family, source: testFonts.square }]
+            });
+            expect(gd.querySelector('.gtitle')).toBe(null, 'no title before the font loads');
+
+            promise
+                .then(() => {
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                    expect(document.fonts.check(`20px ${family}`)).toBe(true);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should draw synchronously when the fonts loaded before', (done) => {
+            const family = 'ConfigFontsCache';
+            const config = { fonts: [{ family, source: testFonts.square }] };
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
+                .then(() => {
+                    Plotly.purge(gd);
+                    const promise = Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config);
+                    expect(gd.querySelector('.gtitle')).not.toBe(null, 'title drawn without a wait');
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                    return promise;
+                })
+                .then(done, done.fail);
+        });
+
+        it('should accept the font bytes in a typed array', (done) => {
+            const family = 'ConfigFontsBytes';
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), { fonts: [{ family, source: fontBytes() }] })
+                .then(() => {
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should warn one time and draw with a fallback font if a font file cannot be decoded', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ConfigFontsBroken';
+            const config = { fonts: [{ family, source: 'data:font/ttf;base64,AAAA' }] };
+            const message = `Cannot load the font "${family}"`;
+            const warnings = () => Lib.warn.calls.allArgs().filter((args) => String(args[0]).includes(message)).length;
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
+                .then(() => {
+                    expect(gd.querySelector('.gtitle')).not.toBe(null);
+                    expect(warnings()).toBe(1);
+                    return Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config);
+                })
+                .then(() => {
+                    expect(warnings()).toBe(1, 'the face stays failed');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should not download a font file again if the file cannot be decoded', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ConfigFontsBadFile';
+            const config = { fonts: [{ family, source: 'https://fonts.example.invalid/bad.ttf' }] };
+            const message = `Cannot load the font "${family}"`;
+            const warnings = () => Lib.warn.calls.allArgs().filter((args) => String(args[0]).includes(message)).length;
+            spyOn(window, 'fetch').and.callFake(() => Promise.resolve(new Response(new Uint8Array([0, 1, 2, 3]))));
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
+                .then(() => Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config))
+                .then(() => {
+                    expect(window.fetch).toHaveBeenCalledTimes(1);
+                    expect(warnings()).toBe(1);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should load a font in the next draw after a failed download', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ConfigFontsRetry';
+            const config = { fonts: [{ family, source: 'https://fonts.example.invalid/retry.ttf' }] };
+            let calls = 0;
+            spyOn(window, 'fetch').and.callFake(() => {
+                calls++;
+                if (calls === 1) return Promise.reject(new TypeError('Failed to fetch'));
+                return Promise.resolve(new Response(fontBytes()));
+            });
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
+                .then(() => {
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching(`Cannot load the font "${family}"`));
+                    Plotly.purge(gd);
+                    return Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config);
+                })
+                .then(() => {
+                    expect(window.fetch).toHaveBeenCalledTimes(2);
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should stop a draw that waits for a font if the graph is purged during the wait', (done) => {
+            const family = 'ConfigFontsPurged';
+            const answer = holdFetch();
+
+            const promise = Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), {
+                fonts: [{ family, source: 'https://fonts.example.invalid/purged.ttf' }]
+            });
+            Plotly.purge(gd);
+            answer();
+
+            promise
+                .then((result) => {
+                    expect(result).toBe(gd);
+                    expect(gd.querySelector('.main-svg')).toBe(null, 'nothing drawn after the purge');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should run a relayout that comes during the font wait after the draw', (done) => {
+            const family = 'ConfigFontsRelayout';
+            const answer = holdFetch();
+
+            const plotted = Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], layout(family), {
+                fonts: [{ family, source: 'https://fonts.example.invalid/relayout.ttf' }]
+            });
+            const relaidOut = Plotly.relayout(gd, 'xaxis.range', [0, 4]);
+            answer();
+
+            Promise.all([plotted, relaidOut])
+                .then(() => {
+                    expect(gd._fullLayout.xaxis.range).toEqual([0, 4]);
+                    expect(gd.querySelectorAll('.xtick').length).toBeGreaterThan(0);
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should not rebuild the plot when react gets the same font bytes in a new buffer', (done) => {
+            const family = 'ConfigFontsReactBytes';
+            const config = () => ({ fonts: [{ family, source: fontBytes() }] });
+            let paper;
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config())
+                .then(() => {
+                    paper = gd.querySelector('.main-svg');
+                    return Plotly.react(gd, [{ y: [2, 1] }], layout(family), config());
+                })
+                .then(() => {
+                    expect(gd.querySelector('.main-svg')).toBe(paper, 'react did not call newPlot');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should warn about an item without a family', (done) => {
+            spyOn(Lib, 'warn');
+            const item = { source: testFonts.square };
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout('ConfigFontsNoFamily'), { fonts: [item] })
+                .then(() => {
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('config\\.fonts'), item);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should warn about a fonts value that is not an array and about items without a usable source', (done) => {
+            spyOn(Lib, 'warn');
+            const single = { family: 'ConfigFontsSingle', source: testFonts.square };
+            const blobItem = { family: 'ConfigFontsBlob', source: new Blob([fontBytes()]) };
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout('Arial'), { fonts: single })
+                .then(() => {
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('must be an array'), single);
+                    return Plotly.newPlot(gd, [{ y: [1, 2] }], layout('Arial'), {
+                        fonts: ['ConfigFontsString', blobItem]
+                    });
+                })
+                .then(() => {
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('typed array'), 'ConfigFontsString');
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('typed array'), blobItem);
+                })
+                .then(done, done.fail);
         });
     });
 });

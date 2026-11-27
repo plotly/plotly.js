@@ -31,7 +31,8 @@ function toImage(gd, opts) {
         var delay = helpers.getDelay(clonedGd._fullLayout);
 
         setTimeout(function() {
-            var svg = toSVG(clonedGd);
+            // The format tells toSVG which fonts it can embed
+            var svg = toSVG(clonedGd, opts.format);
 
             var canvas = document.createElement('canvas');
             canvas.id = Lib.randstr();

@@ -5,6 +5,7 @@ var d3 = require('@plotly/d3');
 var Lib = require('../lib');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
+const { fontFaceRules } = require('../lib/font_faces');
 
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var DOUBLEQUOTE_REGEX = /"/g;
@@ -178,6 +179,10 @@ module.exports = function toSVG(gd, format, scale) {
 
     // Fix quotations around font strings and gradient URLs
     s = s.replace(DUMMY_REGEX, "'");
+
+    // An SVG image cannot use the fonts of the page, so the SVG must carry the fonts that it names
+    const rules = fontFaceRules(gd._context.fonts, s, format);
+    if (rules) s = s.replace(/<svg\b[^>]*>/, (tag) => `${tag}<style>${rules}</style>`);
 
     return s;
 };

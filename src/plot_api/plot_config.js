@@ -360,6 +360,23 @@ var configAttributes = {
         ].join(' ')
     },
 
+    fonts: {
+        valType: 'any',
+        dflt: [],
+        description: [
+            'Sets the fonts that plotly.js loads before it draws the graph, and embeds in exported images.',
+            'Each item is an object with a *family* string and a *source*,',
+            'and an optional *weight* and *style* as in a CSS `@font-face` rule.',
+            'The *source* is the URL of a font file, a base64 data URL,',
+            'or the font bytes in an `ArrayBuffer` or a typed array.',
+            'plotly.js measures text only after the fonts load.',
+            'If a font does not load in 10 seconds, plotly.js logs a warning and draws with a fallback font.',
+            'After a failed download, the next draw tries the download again.',
+            'An export to *svg*, *pdf* or *eps* does not embed a font whose file forbids embedding.',
+            'If plotly.js cannot read that permission, as in a WOFF2 file, the export embeds the font.'
+        ].join(' ')
+    },
+
     logging: {
         valType: 'integer',
         min: 0,

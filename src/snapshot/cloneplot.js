@@ -148,6 +148,9 @@ module.exports = function clonePlot(graphObj, options) {
         plotTile.config.setBackground = options.setBackground || 'opaque';
     }
 
+    // An image of the clone must embed the fonts that the graph loads
+    if (context.fonts) plotTile.config.fonts = context.fonts;
+
     // attaching the default Layout the gd, so you can grab it later
     plotTile.gd.defaultLayout = cloneLayoutOverride(options.tileClass);
 
