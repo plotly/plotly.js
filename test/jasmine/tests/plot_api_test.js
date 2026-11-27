@@ -1649,7 +1649,8 @@ describe('Test plot api', function () {
                     return Plotly.restyle(gd, { x0: 12.3 });
                 })
                 .then(function () {
-                    checkTicks('x', ['12', '12.5'], 'switched to numeric');
+                    // a single box forces one tick at its own position
+                    checkTicks('x', ['12.3'], 'switched to numeric');
                     expect(gd._fullLayout.xaxis.type).toBe('linear');
                 })
                 .then(done, done.fail);

@@ -73,7 +73,7 @@ function padFactor(wanted, bandLength) {
  * Creates/updates these conversion functions, and a few more utilities
  * like cleanRange, and makeCalcdata
  *
- * also clears ._minDtick, ._forceTick0
+ * also creates ax.clearCalc, which clears ._minDtick, ._forceTick0
  */
 module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
@@ -987,6 +987,12 @@ module.exports = function setConvert(ax, fullLayout) {
 
     // should skip if not category nor multicategory
     ax.clearCalc = function() {
+        // for bar charts and box plots: reset forced minimum tick spacing.
+        // this has to happen here rather than in setConvert, as the values
+        // are relinked onto the new fullLayout after supplyDefaults runs
+        delete ax._minDtick;
+        delete ax._forceTick0;
+
         var group = ax._matchGroup;
         if(group) {
             var categories = null;
@@ -1059,8 +1065,4 @@ module.exports = function setConvert(ax, fullLayout) {
     // even though it won't be needed by this axis
     ax._separators = fullLayout.separators;
     ax._numFormat = locale ? locale.numberFormat : numberFormat;
-
-    // and for bar charts and box plots: reset forced minimum tick spacing
-    delete ax._minDtick;
-    delete ax._forceTick0;
 };
