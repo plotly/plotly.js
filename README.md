@@ -154,8 +154,9 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 | Contributor | GitHub |  Status |
 |-------------|--------|---------|
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | Active, Maintainer |
-|**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | Active, Maintainer |
 |**Cameron DeCoster** | [@camdecoster](https://github.com/camdecoster) | Active, Maintainer |
+|**Adrian Borrmann** | [@KoolADE85](https://github.com/KoolADE85) | Active, Maintainer |
+|**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | Active, Community Contributor |
 |**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | Active, Community Contributor |
 |**My-Tien Nguyen**| [@my-tien](https://github.com/my-tien) | Active, Community Contributor |
 |**Birk Skyum**| [@birkskyum](https://github.com/birkskyum) | Active, Community Contributor |
