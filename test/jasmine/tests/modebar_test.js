@@ -1644,6 +1644,45 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
+        it('applies icon colors to every path of a multi-path custom svg icon', function(done) {
+            var icon = {
+                svg: '<svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 1000 1000">' +
+                    '<path d="M0,0 L500,0 L500,500 Z"/>' +
+                    '<path d="M500,500 L1000,500 L1000,1000 Z"/>' +
+                    '</svg>'
+            };
+
+            function checkAllPaths(btn, color) {
+                var paths = btn.querySelectorAll('.icon path');
+                expect(paths.length).toBe(2);
+                paths.forEach(function(p) {
+                    expect(window.getComputedStyle(p).fill).toBe(color);
+                });
+            }
+
+            Plotly.newPlot(gd, [], {
+                modebar: {
+                    color: colors[0],
+                    activecolor: colors[1]
+                }
+            }, {
+                modeBarButtonsToAdd: [{
+                    name: 'multi-path',
+                    icon: icon,
+                    click: function() {}
+                }]
+            })
+            .then(function() {
+                var btn = gd._fullLayout._modeBar.element.querySelector('[data-title="multi-path"]');
+                checkAllPaths(btn, colors[0]);
+                btn.dispatchEvent(new window.MouseEvent('mouseenter'));
+                checkAllPaths(btn, colors[1]);
+                btn.dispatchEvent(new window.MouseEvent('mouseleave'));
+                checkAllPaths(btn, colors[0]);
+            })
+            .then(done, done.fail);
+        });
+
         it('changes background color (displayModeBar: hover)', function(done) {
             Plotly.newPlot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
