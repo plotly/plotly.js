@@ -205,6 +205,13 @@ function _doPlot(gd, data, layout, config) {
      * start async-friendly code - now we're actually drawing things
      */
 
+    // Margin pushers such as colorbars depend on the plot's pixel dimensions.
+    // Refresh the inner size before drawing them after a resize.
+    var size = fullLayout._size;
+    if (size.w !== Math.round(fullLayout.width) - size.l - size.r ||
+        size.h !== Math.round(fullLayout.height) - size.t - size.b) {
+        Plots.doAutoMargin(gd);
+    }
     var oldMargins = Lib.extendFlat({}, fullLayout._size);
 
     // draw framework first so that margin-pushing

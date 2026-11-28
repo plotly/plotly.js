@@ -71,6 +71,62 @@ describe('Test colorbar:', function() {
         });
     });
 
+    describe('colorbar position after a height change', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+            gd.style.width = '600px';
+            gd.style.height = '500px';
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
+        function colorbarLeft() {
+            var colorbar = gd.querySelector('.colorbar .cbbg');
+            return colorbar.getBoundingClientRect().left - gd.getBoundingClientRect().left;
+        }
+
+        var changes = {
+            relayout: function() {
+                return Plotly.relayout(gd, {height: 400});
+            },
+            react: function(type) {
+                return Plotly.react(gd, [{type: type, z: [[1, 4], [2, 3]]}], {width: 600, height: 400});
+            },
+            resize: function() {
+                gd.style.height = '400px';
+                return Plotly.Plots.resize(gd);
+            }
+        };
+
+        ['contour', 'heatmap'].forEach(function(type) {
+            Object.keys(changes).forEach(function(method) {
+                it('places the ' + type + ' colorbar after ' + method + ' at its fresh position', function(done) {
+                    var data = [{type: type, z: [[1, 4], [2, 3]]}];
+                    var initialLayout = method === 'resize' ? {} : {width: 600, height: 500};
+                    var afterResize;
+
+                    Plotly.newPlot(gd, data, initialLayout)
+                    .then(function() {
+                        return changes[method](type);
+                    })
+                    .then(function() {
+                        afterResize = colorbarLeft();
+                        return Plotly.newPlot(gd, data, {width: 600, height: 400});
+                    })
+                    .then(function() {
+                        expect(afterResize).toBeCloseTo(colorbarLeft(), 0);
+                    })
+                    .then(done, done.fail);
+                });
+            });
+        });
+    });
+
     describe('drawing & editing', function() {
         var gd;
 
