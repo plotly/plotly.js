@@ -1,14 +1,15 @@
-name: Close stale PRs
+name: Close stale PRs and release stale issues
 
 # A pull request goes stale when a maintainer review requests changes or leaves comments, and the author does not respond.
 # A response is a comment, a review, or a reaction from the author.
+# A `ready-for-pr` issue loses an assignee who opens no pull request, and later loses the label if nobody works on it.
 on:
   schedule:
     - cron: '30 6 * * *'
   workflow_dispatch:
     inputs:
       dry-run:
-        description: Log the actions and change no pull request
+        description: Log the actions and change no pull request or issue
         type: boolean
         default: true
 
@@ -20,6 +21,9 @@ permissions:
 env:
   DAYS_BEFORE_STALE: 14
   DAYS_BEFORE_CLOSE: 14
+  DAYS_BEFORE_UNASSIGN: 30
+  # About six months
+  DAYS_BEFORE_UNREADY: 180
 
 jobs:
   close-stale-prs:
@@ -45,5 +49,31 @@ jobs:
               core,
               daysBeforeStale: Number(process.env.DAYS_BEFORE_STALE),
               daysBeforeClose: Number(process.env.DAYS_BEFORE_CLOSE),
+              dryRun: process.env.DRY_RUN === 'true'
+            });
+
+  release-stale-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts
+            .github/automation-messages
+
+      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        env:
+          # A scheduled run has no inputs, so it acts for real
+          DRY_RUN: ${{ inputs.dry-run || false }}
+        with:
+          script: |
+            const { default: releaseStaleIssues } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/release-stale-issues.mjs`);
+            await releaseStaleIssues({
+              github,
+              context,
+              core,
+              daysBeforeUnassign: Number(process.env.DAYS_BEFORE_UNASSIGN),
+              daysBeforeUnready: Number(process.env.DAYS_BEFORE_UNREADY),
               dryRun: process.env.DRY_RUN === 'true'
             });
