@@ -1,0 +1,1 @@
+@{user}, you were removed from this issue because you opened no pull request for it in {days} days. Anyone can now open a pull request for this issue. If you still want to work on it, ask in the issue to be assigned again.

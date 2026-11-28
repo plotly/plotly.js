@@ -1,0 +1,1 @@
+Nobody opened a pull request for this issue in {days} days, so the `ready-for-pr` label was removed. The issue stays open. Pull requests for it will not be accepted until a maintainer adds the label again.
